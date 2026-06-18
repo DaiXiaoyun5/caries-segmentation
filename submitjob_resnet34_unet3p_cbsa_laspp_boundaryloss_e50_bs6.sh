@@ -1,0 +1,56 @@
+#!/bin/bash
+#SBATCH -J res34_u3p_cbsa_laspp_boundary
+#SBATCH -p gpu
+#SBATCH -N 1
+#SBATCH -n 1
+#SBATCH -c 4
+#SBATCH --gres=gpu:1
+#SBATCH -o runs/logs/%x_%j.out
+
+cd /share/home/u2515283028/caries_project
+mkdir -p runs/logs
+
+module load anaconda3/4.12.0
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate caries-train
+
+echo "===== Job Info ====="
+echo "job name: $SLURM_JOB_NAME"
+echo "job id  : $SLURM_JOB_ID"
+echo "node    : $SLURMD_NODENAME"
+echo "pwd     : $(pwd)"
+echo "python  : $(which python)"
+python -V
+
+echo "===== GPU Info ====="
+nvidia-smi || true
+
+echo "===== Start Training: CBSA + Lite-ASPP + Boundary Loss ====="
+
+srun python -u src/train_resnet34_unet3p_cbsa_laspp_loss_ablation.py \
+  --run-name resnet34_unet3p_cbsa_laspp_boundaryloss_e50_bs6 \
+  --loss-mode boundary \
+  --image-size 512 \
+  --batch-size 6 \
+  --epochs 50 \
+  --lr 3e-4 \
+  --num-workers 4 \
+  --seed 42 \
+  --encoder-name resnet34 \
+  --encoder-weights imagenet \
+  --cat-channels 64 \
+  --deep-supervision 1 \
+  --ds-weights 1.0,0.4,0.3,0.2,0.1 \
+  --cbsa-position all \
+  --cbsa-lambda 1e-4 \
+  --cbsa-alpha 0.2 \
+  --cbsa-beta 0.1 \
+  --aspp-hidden 128 \
+  --aspp-dilations 1,3,5 \
+  --aspp-dropout 0.0 \
+  --aspp-res-scale 0.1 \
+  --bce-weight 0.5 \
+  --dice-weight 0.5 \
+  --boundary-weight 0.05
+
+echo "===== Done: CBSA + Lite-ASPP + Boundary Loss ====="

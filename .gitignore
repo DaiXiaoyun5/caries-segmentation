@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.ipynb_checkpoints/
+
+# Conda / env
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Logs
+*.log
+*.out
+runs/logs/
+slurm-*.out
+
+# Large experiment outputs
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.onnx
+*.tar
+*.tar.gz
+*.zip
+*.7z
+
+# Data
+data/
+datasets/
+images/
+masks/
+CariXray/
+caries/
+raw_data/
+
+# WandB / TensorBoard
+wandb/
+events.out.tfevents*
+lightning_logs/
+
+# Cache
+.cache/
+tmp/
+temp/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Keep selected small results manually if needed
