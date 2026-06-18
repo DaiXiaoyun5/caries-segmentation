@@ -3,26 +3,22 @@ set -euo pipefail
 
 cd /share/home/u2515283028/caries_project
 
-module load anaconda3/4.12.0
-source "$(conda info --base)/etc/profile.d/conda.sh"
-conda activate caries-train
-
 SRC="src/train_resnet34_unet_brr_b2_rbsg_e200.py"
-DST="src/train_resnet34_unet_brr_b2_preaux_e200.py"
+DST="src/train_resnet34_unet_brr_b3_mbc_e200.py"
 
 if [ ! -f "$SRC" ]; then
   echo "ERROR: cannot find $SRC"
   exit 1
 fi
 
-echo "===== Copy B2 script to B2-preaux ====="
+echo "===== Copy B2 script to B3 ====="
 cp -p "$SRC" "$DST"
 
-echo "===== Patch B2-preaux script ====="
+echo "===== Patch B3 script: add Mask-Boundary Consistency Loss ====="
 python - <<'PY'
 from pathlib import Path
 
-p = Path("src/train_resnet34_unet_brr_b2_preaux_e200.py")
+p = Path("src/train_resnet34_unet_brr_b3_mbc_e200.py")
 s = p.read_text(encoding="utf-8")
 
 old_import = '''from train_resnet34_unet_brr_b1_aux_e200 import (
@@ -36,112 +32,133 @@ new_import = '''from train_resnet34_unet_brr_b1_aux_e200 import (
 '''
 
 if old_import not in s:
-    raise RuntimeError("Cannot find old B1 import block.")
+    raise RuntimeError("Cannot find old B1 import block. Please check B2 script structure.")
 s = s.replace(old_import, new_import)
-
-old_return = '''        return {
-            "mask": mask_logits,
-            "boundary": boundary_logits,
-            "rim": rim_logits,
-        }
-'''
-new_return = '''        return {
-            "mask": mask_logits,
-            "boundary": boundary_logits,
-            "rim": rim_logits,
-            "boundary_pre": b_pre,
-            "rim_pre": r_pre,
-        }
-'''
-if old_return not in s:
-    raise RuntimeError("Cannot find return aux dict block.")
-s = s.replace(old_return, new_return)
 
 insert_code = r'''
 
-def compute_b2_preaux_loss(
-    outputs,
-    masks,
-    epoch,
-    warmup_epochs=20,
-    pre_boundary_weight=0.10,
-    pre_rim_weight=0.05,
-):
+def dice_loss_from_probs(probs, targets, eps=1e-6):
     """
-    B2-preaux loss.
+    Dice loss for probability maps.
+    probs:   [B,1,H,W], values in [0,1]
+    targets: [B,1,H,W], values in {0,1}
+    """
+    dims = (1, 2, 3)
+    inter = (probs * targets).sum(dims)
+    denom = probs.sum(dims) + targets.sum(dims)
+    dice = (2.0 * inter + eps) / (denom + eps)
+    return 1.0 - dice.mean()
 
-    It keeps original B2:
-      L_seg + wb * L_boundary_final + wr * L_rim_final
 
-    And adds direct supervision to the pre-gate hints:
-      + wpb * L_boundary_pre + wpr * L_rim_pre
+def soft_mask_to_boundary(mask_prob, rb=3):
+    """
+    Differentiable soft boundary from predicted mask probability.
 
-    rb=3, rr=9 are kept exactly the same as original B2/B1.
-    lambda_pos=0.20, lambda_rim=0.10 are kept inside RBSGLite.
+    mask_prob: [B,1,H,W], values in [0,1]
+    boundary = soft_dilate(mask_prob) - soft_erode(mask_prob)
+
+    This keeps gradients from boundary consistency loss flowing back to mask logits.
+    """
+    if mask_prob.dim() == 3:
+        mask_prob = mask_prob.unsqueeze(1)
+
+    mask_prob = mask_prob.float()
+    k = 2 * rb + 1
+
+    dil = F.max_pool2d(mask_prob, kernel_size=k, stride=1, padding=rb)
+    ero = -F.max_pool2d(-mask_prob, kernel_size=k, stride=1, padding=rb)
+
+    boundary = (dil - ero).clamp(0.0, 1.0)
+    return boundary
+
+
+def mask_boundary_consistency_loss(mask_logits, boundary_gt, rb=3, eps=1e-6):
+    """
+    Mask-Boundary Consistency Loss.
+
+    It enforces the soft boundary derived from predicted mask to match
+    the GT boundary target derived from GT mask.
+
+    Important:
+      - boundary_gt is used only as training/evaluation target.
+      - No GT boundary/rim is used as model input.
+      - This loss adds no inference parameter.
+    """
+    mask_prob = torch.sigmoid(mask_logits)
+    pred_boundary = soft_mask_to_boundary(mask_prob, rb=rb)
+
+    pred_boundary = pred_boundary.clamp(eps, 1.0 - eps)
+    boundary_gt = boundary_gt.float()
+
+    bce = F.binary_cross_entropy(pred_boundary, boundary_gt)
+    dice = dice_loss_from_probs(pred_boundary, boundary_gt)
+
+    return bce + dice
+
+
+def compute_b3_loss(outputs, masks, epoch, warmup_epochs=20, mbc_weight=0.05, mbc_rb=3):
+    """
+    B3 loss = B2 loss + Mask-Boundary Consistency Loss.
+
+    B2:
+      L_seg + wb * L_boundary + wr * L_rim
+
+    B3:
+      L_seg + wb * L_boundary + wr * L_rim + wc * L_mbc
     """
     mask_logits = outputs["mask"]
     boundary_logits = outputs["boundary"]
     rim_logits = outputs["rim"]
-    boundary_pre_logits = outputs["boundary_pre"]
-    rim_pre_logits = outputs["rim_pre"]
 
     boundary_gt, rim_gt = mask_to_boundary_and_rim(masks, rb=3, rr=9)
 
     loss_seg = bce_dice_loss(mask_logits, masks)
-
     loss_boundary = bce_dice_loss(boundary_logits, boundary_gt)
     loss_rim = F.binary_cross_entropy_with_logits(rim_logits, rim_gt)
 
-    loss_boundary_pre = bce_dice_loss(boundary_pre_logits, boundary_gt)
-    loss_rim_pre = F.binary_cross_entropy_with_logits(rim_pre_logits, rim_gt)
+    loss_mbc = mask_boundary_consistency_loss(
+        mask_logits,
+        boundary_gt,
+        rb=mbc_rb,
+    )
 
     if epoch <= warmup_epochs:
         wb = 0.10
         wr = 0.05
-        wpb = min(float(pre_boundary_weight), 0.05)
-        wpr = min(float(pre_rim_weight), 0.025)
+        wc = min(float(mbc_weight), 0.02)
     else:
         wb = 0.20
         wr = 0.10
-        wpb = float(pre_boundary_weight)
-        wpr = float(pre_rim_weight)
+        wc = float(mbc_weight)
 
-    total = (
-        loss_seg
-        + wb * loss_boundary
-        + wr * loss_rim
-        + wpb * loss_boundary_pre
-        + wpr * loss_rim_pre
-    )
+    total = loss_seg + wb * loss_boundary + wr * loss_rim + wc * loss_mbc
 
     return total, {
         "loss_seg": float(loss_seg.detach().cpu()),
         "loss_boundary": float(loss_boundary.detach().cpu()),
         "loss_rim": float(loss_rim.detach().cpu()),
-        "loss_boundary_pre": float(loss_boundary_pre.detach().cpu()),
-        "loss_rim_pre": float(loss_rim_pre.detach().cpu()),
+        "loss_mbc": float(loss_mbc.detach().cpu()),
         "wb": wb,
         "wr": wr,
-        "wpb": wpb,
-        "wpr": wpr,
+        "wc": wc,
     }
 
 
-def run_one_epoch_b2_preaux(
+def run_one_epoch_b3(
     model,
     loader,
     optimizer,
     device,
     train=True,
     epoch=1,
-    pre_boundary_weight=0.10,
-    pre_rim_weight=0.05,
+    mbc_weight=0.05,
+    mbc_rb=3,
 ):
     """
-    Train/eval one epoch for B2-preaux.
+    Train/eval one epoch for B3.
 
-    Metrics are computed only from final mask logits.
-    Pre-boundary/pre-rim supervision only affects training loss.
+    Metrics are still computed only from final mask logits.
+    Boundary/rim/MBC only affect loss.
     """
     model.train(train)
 
@@ -152,13 +169,6 @@ def run_one_epoch_b2_preaux(
     total_tn = 0.0
     n_batches = 0
 
-    last_items = {
-        "loss_boundary_pre": 0.0,
-        "loss_rim_pre": 0.0,
-        "wpb": 0.0,
-        "wpr": 0.0,
-    }
-
     for images, masks, _, _ in loader:
         images = images.to(device, non_blocking=True)
         masks = masks.to(device, non_blocking=True).float()
@@ -168,19 +178,17 @@ def run_one_epoch_b2_preaux(
 
         with torch.set_grad_enabled(train):
             outputs = model(images, return_aux=True)
-            loss, loss_items = compute_b2_preaux_loss(
+            loss, _ = compute_b3_loss(
                 outputs,
                 masks,
                 epoch=epoch,
-                pre_boundary_weight=pre_boundary_weight,
-                pre_rim_weight=pre_rim_weight,
+                mbc_weight=mbc_weight,
+                mbc_rb=mbc_rb,
             )
 
             if train:
                 loss.backward()
                 optimizer.step()
-
-        last_items = loss_items
 
         logits = outputs["mask"].detach()
         probs = torch.sigmoid(logits)
@@ -215,10 +223,6 @@ def run_one_epoch_b2_preaux(
         "fp": total_fp,
         "fn": total_fn,
         "tn": total_tn,
-        "loss_boundary_pre": last_items["loss_boundary_pre"],
-        "loss_rim_pre": last_items["loss_rim_pre"],
-        "wpb": last_items["wpb"],
-        "wpr": last_items["wpr"],
     }
 '''
 
@@ -227,13 +231,14 @@ if marker not in s:
     raise RuntimeError("Cannot find def main(args) marker.")
 s = s.replace(marker, insert_code + marker)
 
+# Update config description.
 s = s.replace(
     'config["experiment"] = "B2: B1 + RBSG-lite decoder feature gate"',
-    'config["experiment"] = "B2-preaux: B2 BRR-RBSG with pre-boundary/pre-rim supervision"',
+    'config["experiment"] = "B3: B2 BRR-RBSG + Mask-Boundary Consistency Loss"',
 )
 s = s.replace(
     'config["note"] = "B2 keeps B1 boundary/rim auxiliary supervision and adds RBSG-lite on final decoder feature. This avoids rewriting SMP decoder internals."',
-    'config["note"] = "B2-preaux keeps B2 architecture and lambda_pos=0.20/lambda_rim=0.10/rb=3/rr=9, and adds direct supervision to boundary_head_pre and rim_head_pre so that RBSG hints become more semantically reliable."',
+    'config["note"] = "B3 keeps B2 BRR-RBSG architecture and adds Mask-Boundary Consistency Loss. It enforces the soft boundary derived from predicted mask to match GT boundary. No extra inference parameter is introduced."',
 )
 
 old_loss_block = '''    config["loss"] = {
@@ -246,88 +251,89 @@ old_loss_block = '''    config["loss"] = {
 '''
 new_loss_block = '''    config["loss"] = {
         "main": "BCEWithLogits + Dice",
-        "boundary_final": "BCEWithLogits + Dice",
-        "rim_final": "BCEWithLogits",
-        "boundary_pre": "BCEWithLogits + Dice",
-        "rim_pre": "BCEWithLogits",
-        "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim + 0.05*L_boundary_pre + 0.025*L_rim_pre",
-        "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim + pre_boundary_weight*L_boundary_pre + pre_rim_weight*L_rim_pre",
-        "pre_boundary_weight": args.pre_boundary_weight,
-        "pre_rim_weight": args.pre_rim_weight
+        "boundary": "BCEWithLogits + Dice",
+        "rim": "BCEWithLogits",
+        "mask_boundary_consistency": "BCE + Dice between soft boundary from predicted mask and GT boundary",
+        "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim + 0.02*L_mbc",
+        "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim + mbc_weight*L_mbc",
+        "mbc_weight": args.mbc_weight,
+        "mbc_rb": args.mbc_rb
     }
 '''
 if old_loss_block not in s:
     raise RuntimeError("Cannot find original config loss block.")
 s = s.replace(old_loss_block, new_loss_block)
 
+# Update print header.
 s = s.replace(
     'print("Model ready: B2 BRR RBSG-lite ResNet34-U-Net")',
-    'print("Model ready: B2-preaux BRR-RBSG ResNet34-U-Net")',
+    'print("Model ready: B3 BRR-RBSG + Mask-Boundary Consistency Loss")',
 )
 s = s.replace(
     '    print("lr              =", args.lr)\n',
-    '    print("lr              =", args.lr)\n    print("pre_boundary_weight =", args.pre_boundary_weight)\n    print("pre_rim_weight      =", args.pre_rim_weight)\n',
+    '    print("lr              =", args.lr)\n    print("mbc_weight      =", args.mbc_weight)\n    print("mbc_rb          =", args.mbc_rb)\n',
 )
 
+# Replace train/val/test calls.
 repls = {
 '''        train_metrics = run_one_epoch_b1(model, train_loader, optimizer, device, train=True, epoch=epoch)''':
-'''        train_metrics = run_one_epoch_b2_preaux(
+'''        train_metrics = run_one_epoch_b3(
             model,
             train_loader,
             optimizer,
             device,
             train=True,
             epoch=epoch,
-            pre_boundary_weight=args.pre_boundary_weight,
-            pre_rim_weight=args.pre_rim_weight,
+            mbc_weight=args.mbc_weight,
+            mbc_rb=args.mbc_rb,
         )''',
 
 '''        val_metrics = run_one_epoch_b1(model, val_loader, optimizer=None, device=device, train=False, epoch=epoch)''':
-'''        val_metrics = run_one_epoch_b2_preaux(
+'''        val_metrics = run_one_epoch_b3(
             model,
             val_loader,
             optimizer=None,
             device=device,
             train=False,
             epoch=epoch,
-            pre_boundary_weight=args.pre_boundary_weight,
-            pre_rim_weight=args.pre_rim_weight,
+            mbc_weight=args.mbc_weight,
+            mbc_rb=args.mbc_rb,
         )''',
 
 '''    best_train_metrics = run_one_epoch_b1(model, train_loader, optimizer=None, device=device, train=False, epoch=args.epochs)''':
-'''    best_train_metrics = run_one_epoch_b2_preaux(
+'''    best_train_metrics = run_one_epoch_b3(
         model,
         train_loader,
         optimizer=None,
         device=device,
         train=False,
         epoch=args.epochs,
-        pre_boundary_weight=args.pre_boundary_weight,
-        pre_rim_weight=args.pre_rim_weight,
+        mbc_weight=args.mbc_weight,
+        mbc_rb=args.mbc_rb,
     )''',
 
 '''    best_val_metrics = run_one_epoch_b1(model, val_loader, optimizer=None, device=device, train=False, epoch=args.epochs)''':
-'''    best_val_metrics = run_one_epoch_b2_preaux(
+'''    best_val_metrics = run_one_epoch_b3(
         model,
         val_loader,
         optimizer=None,
         device=device,
         train=False,
         epoch=args.epochs,
-        pre_boundary_weight=args.pre_boundary_weight,
-        pre_rim_weight=args.pre_rim_weight,
+        mbc_weight=args.mbc_weight,
+        mbc_rb=args.mbc_rb,
     )''',
 
 '''    test_metrics = run_one_epoch_b1(model, test_loader, optimizer=None, device=device, train=False, epoch=args.epochs)''':
-'''    test_metrics = run_one_epoch_b2_preaux(
+'''    test_metrics = run_one_epoch_b3(
         model,
         test_loader,
         optimizer=None,
         device=device,
         train=False,
         epoch=args.epochs,
-        pre_boundary_weight=args.pre_boundary_weight,
-        pre_rim_weight=args.pre_rim_weight,
+        mbc_weight=args.mbc_weight,
+        mbc_rb=args.mbc_rb,
     )''',
 }
 
@@ -336,29 +342,21 @@ for old, new in repls.items():
         raise RuntimeError(f"Cannot find call block: {old[:80]}")
     s = s.replace(old, new)
 
-s = s.replace(
-'''            f"val_iou={val_metrics['iou']:.4f} val_precision={val_metrics['precision']:.4f} "
-            f"val_recall={val_metrics['recall']:.4f}"
-''',
-'''            f"val_iou={val_metrics['iou']:.4f} val_precision={val_metrics['precision']:.4f} "
-            f"val_recall={val_metrics['recall']:.4f} "
-            f"pre_bd={train_metrics['loss_boundary_pre']:.4f} pre_rim={train_metrics['loss_rim_pre']:.4f}"
-''',
-)
-
+# Update default run name.
 s = s.replace(
     'parser.add_argument("--run-name", type=str, default="b2_brr_rbsg_auglite_e200_constlr_bs6")',
-    'parser.add_argument("--run-name", type=str, default="b2_preaux_rbsg_auglite_e200_constlr_bs6")',
+    'parser.add_argument("--run-name", type=str, default="b3_brr_rbsg_mbc_auglite_e200_constlr_bs6")',
 )
 
+# Add argparse parameters.
 arg_marker = '''    parser.add_argument("--encoder-name", type=str, default="resnet34")
     parser.add_argument("--encoder-weights", type=str, default="imagenet")
 '''
 arg_insert = '''    parser.add_argument("--encoder-name", type=str, default="resnet34")
     parser.add_argument("--encoder-weights", type=str, default="imagenet")
 
-    parser.add_argument("--pre-boundary-weight", type=float, default=0.10)
-    parser.add_argument("--pre-rim-weight", type=float, default=0.05)
+    parser.add_argument("--mbc-weight", type=float, default=0.05)
+    parser.add_argument("--mbc-rb", type=int, default=3)
 '''
 if arg_marker not in s:
     raise RuntimeError("Cannot find argparse insertion marker.")
@@ -369,15 +367,15 @@ print(f"Patched: {p}")
 PY
 
 echo "===== Create full training sbatch script ====="
-cat > submitjob_b2_preaux_rbsg_auglite_e200_constlr_bs6.sh <<'EOF'
+cat > scripts/jobs/submitjob_b3_brr_rbsg_mbc_auglite_e200_constlr_bs6.sh <<'EOF'
 #!/bin/bash
-#SBATCH -J b2_preaux
+#SBATCH -J b3_brr_mbc
 #SBATCH -p gpu
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH -c 4
 #SBATCH --gres=gpu:1
-#SBATCH -o runs/logs/b2_preaux_%j.out
+#SBATCH -o runs/logs/b3_brr_mbc_%j.out
 
 set -e
 
@@ -394,11 +392,11 @@ python --version
 nvidia-smi
 
 echo "===== CHECK SCRIPT ====="
-python -m py_compile src/train_resnet34_unet_brr_b2_preaux_e200.py
+python -m py_compile src/train_resnet34_unet_brr_b3_mbc_e200.py
 
-echo "===== RUN B2-preaux: BRR-RBSG + pre-boundary/pre-rim supervision ====="
-python src/train_resnet34_unet_brr_b2_preaux_e200.py \
-  --run-name b2_preaux_rbsg_auglite_e200_constlr_bs6 \
+echo "===== RUN B3: BRR-RBSG + Mask-Boundary Consistency Loss ====="
+python src/train_resnet34_unet_brr_b3_mbc_e200.py \
+  --run-name b3_brr_rbsg_mbc_auglite_e200_constlr_bs6 \
   --image-size 512 \
   --augment-profile lite \
   --batch-size 6 \
@@ -409,22 +407,22 @@ python src/train_resnet34_unet_brr_b2_preaux_e200.py \
   --seed 42 \
   --encoder-name resnet34 \
   --encoder-weights imagenet \
-  --pre-boundary-weight 0.10 \
-  --pre-rim-weight 0.05
+  --mbc-weight 0.05 \
+  --mbc-rb 3
 
-echo "===== DONE B2-preaux ====="
+echo "===== DONE B3 ====="
 EOF
 
 echo "===== Create smoke test sbatch script ====="
-cat > submitjob_smoke_b2_preaux_e3.sh <<'EOF'
+cat > scripts/jobs/submitjob_smoke_b3_brr_rbsg_mbc_e3.sh <<'EOF'
 #!/bin/bash
-#SBATCH -J smoke_b2pa
+#SBATCH -J smoke_b3
 #SBATCH -p gpu
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH -c 4
 #SBATCH --gres=gpu:1
-#SBATCH -o runs/logs/smoke_b2_preaux_%j.out
+#SBATCH -o runs/logs/smoke_b3_mbc_%j.out
 
 set -e
 
@@ -441,11 +439,11 @@ python --version
 nvidia-smi
 
 echo "===== CHECK SCRIPT ====="
-python -m py_compile src/train_resnet34_unet_brr_b2_preaux_e200.py
+python -m py_compile src/train_resnet34_unet_brr_b3_mbc_e200.py
 
-echo "===== SMOKE RUN B2-preaux: 3 epochs ====="
-python src/train_resnet34_unet_brr_b2_preaux_e200.py \
-  --run-name smoke_b2_preaux_e3 \
+echo "===== SMOKE RUN B3: 3 epochs, batch size 2 ====="
+python src/train_resnet34_unet_brr_b3_mbc_e200.py \
+  --run-name smoke_b3_brr_rbsg_mbc_e3 \
   --image-size 512 \
   --augment-profile lite \
   --batch-size 2 \
@@ -456,33 +454,36 @@ python src/train_resnet34_unet_brr_b2_preaux_e200.py \
   --seed 42 \
   --encoder-name resnet34 \
   --encoder-weights imagenet \
-  --pre-boundary-weight 0.10 \
-  --pre-rim-weight 0.05
+  --mbc-weight 0.05 \
+  --mbc-rb 3
 
-echo "===== DONE SMOKE B2-preaux ====="
+echo "===== DONE SMOKE B3 ====="
 EOF
 
-chmod +x submitjob_b2_preaux_rbsg_auglite_e200_constlr_bs6.sh
-chmod +x submitjob_smoke_b2_preaux_e3.sh
+chmod +x scripts/jobs/submitjob_b3_brr_rbsg_mbc_auglite_e200_constlr_bs6.sh
+chmod +x scripts/jobs/submitjob_smoke_b3_brr_rbsg_mbc_e3.sh
 
 echo "===== Shell syntax check ====="
-bash -n submitjob_b2_preaux_rbsg_auglite_e200_constlr_bs6.sh
-bash -n submitjob_smoke_b2_preaux_e3.sh
+bash -n scripts/jobs/submitjob_b3_brr_rbsg_mbc_auglite_e200_constlr_bs6.sh
+bash -n scripts/jobs/submitjob_smoke_b3_brr_rbsg_mbc_e3.sh
 
 echo "===== Python syntax check ====="
-python -m py_compile src/train_resnet34_unet_brr_b2_preaux_e200.py
+module load anaconda3/4.12.0 || true
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate caries-train
+python -m py_compile src/train_resnet34_unet_brr_b3_mbc_e200.py
 
 echo "===== Created files ====="
-ls -lh src/train_resnet34_unet_brr_b2_preaux_e200.py
-ls -lh submitjob_b2_preaux_rbsg_auglite_e200_constlr_bs6.sh
-ls -lh submitjob_smoke_b2_preaux_e3.sh
+ls -lh src/train_resnet34_unet_brr_b3_mbc_e200.py
+ls -lh scripts/jobs/submitjob_b3_brr_rbsg_mbc_auglite_e200_constlr_bs6.sh
+ls -lh scripts/jobs/submitjob_smoke_b3_brr_rbsg_mbc_e3.sh
 
 echo "===== Next step ====="
 echo "1) First submit smoke test:"
-echo "   sbatch submitjob_smoke_b2_preaux_e3.sh"
+echo "   sbatch scripts/jobs/submitjob_smoke_b3_brr_rbsg_mbc_e3.sh"
 echo
 echo "2) Watch smoke log:"
-echo "   tail -f runs/logs/smoke_b2_preaux_*.out"
+echo "   tail -f runs/logs/smoke_b3_mbc_*.out"
 echo
-echo "3) If smoke passes, submit full run:"
-echo "   sbatch submitjob_b2_preaux_rbsg_auglite_e200_constlr_bs6.sh"
+echo "3) If smoke passes, submit full B3:"
+echo "   sbatch scripts/jobs/submitjob_b3_brr_rbsg_mbc_auglite_e200_constlr_bs6.sh"

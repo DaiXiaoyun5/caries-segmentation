@@ -8,18 +8,17 @@
 /share/home/u2515283028/caries_project
 ```
 
-如果部署到其他位置，请先替换 Python 和 Shell 脚本中的该路径。为避免破坏已有实验任务，本次整理保留了原有文件位置。
+如果部署到其他位置，请先替换 Python 和 Shell 脚本中的该路径。Shell 脚本已按用途收纳到 `scripts/`，但文件名保持不变。
 
 ## 项目结构
 
 ```text
 .
 ├── src/                     # 数据处理、训练、评估、分析脚本
-├── submitjob*.sh            # Slurm 训练与消融任务
-├── submit_*.sh              # 评估、可视化和复杂度统计任务
-├── make_*_patch.sh          # 在集群上生成后续实验脚本的补丁工具
-├── pack_*.sh                # 实验结果与证据打包工具
-├── setup_*.sh               # 外部模型准备脚本
+├── scripts/
+│   ├── jobs/                # Slurm 训练、评估和冒烟任务
+│   ├── tools/               # 检查、补丁生成和结果打包工具
+│   └── setup/               # 依赖安装、下载和外部模型准备
 ├── requirements.txt         # 核心 Python 依赖
 └── docs/PROJECT_GUIDE.md    # 模型族、数据流和脚本导航
 ```
@@ -94,7 +93,7 @@ python src/train_resnet34_unet3p.py \
 ### Slurm 集群
 
 ```bash
-sbatch submitjob_resnet34_unet_auglite_e200_constlr_bs6.sh
+sbatch scripts/jobs/submitjob_resnet34_unet_auglite_e200_constlr_bs6.sh
 ```
 
 任务脚本通常完成训练、逐病例评估以及结果摘要输出。请先检查分区名、Conda 环境、GPU 配额和日志路径是否适合当前集群。
@@ -146,4 +145,3 @@ python src/analyze_final_paper_evidence.py
 - 少量早期中文注释存在历史编码乱码，不影响 Python 语法，但后续维护时建议逐步修复。
 - 仓库包含大量实验快照和消融版本；不要仅凭文件名删除“重复”脚本，它们可能对应已完成实验。
 - 本项目用于研究实验，不应直接用于临床诊断。
-

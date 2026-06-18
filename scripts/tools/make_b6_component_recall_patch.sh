@@ -520,7 +520,7 @@ print(f"Patched: {p}")
 PY
 
 echo "===== Create full training sbatch script ====="
-cat > submitjob_b6_brr_rbsg_component_recall_auglite_e200_constlr_bs6.sh <<'EOF'
+cat > scripts/jobs/submitjob_b6_brr_rbsg_component_recall_auglite_e200_constlr_bs6.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J b6_comp
 #SBATCH -p gpu
@@ -570,7 +570,7 @@ echo "===== DONE B6 ====="
 EOF
 
 echo "===== Create smoke test sbatch script ====="
-cat > submitjob_smoke_b6_brr_rbsg_component_recall_e3.sh <<'EOF'
+cat > scripts/jobs/submitjob_smoke_b6_brr_rbsg_component_recall_e3.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J smoke_b6
 #SBATCH -p gpu
@@ -619,12 +619,12 @@ python src/train_resnet34_unet_brr_b6_component_recall_e200.py \
 echo "===== DONE SMOKE B6 ====="
 EOF
 
-chmod +x submitjob_b6_brr_rbsg_component_recall_auglite_e200_constlr_bs6.sh
-chmod +x submitjob_smoke_b6_brr_rbsg_component_recall_e3.sh
+chmod +x scripts/jobs/submitjob_b6_brr_rbsg_component_recall_auglite_e200_constlr_bs6.sh
+chmod +x scripts/jobs/submitjob_smoke_b6_brr_rbsg_component_recall_e3.sh
 
 echo "===== Shell syntax check ====="
-bash -n submitjob_b6_brr_rbsg_component_recall_auglite_e200_constlr_bs6.sh
-bash -n submitjob_smoke_b6_brr_rbsg_component_recall_e3.sh
+bash -n scripts/jobs/submitjob_b6_brr_rbsg_component_recall_auglite_e200_constlr_bs6.sh
+bash -n scripts/jobs/submitjob_smoke_b6_brr_rbsg_component_recall_e3.sh
 
 echo "===== Python syntax check ====="
 module load anaconda3/4.12.0 || true
@@ -634,15 +634,15 @@ python -m py_compile src/train_resnet34_unet_brr_b6_component_recall_e200.py
 
 echo "===== Created files ====="
 ls -lh src/train_resnet34_unet_brr_b6_component_recall_e200.py
-ls -lh submitjob_b6_brr_rbsg_component_recall_auglite_e200_constlr_bs6.sh
-ls -lh submitjob_smoke_b6_brr_rbsg_component_recall_e3.sh
+ls -lh scripts/jobs/submitjob_b6_brr_rbsg_component_recall_auglite_e200_constlr_bs6.sh
+ls -lh scripts/jobs/submitjob_smoke_b6_brr_rbsg_component_recall_e3.sh
 
 echo "===== Next step ====="
 echo "1) First submit smoke test:"
-echo "   sbatch submitjob_smoke_b6_brr_rbsg_component_recall_e3.sh"
+echo "   sbatch scripts/jobs/submitjob_smoke_b6_brr_rbsg_component_recall_e3.sh"
 echo
 echo "2) Watch smoke log:"
 echo "   tail -f runs/logs/smoke_b6_component_*.out"
 echo
 echo "3) If smoke passes, submit full B6:"
-echo "   sbatch submitjob_b6_brr_rbsg_component_recall_auglite_e200_constlr_bs6.sh"
+echo "   sbatch scripts/jobs/submitjob_b6_brr_rbsg_component_recall_auglite_e200_constlr_bs6.sh"

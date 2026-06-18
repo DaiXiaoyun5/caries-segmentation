@@ -430,7 +430,7 @@ print(f"Patched: {p}")
 PY
 
 echo "===== Create full training sbatch script ====="
-cat > submitjob_b4_brr_rbsg_lshnw_auglite_e200_constlr_bs6.sh <<'EOF'
+cat > scripts/jobs/submitjob_b4_brr_rbsg_lshnw_auglite_e200_constlr_bs6.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J b4_lshnw
 #SBATCH -p gpu
@@ -479,7 +479,7 @@ echo "===== DONE B4 ====="
 EOF
 
 echo "===== Create smoke test sbatch script ====="
-cat > submitjob_smoke_b4_brr_rbsg_lshnw_e3.sh <<'EOF'
+cat > scripts/jobs/submitjob_smoke_b4_brr_rbsg_lshnw_e3.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J smoke_b4
 #SBATCH -p gpu
@@ -527,12 +527,12 @@ python src/train_resnet34_unet_brr_b4_lshnw_e200.py \
 echo "===== DONE SMOKE B4 ====="
 EOF
 
-chmod +x submitjob_b4_brr_rbsg_lshnw_auglite_e200_constlr_bs6.sh
-chmod +x submitjob_smoke_b4_brr_rbsg_lshnw_e3.sh
+chmod +x scripts/jobs/submitjob_b4_brr_rbsg_lshnw_auglite_e200_constlr_bs6.sh
+chmod +x scripts/jobs/submitjob_smoke_b4_brr_rbsg_lshnw_e3.sh
 
 echo "===== Shell syntax check ====="
-bash -n submitjob_b4_brr_rbsg_lshnw_auglite_e200_constlr_bs6.sh
-bash -n submitjob_smoke_b4_brr_rbsg_lshnw_e3.sh
+bash -n scripts/jobs/submitjob_b4_brr_rbsg_lshnw_auglite_e200_constlr_bs6.sh
+bash -n scripts/jobs/submitjob_smoke_b4_brr_rbsg_lshnw_e3.sh
 
 echo "===== Python syntax check ====="
 module load anaconda3/4.12.0 || true
@@ -542,15 +542,15 @@ python -m py_compile src/train_resnet34_unet_brr_b4_lshnw_e200.py
 
 echo "===== Created files ====="
 ls -lh src/train_resnet34_unet_brr_b4_lshnw_e200.py
-ls -lh submitjob_b4_brr_rbsg_lshnw_auglite_e200_constlr_bs6.sh
-ls -lh submitjob_smoke_b4_brr_rbsg_lshnw_e3.sh
+ls -lh scripts/jobs/submitjob_b4_brr_rbsg_lshnw_auglite_e200_constlr_bs6.sh
+ls -lh scripts/jobs/submitjob_smoke_b4_brr_rbsg_lshnw_e3.sh
 
 echo "===== Next step ====="
 echo "1) First submit smoke test:"
-echo "   sbatch submitjob_smoke_b4_brr_rbsg_lshnw_e3.sh"
+echo "   sbatch scripts/jobs/submitjob_smoke_b4_brr_rbsg_lshnw_e3.sh"
 echo
 echo "2) Watch smoke log:"
 echo "   tail -f runs/logs/smoke_b4_lshnw_*.out"
 echo
 echo "3) If smoke passes, submit full B4:"
-echo "   sbatch submitjob_b4_brr_rbsg_lshnw_auglite_e200_constlr_bs6.sh"
+echo "   sbatch scripts/jobs/submitjob_b4_brr_rbsg_lshnw_auglite_e200_constlr_bs6.sh"

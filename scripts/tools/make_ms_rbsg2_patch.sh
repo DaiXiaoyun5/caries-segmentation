@@ -599,7 +599,7 @@ print(f"Patched: {p}")
 PY
 
 echo "===== Create full training sbatch script ====="
-cat > submitjob_ms_rbsg2_auglite_e200_constlr_bs6.sh <<'EOF'
+cat > scripts/jobs/submitjob_ms_rbsg2_auglite_e200_constlr_bs6.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J ms_rbsg2
 #SBATCH -p gpu
@@ -646,7 +646,7 @@ echo "===== DONE MS-RBSG-2 ====="
 EOF
 
 echo "===== Create smoke test sbatch script ====="
-cat > submitjob_smoke_ms_rbsg2_e3.sh <<'EOF'
+cat > scripts/jobs/submitjob_smoke_ms_rbsg2_e3.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J smoke_msrg
 #SBATCH -p gpu
@@ -692,27 +692,27 @@ python src/train_resnet34_unet_brr_ms_rbsg2_e200.py \
 echo "===== DONE SMOKE MS-RBSG-2 ====="
 EOF
 
-chmod +x submitjob_ms_rbsg2_auglite_e200_constlr_bs6.sh
-chmod +x submitjob_smoke_ms_rbsg2_e3.sh
+chmod +x scripts/jobs/submitjob_ms_rbsg2_auglite_e200_constlr_bs6.sh
+chmod +x scripts/jobs/submitjob_smoke_ms_rbsg2_e3.sh
 
 echo "===== Shell syntax check ====="
-bash -n submitjob_ms_rbsg2_auglite_e200_constlr_bs6.sh
-bash -n submitjob_smoke_ms_rbsg2_e3.sh
+bash -n scripts/jobs/submitjob_ms_rbsg2_auglite_e200_constlr_bs6.sh
+bash -n scripts/jobs/submitjob_smoke_ms_rbsg2_e3.sh
 
 echo "===== Python syntax check ====="
 python -m py_compile src/train_resnet34_unet_brr_ms_rbsg2_e200.py
 
 echo "===== Created files ====="
 ls -lh src/train_resnet34_unet_brr_ms_rbsg2_e200.py
-ls -lh submitjob_ms_rbsg2_auglite_e200_constlr_bs6.sh
-ls -lh submitjob_smoke_ms_rbsg2_e3.sh
+ls -lh scripts/jobs/submitjob_ms_rbsg2_auglite_e200_constlr_bs6.sh
+ls -lh scripts/jobs/submitjob_smoke_ms_rbsg2_e3.sh
 
 echo "===== Next step ====="
 echo "1) First submit smoke test:"
-echo "   sbatch submitjob_smoke_ms_rbsg2_e3.sh"
+echo "   sbatch scripts/jobs/submitjob_smoke_ms_rbsg2_e3.sh"
 echo
 echo "2) Watch smoke log:"
 echo "   tail -f runs/logs/smoke_ms_rbsg2_*.out"
 echo
 echo "3) If smoke passes, submit full run:"
-echo "   sbatch submitjob_ms_rbsg2_auglite_e200_constlr_bs6.sh"
+echo "   sbatch scripts/jobs/submitjob_ms_rbsg2_auglite_e200_constlr_bs6.sh"

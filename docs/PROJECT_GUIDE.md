@@ -53,11 +53,12 @@ Split 文件每行包含绝对图像路径和绝对 mask 路径，以 Tab 分隔
 
 ### Shell
 
-- `submitjob_*.sh`：常规 Slurm 训练任务。
-- `submitjob_smoke_*.sh`：短周期冒烟测试。
-- `submit_*.sh`：评估和分析任务。
-- `make_*_patch.sh`：根据既有脚本构建后续实验版本。
-- `pack_*.sh`：收集代码、指标和实验产物。
+- `scripts/jobs/submitjob_*.sh`：常规 Slurm 训练任务。
+- `scripts/jobs/submitjob_smoke_*.sh`：短周期冒烟测试。
+- `scripts/jobs/submit_*.sh`：评估和分析任务。
+- `scripts/tools/make_*_patch.sh`：根据既有脚本构建后续实验版本。
+- `scripts/tools/pack_*.sh`：收集代码、指标和实验产物。
+- `scripts/setup/*.sh`：依赖安装、模型下载和外部基线准备。
 
 ## 4. BRR 消融命名
 
@@ -71,27 +72,27 @@ Split 文件每行包含绝对图像路径和绝对 mask 路径，以 Tab 分隔
 - B7：ULRB A/B 变体。
 - MS：组合式后续模型。
 
-对应 `submitjob_smoke_*.sh` 可先做短周期验证，再运行 200 epoch 正式任务。
+对应 `scripts/jobs/submitjob_smoke_*.sh` 可先做短周期验证，再运行 200 epoch 正式任务。
 
 ## 5. 外部实验
 
 ### nnU-Net v2
 
 1. `prepare_nnunet_caries.py` 转换数据。
-2. `submitjob_nnunet*_plan*.sh` 规划与预处理。
-3. `submitjob_nnunet*_fold0*.sh` 训练。
+2. `scripts/jobs/submitjob_nnunet*_plan*.sh` 规划与预处理。
+3. `scripts/jobs/submitjob_nnunet*_fold0*.sh` 训练。
 4. `eval_nnunet_caries.py` 统一评估。
 
 ### MedSAM
 
-1. `setup_medsam_caries.sh` 准备仓库与权重。
-2. `submitjob_medsam_gtbox_caries.sh` 使用 GT box 评估。
-3. `pack_medsam_gtbox_result.sh` 打包结果。
+1. `scripts/setup/setup_medsam_caries.sh` 准备仓库与权重。
+2. `scripts/jobs/submitjob_medsam_gtbox_caries.sh` 使用 GT box 评估。
+3. `scripts/tools/pack_medsam_gtbox_result.sh` 打包结果。
 
 ### YOLO
 
 1. `prepare_yolo_caries_detection.py` 生成检测数据。
-2. `submitjob_yolo11n_caries_detect.sh` 训练。
+2. `scripts/jobs/submitjob_yolo11n_caries_detect.sh` 训练。
 3. `eval_yolo_caries_recall_conf.py` 分析置信度与召回率。
 
 ## 6. 迁移到其他机器
@@ -112,4 +113,3 @@ Split 文件每行包含绝对图像路径和绝对 mask 路径，以 Tab 分隔
 - 记录 Python、PyTorch、CUDA、GPU 与随机种子。
 - 保留最终 `config.json`、`history.csv` 和指标 JSON；权重与预测图使用外部存储。
 - 后续若要重构目录，先批量更新 Shell 脚本和 Python 模块导入，再移动文件。
-
