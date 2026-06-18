@@ -1,0 +1,19 @@
+# Install a PyTorch build matching the CUDA driver separately:
+# https://pytorch.org/get-started/locally/
+torch
+torchvision
+
+# Core training and evaluation
+numpy
+Pillow
+matplotlib
+opencv-python
+albumentations
+segmentation-models-pytorch
+
+# Optional model-complexity reporting used by some scripts
+thop
+
+# Optional experiment families are intentionally not included:
+# nnunetv2, ultralytics, MedSAM/segment-anything, and RWKV dependencies.
+
