@@ -17,7 +17,7 @@ find data/yolo_caries_detect/labels/test -type f | sort | head -20 | xargs -I{} 
 mkdir -p "$OUT/src" "$OUT/submit_scripts" "$OUT/runs/logs"
 cp src/prepare_yolo_caries_detection.py "$OUT/src/" 2>/dev/null || true
 cp src/eval_yolo_caries_recall_conf.py "$OUT/src/" 2>/dev/null || true
-cp submitjob_yolo11n_caries_detect.sh "$OUT/submit_scripts/" 2>/dev/null || true
+cp scripts/jobs/submitjob_yolo11n_caries_detect.sh "$OUT/submit_scripts/" 2>/dev/null || true
 cp runs/logs/yolo11n_caries_*.out "$OUT/runs/logs/" 2>/dev/null || true
 
 find "$OUT" -type f | sort > "$OUT/file_list.txt"

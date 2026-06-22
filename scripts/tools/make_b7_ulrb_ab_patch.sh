@@ -565,7 +565,7 @@ python -m py_compile src/train_resnet34_unet_brr_b7_ulrb_b_e200.py
 
 echo "===== Create smoke and full sbatch scripts ====="
 
-cat > submitjob_smoke_b7_ulrb_a_e3.sh <<'EOF'
+cat > scripts/jobs/submitjob_smoke_b7_ulrb_a_e3.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J smoke_uA
 #SBATCH -p gpu
@@ -609,7 +609,7 @@ python src/train_resnet34_unet_brr_b7_ulrb_a_e200.py \
 echo "===== DONE SMOKE B7A ====="
 EOF
 
-cat > submitjob_smoke_b7_ulrb_b_e3.sh <<'EOF'
+cat > scripts/jobs/submitjob_smoke_b7_ulrb_b_e3.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J smoke_uB
 #SBATCH -p gpu
@@ -653,7 +653,7 @@ python src/train_resnet34_unet_brr_b7_ulrb_b_e200.py \
 echo "===== DONE SMOKE B7B ====="
 EOF
 
-cat > submitjob_b7_ulrb_a_auglite_e200_constlr_bs6.sh <<'EOF'
+cat > scripts/jobs/submitjob_b7_ulrb_a_auglite_e200_constlr_bs6.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J b7_ulrbA
 #SBATCH -p gpu
@@ -697,7 +697,7 @@ python src/train_resnet34_unet_brr_b7_ulrb_a_e200.py \
 echo "===== DONE B7A ====="
 EOF
 
-cat > submitjob_b7_ulrb_b_auglite_e200_constlr_bs6.sh <<'EOF'
+cat > scripts/jobs/submitjob_b7_ulrb_b_auglite_e200_constlr_bs6.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J b7_ulrbB
 #SBATCH -p gpu
@@ -741,34 +741,34 @@ python src/train_resnet34_unet_brr_b7_ulrb_b_e200.py \
 echo "===== DONE B7B ====="
 EOF
 
-chmod +x submitjob_smoke_b7_ulrb_a_e3.sh
-chmod +x submitjob_smoke_b7_ulrb_b_e3.sh
-chmod +x submitjob_b7_ulrb_a_auglite_e200_constlr_bs6.sh
-chmod +x submitjob_b7_ulrb_b_auglite_e200_constlr_bs6.sh
+chmod +x scripts/jobs/submitjob_smoke_b7_ulrb_a_e3.sh
+chmod +x scripts/jobs/submitjob_smoke_b7_ulrb_b_e3.sh
+chmod +x scripts/jobs/submitjob_b7_ulrb_a_auglite_e200_constlr_bs6.sh
+chmod +x scripts/jobs/submitjob_b7_ulrb_b_auglite_e200_constlr_bs6.sh
 
 echo "===== Shell syntax check ====="
-bash -n submitjob_smoke_b7_ulrb_a_e3.sh
-bash -n submitjob_smoke_b7_ulrb_b_e3.sh
-bash -n submitjob_b7_ulrb_a_auglite_e200_constlr_bs6.sh
-bash -n submitjob_b7_ulrb_b_auglite_e200_constlr_bs6.sh
+bash -n scripts/jobs/submitjob_smoke_b7_ulrb_a_e3.sh
+bash -n scripts/jobs/submitjob_smoke_b7_ulrb_b_e3.sh
+bash -n scripts/jobs/submitjob_b7_ulrb_a_auglite_e200_constlr_bs6.sh
+bash -n scripts/jobs/submitjob_b7_ulrb_b_auglite_e200_constlr_bs6.sh
 
 echo "===== Created files ====="
 ls -lh src/train_resnet34_unet_brr_b7_ulrb_a_e200.py
 ls -lh src/train_resnet34_unet_brr_b7_ulrb_b_e200.py
-ls -lh submitjob_smoke_b7_ulrb_a_e3.sh
-ls -lh submitjob_smoke_b7_ulrb_b_e3.sh
-ls -lh submitjob_b7_ulrb_a_auglite_e200_constlr_bs6.sh
-ls -lh submitjob_b7_ulrb_b_auglite_e200_constlr_bs6.sh
+ls -lh scripts/jobs/submitjob_smoke_b7_ulrb_a_e3.sh
+ls -lh scripts/jobs/submitjob_smoke_b7_ulrb_b_e3.sh
+ls -lh scripts/jobs/submitjob_b7_ulrb_a_auglite_e200_constlr_bs6.sh
+ls -lh scripts/jobs/submitjob_b7_ulrb_b_auglite_e200_constlr_bs6.sh
 
 echo "===== Next step ====="
 echo "1) Submit smoke tests:"
-echo "   sbatch submitjob_smoke_b7_ulrb_a_e3.sh"
-echo "   sbatch submitjob_smoke_b7_ulrb_b_e3.sh"
+echo "   sbatch scripts/jobs/submitjob_smoke_b7_ulrb_a_e3.sh"
+echo "   sbatch scripts/jobs/submitjob_smoke_b7_ulrb_b_e3.sh"
 echo
 echo "2) Watch smoke logs:"
 echo "   tail -f runs/logs/smoke_b7_ulrb_a_*.out"
 echo "   tail -f runs/logs/smoke_b7_ulrb_b_*.out"
 echo
 echo "3) If both smoke tests pass, submit full runs:"
-echo "   sbatch submitjob_b7_ulrb_a_auglite_e200_constlr_bs6.sh"
-echo "   sbatch submitjob_b7_ulrb_b_auglite_e200_constlr_bs6.sh"
+echo "   sbatch scripts/jobs/submitjob_b7_ulrb_a_auglite_e200_constlr_bs6.sh"
+echo "   sbatch scripts/jobs/submitjob_b7_ulrb_b_auglite_e200_constlr_bs6.sh"

@@ -21,7 +21,7 @@ echo "===== Python syntax check ====="
 python -m py_compile "$SCRIPT"
 
 echo "===== Create smoke script: B2-preaux-lite ====="
-cat > submitjob_smoke_b2_preaux_lite_e3.sh <<'EOF'
+cat > scripts/jobs/submitjob_smoke_b2_preaux_lite_e3.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J smoke_pal
 #SBATCH -p gpu
@@ -68,7 +68,7 @@ echo "===== DONE SMOKE B2-preaux-lite ====="
 EOF
 
 echo "===== Create smoke script: B2-prebd-only ====="
-cat > submitjob_smoke_b2_prebd_only_e3.sh <<'EOF'
+cat > scripts/jobs/submitjob_smoke_b2_prebd_only_e3.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J smoke_pbd
 #SBATCH -p gpu
@@ -115,7 +115,7 @@ echo "===== DONE SMOKE B2-prebd-only ====="
 EOF
 
 echo "===== Create full script: B2-preaux-lite ====="
-cat > submitjob_b2_preaux_lite_auglite_e200_constlr_bs6.sh <<'EOF'
+cat > scripts/jobs/submitjob_b2_preaux_lite_auglite_e200_constlr_bs6.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J b2_pal
 #SBATCH -p gpu
@@ -162,7 +162,7 @@ echo "===== DONE B2-preaux-lite ====="
 EOF
 
 echo "===== Create full script: B2-prebd-only ====="
-cat > submitjob_b2_prebd_only_auglite_e200_constlr_bs6.sh <<'EOF'
+cat > scripts/jobs/submitjob_b2_prebd_only_auglite_e200_constlr_bs6.sh <<'EOF'
 #!/bin/bash
 #SBATCH -J b2_pbd
 #SBATCH -p gpu
@@ -208,32 +208,32 @@ python src/train_resnet34_unet_brr_b2_preaux_e200.py \
 echo "===== DONE B2-prebd-only ====="
 EOF
 
-chmod +x submitjob_smoke_b2_preaux_lite_e3.sh
-chmod +x submitjob_smoke_b2_prebd_only_e3.sh
-chmod +x submitjob_b2_preaux_lite_auglite_e200_constlr_bs6.sh
-chmod +x submitjob_b2_prebd_only_auglite_e200_constlr_bs6.sh
+chmod +x scripts/jobs/submitjob_smoke_b2_preaux_lite_e3.sh
+chmod +x scripts/jobs/submitjob_smoke_b2_prebd_only_e3.sh
+chmod +x scripts/jobs/submitjob_b2_preaux_lite_auglite_e200_constlr_bs6.sh
+chmod +x scripts/jobs/submitjob_b2_prebd_only_auglite_e200_constlr_bs6.sh
 
 echo "===== Shell syntax check ====="
-bash -n submitjob_smoke_b2_preaux_lite_e3.sh
-bash -n submitjob_smoke_b2_prebd_only_e3.sh
-bash -n submitjob_b2_preaux_lite_auglite_e200_constlr_bs6.sh
-bash -n submitjob_b2_prebd_only_auglite_e200_constlr_bs6.sh
+bash -n scripts/jobs/submitjob_smoke_b2_preaux_lite_e3.sh
+bash -n scripts/jobs/submitjob_smoke_b2_prebd_only_e3.sh
+bash -n scripts/jobs/submitjob_b2_preaux_lite_auglite_e200_constlr_bs6.sh
+bash -n scripts/jobs/submitjob_b2_prebd_only_auglite_e200_constlr_bs6.sh
 
 echo "===== Created files ====="
-ls -lh submitjob_smoke_b2_preaux_lite_e3.sh
-ls -lh submitjob_smoke_b2_prebd_only_e3.sh
-ls -lh submitjob_b2_preaux_lite_auglite_e200_constlr_bs6.sh
-ls -lh submitjob_b2_prebd_only_auglite_e200_constlr_bs6.sh
+ls -lh scripts/jobs/submitjob_smoke_b2_preaux_lite_e3.sh
+ls -lh scripts/jobs/submitjob_smoke_b2_prebd_only_e3.sh
+ls -lh scripts/jobs/submitjob_b2_preaux_lite_auglite_e200_constlr_bs6.sh
+ls -lh scripts/jobs/submitjob_b2_prebd_only_auglite_e200_constlr_bs6.sh
 
 echo "===== Next step ====="
 echo "1) Submit smoke tests:"
-echo "   sbatch submitjob_smoke_b2_preaux_lite_e3.sh"
-echo "   sbatch submitjob_smoke_b2_prebd_only_e3.sh"
+echo "   sbatch scripts/jobs/submitjob_smoke_b2_preaux_lite_e3.sh"
+echo "   sbatch scripts/jobs/submitjob_smoke_b2_prebd_only_e3.sh"
 echo
 echo "2) Watch smoke logs:"
 echo "   tail -f runs/logs/smoke_b2_preaux_lite_*.out"
 echo "   tail -f runs/logs/smoke_b2_prebd_only_*.out"
 echo
 echo "3) If both smoke tests pass, submit full runs:"
-echo "   sbatch submitjob_b2_preaux_lite_auglite_e200_constlr_bs6.sh"
-echo "   sbatch submitjob_b2_prebd_only_auglite_e200_constlr_bs6.sh"
+echo "   sbatch scripts/jobs/submitjob_b2_preaux_lite_auglite_e200_constlr_bs6.sh"
+echo "   sbatch scripts/jobs/submitjob_b2_prebd_only_auglite_e200_constlr_bs6.sh"
