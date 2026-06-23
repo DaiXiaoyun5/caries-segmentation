@@ -169,6 +169,13 @@ def build_model(model_cls, cfg):
         "use_scse": cfg.get("use_scse", 0),
         "wavelet_position": cfg.get("wavelet_position", "hd1"),
         "wavelet_scale": cfg.get("wavelet_scale", 0.1),
+
+        # B10 DMSK-Skip-lite optional parameters. Signature filtering below
+        # keeps these isolated from all existing model classes.
+        "dmsk_hidden_channels": cfg.get("dmsk_hidden_channels", 32),
+        "dmsk_context_dilation": cfg.get("dmsk_context_dilation", 3),
+        "dmsk_init_scale": cfg.get("dmsk_init_scale", 0.10),
+        "dmsk_hard_selection": bool(cfg.get("dmsk_hard_selection", 1)),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
