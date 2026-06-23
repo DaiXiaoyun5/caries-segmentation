@@ -176,6 +176,9 @@ def build_model(model_cls, cfg):
         "dmsk_context_dilation": cfg.get("dmsk_context_dilation", 3),
         "dmsk_init_scale": cfg.get("dmsk_init_scale", 0.10),
         "dmsk_hard_selection": bool(cfg.get("dmsk_hard_selection", 1)),
+
+        # B11 EMA optional parameter.
+        "ema_reduction": cfg.get("ema_reduction", 4),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
