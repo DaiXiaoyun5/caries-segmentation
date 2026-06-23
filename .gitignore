@@ -53,3 +53,51 @@ Thumbs.db
 .idea/
 
 # Keep selected small results manually if needed
+
+# ===== local archives / chatgpt packs / backups =====
+*.zip
+*.zip.*
+*_pack_for_chatgpt*/
+*chatgpt*/
+*_for_chatgpt*/
+project_inventory_*/
+final_paper_evidence_pack_*/
+rerun_backup/
+
+# ===== experiment outputs =====
+runs/
+runs_medsam/
+outputs/
+results/
+checkpoints/
+ckpts/
+logs/
+wandb/
+tensorboard/
+
+# ===== datasets / external repos =====
+data/
+datasets/
+external_models/
+third_party/
+nnunet_caries/
+
+# ===== temporary / suspicious stray files =====
+PY
+import
+except
+try:
+
+# ===== model weights / large files =====
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.onnx
+*.pkl
+*.npy
+*.npz
+
+# ===== python cache =====
+__pycache__/
+*.pyc
