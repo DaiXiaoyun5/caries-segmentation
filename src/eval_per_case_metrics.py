@@ -120,6 +120,10 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b15_edge_simam" in rn or "b15_esdr" in rn:
+        return "train_resnet34_unet_brr_b15_edge_simam_rescue_e200", "ResNet34UNetBRRB15EdgeSimAMRescue"
+    if "b14_ppm" in rn:
+        return "train_resnet34_unet_brr_b14_ppm_e200", "ResNet34UNetBRRB14PPM"
     if "b13_cer" in rn:
         return "train_resnet34_unet_brr_b13_cer_e200", "ResNet34UNetBRRB13CER"
     if "b12_tdr" in rn:
@@ -204,6 +208,20 @@ def build_model(model_cls, cfg):
         "cer_highpass_kernel": cfg.get("cer_highpass_kernel", 7),
         "cer_candidate_tau": cfg.get("cer_candidate_tau", 0.15),
         "cer_candidate_sharpness": cfg.get("cer_candidate_sharpness", 12.0),
+
+        # B14 PPM-lite bottleneck optional parameters.
+        "ppm_hidden_channels": cfg.get("ppm_hidden_channels", 64),
+        "ppm_pool_sizes": cfg.get("ppm_pool_sizes", [1, 2, 3, 6]),
+        "ppm_dropout": cfg.get("ppm_dropout", 0.0),
+        "ppm_init_scale": cfg.get("ppm_init_scale", 0.08),
+
+        # B15 Edge-SimAM Detail Rescue optional parameters.
+        "esdr_hidden_channels": cfg.get("esdr_hidden_channels", 16),
+        "esdr_max_delta": cfg.get("esdr_max_delta", 0.60),
+        "esdr_init_scale": cfg.get("esdr_init_scale", 0.10),
+        "esdr_bias_init": cfg.get("esdr_bias_init", -4.0),
+        "esdr_contrast_kernel": cfg.get("esdr_contrast_kernel", 7),
+        "esdr_simam_lambda": cfg.get("esdr_simam_lambda", 1e-4),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
