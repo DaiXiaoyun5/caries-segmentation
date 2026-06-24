@@ -120,6 +120,13 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b12_tdr" in rn:
+        return "train_resnet34_unet_brr_b12_tdr_e200", "ResNet34UNetBRRB12TDR"
+    if "b11_ema" in rn:
+        return "train_resnet34_unet_brr_b11_ema_e200", "ResNet34UNetBRRB11EMA"
+    if "b10_dmsk" in rn:
+        return "train_resnet34_unet_brr_b10_dmsk_skip_e200", "ResNet34UNetBRRB10DMSKSkip"
+
     if "resnet34_unet3p" in rn:
         return "train_resnet34_unet3p", "ResNet34UNet3Plus"
 
@@ -179,6 +186,13 @@ def build_model(model_cls, cfg):
 
         # B11 EMA optional parameter.
         "ema_reduction": cfg.get("ema_reduction", 4),
+
+        # B12 Texture Detail Rescue optional parameters.
+        "tdr_hidden_channels": cfg.get("tdr_hidden_channels", 16),
+        "tdr_max_delta": cfg.get("tdr_max_delta", 0.75),
+        "tdr_init_scale": cfg.get("tdr_init_scale", 0.15),
+        "tdr_bias_init": cfg.get("tdr_bias_init", -3.0),
+        "tdr_highpass_kernel": cfg.get("tdr_highpass_kernel", 7),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
