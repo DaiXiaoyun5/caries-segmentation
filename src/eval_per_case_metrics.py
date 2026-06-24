@@ -120,6 +120,8 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b13_cer" in rn:
+        return "train_resnet34_unet_brr_b13_cer_e200", "ResNet34UNetBRRB13CER"
     if "b12_tdr" in rn:
         return "train_resnet34_unet_brr_b12_tdr_e200", "ResNet34UNetBRRB12TDR"
     if "b11_ema" in rn:
@@ -193,6 +195,15 @@ def build_model(model_cls, cfg):
         "tdr_init_scale": cfg.get("tdr_init_scale", 0.15),
         "tdr_bias_init": cfg.get("tdr_bias_init", -3.0),
         "tdr_highpass_kernel": cfg.get("tdr_highpass_kernel", 7),
+
+        # B13 Candidate Expansion Refiner optional parameters.
+        "cer_hidden_channels": cfg.get("cer_hidden_channels", 24),
+        "cer_max_delta": cfg.get("cer_max_delta", 0.80),
+        "cer_init_scale": cfg.get("cer_init_scale", 0.12),
+        "cer_bias_init": cfg.get("cer_bias_init", -4.0),
+        "cer_highpass_kernel": cfg.get("cer_highpass_kernel", 7),
+        "cer_candidate_tau": cfg.get("cer_candidate_tau", 0.15),
+        "cer_candidate_sharpness": cfg.get("cer_candidate_sharpness", 12.0),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
