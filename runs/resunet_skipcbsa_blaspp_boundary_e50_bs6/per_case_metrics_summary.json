@@ -1,0 +1,17 @@
+{
+  "run_name": "resunet_skipcbsa_blaspp_boundary_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8380351995044442,
+  "mean_iou": 0.7455629100668064,
+  "mean_precision": 0.8546183657532057,
+  "mean_recall": 0.8541909242881216,
+  "median_dice": 0.8902291762505856,
+  "median_iou": 0.8021739279348667,
+  "median_precision": 0.9155425143273928,
+  "median_recall": 0.916218389005435,
+  "module_name": "train_resunet_skip_cbsa_blaspp_boundary",
+  "class_name": "ResNet34UNetSkipCBSABottleneckLiteASPPBoundary",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resunet_skipcbsa_blaspp_boundary_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resunet_skipcbsa_blaspp_boundary_e50_bs6/per_case_metrics.csv"
+}

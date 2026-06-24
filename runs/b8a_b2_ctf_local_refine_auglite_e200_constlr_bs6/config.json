@@ -1,0 +1,102 @@
+{
+  "run_name": "b8a_b2_ctf_local_refine_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "crop_size": 256,
+  "crop_margin": 32,
+  "local_weight": 0.3,
+  "local_alpha": 0.3,
+  "local_hidden": 32,
+  "infer_threshold": 0.3,
+  "infer_max_rois": 5,
+  "model_class": "ResNet34UNetBRRB8ACTF",
+  "experiment": "B8A: B2 BRR-RBSG + Coarse-to-Fine Lesion Refinement",
+  "note": "B8A keeps original B2 global branch and adds a coarse-to-fine local crop refiner. Training uses GT-centered ROI crops for local loss, while validation/test use predicted coarse components to generate ROIs and paste refined logits back to full image.",
+  "aux_targets": {
+    "boundary": "dilate(mask,3)-erode(mask,3)",
+    "rim": "dilate(mask,9)-dilate(mask,3)"
+  },
+  "rbsg": {
+    "position": "final decoder feature before segmentation head",
+    "lambda_pos": 0.2,
+    "lambda_rim": 0.1,
+    "positive_gate": "enhance boundary-supportive decoder feature",
+    "rim_gate": "suppress likely peri-lesion hard-negative activation"
+  },
+  "coarse_to_fine": {
+    "enabled": true,
+    "global_branch": "original B2",
+    "local_branch": "lightweight crop-level LocalRefiner",
+    "train_roi": "GT mask bbox with margin",
+    "eval_roi": "predicted coarse connected components",
+    "local_input": [
+      "image_crop",
+      "coarse_prob_crop",
+      "uncertainty_crop"
+    ],
+    "local_output": "local_logits = coarse_logits + alpha * delta_logits"
+  },
+  "loss": {
+    "main": "BCEWithLogits + Dice on global coarse mask",
+    "boundary": "BCEWithLogits + Dice",
+    "rim": "BCEWithLogits",
+    "local_refinement": "BCEWithLogits + Dice on GT-centered ROI crop",
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim + 0.10*L_local",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim + local_weight*L_local",
+    "local_weight": 0.3,
+    "crop_size": 256,
+    "crop_margin": 32,
+    "infer_threshold": 0.3,
+    "infer_max_rois": 5
+  },
+  "augmentation": {
+    "type": "online",
+    "profile": "lite",
+    "train_only": true,
+    "geometry": {
+      "rotation_deg": [
+        -15.0,
+        15.0
+      ],
+      "scale": [
+        0.85,
+        1.2
+      ],
+      "translate_ratio": 0.05,
+      "horizontal_flip_p": 0.5,
+      "vertical_flip_p": 0.0
+    },
+    "photometric": {
+      "brightness_factor": [
+        0.85,
+        1.15
+      ],
+      "contrast_factor": [
+        0.85,
+        1.15
+      ],
+      "gamma": [
+        0.8,
+        1.25
+      ],
+      "gaussian_noise_p": 0.1,
+      "noise_std": [
+        0.005,
+        0.02
+      ],
+      "gaussian_blur_p": 0.1,
+      "blur_radius": [
+        0.2,
+        0.8
+      ]
+    }
+  }
+}

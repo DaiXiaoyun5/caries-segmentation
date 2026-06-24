@@ -1,0 +1,17 @@
+{
+  "run_name": "resnet34_unet3p_edge_e50",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8450050184186493,
+  "mean_iou": 0.7546600725803371,
+  "mean_precision": 0.8758837304206428,
+  "mean_recall": 0.8526507792203005,
+  "median_dice": 0.8946114099101484,
+  "median_iou": 0.8093184775567661,
+  "median_precision": 0.9229762187009054,
+  "median_recall": 0.9183211919091794,
+  "module_name": "train_resnet34_unet3p_edge",
+  "class_name": "ResNet34UNet3PlusEdge",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resnet34_unet3p_edge_e50/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resnet34_unet3p_edge_e50/per_case_metrics.csv"
+}

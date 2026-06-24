@@ -1,0 +1,12 @@
+{
+  "run_name": "unetpp_v1_edge",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 30,
+  "lr": 0.0003,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "lambda_edge": 0.3
+}

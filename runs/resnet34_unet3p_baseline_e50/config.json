@@ -1,0 +1,13 @@
+{
+  "run_name": "resnet34_unet3p_baseline_e50",
+  "image_size": 512,
+  "batch_size": 4,
+  "epochs": 50,
+  "lr": 0.0003,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cat_channels": 64,
+  "deep_supervision": 1
+}

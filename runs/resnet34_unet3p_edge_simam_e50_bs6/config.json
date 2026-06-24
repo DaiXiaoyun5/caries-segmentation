@@ -1,0 +1,26 @@
+{
+  "run_name": "resnet34_unet3p_edge_simam_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cat_channels": 64,
+  "deep_supervision": 1,
+  "lambda_edge": 0.3,
+  "edge_kernel_size": 3,
+  "edge_stat_samples": 800,
+  "edge_vis_threshold": 0.2,
+  "simam_position": "all",
+  "simam_lambda": 0.0001,
+  "estimated_edge_stats": {
+    "samples_used": 800,
+    "pos_pixels": 840911.0,
+    "total_pixels": 209715200.0,
+    "pos_ratio": 0.004009776115417481,
+    "pos_weight": 50.0
+  }
+}

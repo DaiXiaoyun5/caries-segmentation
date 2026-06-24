@@ -1,0 +1,17 @@
+{
+  "run_name": "resnet34_unet3p_edge_simam_ra_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8440114433590663,
+  "mean_iou": 0.7525229753752063,
+  "mean_precision": 0.8566689617700861,
+  "mean_recall": 0.8654488849461156,
+  "median_dice": 0.8911972393899281,
+  "median_iou": 0.8037476062306097,
+  "median_precision": 0.9131336310559564,
+  "median_recall": 0.9196742002280424,
+  "module_name": "train_resnet34_unet3p_edge_simam_ra",
+  "class_name": "ResNet34UNet3PlusEdgeSimAMRA",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resnet34_unet3p_edge_simam_ra_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resnet34_unet3p_edge_simam_ra_e50_bs6/per_case_metrics.csv"
+}

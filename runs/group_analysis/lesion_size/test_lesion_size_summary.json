@@ -1,0 +1,46 @@
+{
+  "num_samples": 358,
+  "groups": {
+    "small": {
+      "num_samples": 119,
+      "area_min": 444,
+      "area_max": 6585,
+      "area_mean": 3744.0084033613443,
+      "area_median": 3815.0,
+      "ratio_min": 0.001171875,
+      "ratio_max": 0.0752423469387755,
+      "ratio_mean": 0.014208891289503811,
+      "ratio_median": 0.012094350961538462
+    },
+    "medium": {
+      "num_samples": 119,
+      "area_min": 6670,
+      "area_max": 14832,
+      "area_mean": 10413.38655462185,
+      "area_median": 10509.0,
+      "ratio_min": 0.0074029168786066335,
+      "ratio_max": 0.051070173816568046,
+      "ratio_mean": 0.026724643090173722,
+      "ratio_median": 0.02620361328125
+    },
+    "large": {
+      "num_samples": 120,
+      "area_min": 15090,
+      "area_max": 122082,
+      "area_mean": 27474.883333333335,
+      "area_median": 23756.0,
+      "ratio_min": 0.012402324908354235,
+      "ratio_max": 0.1258203125,
+      "ratio_mean": 0.057604394390379225,
+      "ratio_median": 0.05231689453125
+    }
+  },
+  "area_min": 444,
+  "area_max": 122082,
+  "area_mean": 13915.40782122905,
+  "area_median": 10555.0,
+  "ratio_min": 0.001171875,
+  "ratio_max": 0.1258203125,
+  "ratio_mean": 0.032915133849237804,
+  "ratio_median": 0.0268408203125
+}

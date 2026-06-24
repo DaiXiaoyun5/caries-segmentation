@@ -1,0 +1,17 @@
+{
+  "run_name": "resunet_cbsa_mkdc_augstrong_e100_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8412077902841666,
+  "mean_iou": 0.7427533699990102,
+  "mean_precision": 0.859904127633559,
+  "mean_recall": 0.8489861671604056,
+  "median_dice": 0.8818582148487106,
+  "median_iou": 0.7886823285192179,
+  "median_precision": 0.9090954707339052,
+  "median_recall": 0.8946640359318899,
+  "module_name": "train_resunet_cbsa_mkdc_augstrong",
+  "class_name": "ResNet34UNetCBSAMKDC",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resunet_cbsa_mkdc_augstrong_e100_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resunet_cbsa_mkdc_augstrong_e100_bs6/per_case_metrics.csv"
+}

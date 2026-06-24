@@ -1,0 +1,83 @@
+{
+  "run_name": "b2_rbsg_rampwarmup30_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "aux_warmup_epochs": 30,
+  "boundary_max_weight": 0.2,
+  "rim_max_weight": 0.1,
+  "model_class": "ResNet34UNetBRRB2RBSG",
+  "experiment": "B2-rampwarmup: B2 BRR-RBSG with continuous boundary-rim auxiliary weight ramp-up",
+  "note": "B2-rampwarmup keeps the B2 BRR-RBSG architecture and replaces the original two-stage boundary/rim auxiliary weights with continuous linear ramp-up during early training.",
+  "aux_targets": {
+    "boundary": "dilate(mask,3)-erode(mask,3)",
+    "rim": "dilate(mask,9)-dilate(mask,3)"
+  },
+  "rbsg": {
+    "position": "final decoder feature before segmentation head",
+    "lambda_pos": 0.2,
+    "lambda_rim": 0.1,
+    "positive_gate": "enhance boundary-supportive decoder feature",
+    "rim_gate": "suppress likely peri-lesion hard-negative activation"
+  },
+  "loss": {
+    "main": "BCEWithLogits + Dice",
+    "boundary": "BCEWithLogits + Dice",
+    "rim": "BCEWithLogits",
+    "aux_weight_schedule": "continuous linear ramp-up",
+    "boundary_weight": "boundary_max_weight * min(1, epoch / aux_warmup_epochs)",
+    "rim_weight": "rim_max_weight * min(1, epoch / aux_warmup_epochs)",
+    "aux_warmup_epochs": 30,
+    "boundary_max_weight": 0.2,
+    "rim_max_weight": 0.1
+  },
+  "augmentation": {
+    "type": "online",
+    "profile": "lite",
+    "train_only": true,
+    "geometry": {
+      "rotation_deg": [
+        -15.0,
+        15.0
+      ],
+      "scale": [
+        0.85,
+        1.2
+      ],
+      "translate_ratio": 0.05,
+      "horizontal_flip_p": 0.5,
+      "vertical_flip_p": 0.0
+    },
+    "photometric": {
+      "brightness_factor": [
+        0.85,
+        1.15
+      ],
+      "contrast_factor": [
+        0.85,
+        1.15
+      ],
+      "gamma": [
+        0.8,
+        1.25
+      ],
+      "gaussian_noise_p": 0.1,
+      "noise_std": [
+        0.005,
+        0.02
+      ],
+      "gaussian_blur_p": 0.1,
+      "blur_radius": [
+        0.2,
+        0.8
+      ]
+    }
+  }
+}

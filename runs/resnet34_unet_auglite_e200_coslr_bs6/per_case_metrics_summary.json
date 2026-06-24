@@ -1,0 +1,17 @@
+{
+  "run_name": "resnet34_unet_auglite_e200_coslr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8665271157738172,
+  "mean_iou": 0.77860428947352,
+  "mean_precision": 0.8607431223561748,
+  "mean_recall": 0.8932037876218943,
+  "median_dice": 0.9012615068156777,
+  "median_iou": 0.8202693474694511,
+  "median_precision": 0.9026435624845148,
+  "median_recall": 0.93002474386728,
+  "module_name": "train_resnet34_unet_auglite_e200_coslr",
+  "class_name": "ResNet34UNetPlain",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resnet34_unet_auglite_e200_coslr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resnet34_unet_auglite_e200_coslr_bs6/per_case_metrics.csv"
+}

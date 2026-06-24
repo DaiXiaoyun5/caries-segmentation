@@ -1,0 +1,17 @@
+{
+  "run_name": "resunet_boundarygate_mkdc_d1b_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8361113681933033,
+  "mean_iou": 0.742733240815533,
+  "mean_precision": 0.870349363455948,
+  "mean_recall": 0.8389099825058911,
+  "median_dice": 0.8904538000182396,
+  "median_iou": 0.802538732161643,
+  "median_precision": 0.9223457135241069,
+  "median_recall": 0.9021140478187506,
+  "module_name": "train_resunet_boundarygate_mkdc_d1b",
+  "class_name": "ResNet34UNetBoundaryGateMKDC",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resunet_boundarygate_mkdc_d1b_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resunet_boundarygate_mkdc_d1b_e50_bs6/per_case_metrics.csv"
+}

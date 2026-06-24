@@ -1,0 +1,11 @@
+{
+  "run_name": "smoke_method_v1_edge_branch",
+  "image_size": 512,
+  "batch_size": 2,
+  "epochs": 1,
+  "lr": 0.0003,
+  "num_workers": 0,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet"
+}

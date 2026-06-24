@@ -1,0 +1,23 @@
+{
+  "run_name": "resunet_cbsa_mkdc_p2_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cbsa_lambda": 0.0001,
+  "cbsa_alpha": 1.0,
+  "cbsa_beta": 0.1,
+  "mk_expansion_factor": 2,
+  "mk_kernel_sizes": "1,3,5",
+  "mk_depth": 1,
+  "mk_add": true,
+  "mk_activation": "relu6",
+  "model_class": "ResNet34UNetCBSAMKDC",
+  "experiment": "P2: ResNet34-U-Net + CBSA + MKDC/MKIR official-block extraction",
+  "note": "MKDC/MKIR block extracted from official SLDGroup/MK-UNet mkunet_network.py; pconv2 Conv+BN preserved; inserted as decoder-output refinement."
+}

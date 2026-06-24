@@ -1,0 +1,21 @@
+{
+  "mean_dice": 0.8441568743292552,
+  "median_dice": 0.889159693944619,
+  "std_dice": 0.1301096112495457,
+  "mean_iou": 0.7491779973965395,
+  "median_iou": 0.8004398221514875,
+  "std_iou": 0.16910150150887873,
+  "mean_precision": 0.8646284646464253,
+  "median_precision": 0.9107039798231991,
+  "std_precision": 0.13241045841515495,
+  "mean_recall": 0.8504314304649916,
+  "median_recall": 0.9095737799177106,
+  "std_recall": 0.1590452265667436,
+  "mean_gt_area": 8682.86033519553,
+  "median_gt_area": 7090.5,
+  "std_gt_area": 6429.710795475535,
+  "mean_pred_area": 8357.77094972067,
+  "median_pred_area": 6567.0,
+  "std_pred_area": 6039.588057842176,
+  "num_cases": 358
+}

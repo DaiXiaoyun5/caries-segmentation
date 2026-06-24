@@ -1,0 +1,23 @@
+{
+  "run_name": "resunet_cbsa_mkdc_a05_t2_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cbsa_lambda": 0.0001,
+  "cbsa_alpha": 0.5,
+  "cbsa_beta": 0.1,
+  "mk_expansion_factor": 2,
+  "mk_kernel_sizes": "1,3,5",
+  "mk_depth": 1,
+  "mk_add": true,
+  "mk_activation": "relu6",
+  "model_class": "ResNet34UNetCBSAMKDCA05",
+  "experiment": "T2/P2-A05: ResNet34-U-Net + CBSA(alpha=0.5) + MKDC",
+  "note": "Parameter tuning against P2: only CBSA boundary modulation strength alpha is reduced from 1.0 to 0.5; architecture and MKDC remain unchanged."
+}

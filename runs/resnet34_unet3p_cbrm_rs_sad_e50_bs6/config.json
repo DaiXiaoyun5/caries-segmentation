@@ -1,0 +1,13 @@
+{
+  "run_name": "resnet34_unet3p_cbrm_rs_sad_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cat_channels": 64,
+  "deep_supervision": 1
+}

@@ -1,0 +1,16 @@
+{
+  "run_name": "resnet34_resdecoder_b1_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "decoder_channels": "256,128,64,64,32",
+  "model_class": "ResNet34ResDecoderUNet",
+  "experiment": "B1: ImageNet-pretrained ResNet34 encoder + residual bridge/decoder U-Net",
+  "note": "This model keeps a standard ImageNet-pretrained ResNet34 encoder, but replaces the plain U-Net decoder with residual decoder blocks. It tests whether a ResUNet-style bridge/decoder improves over ResNet34-U-Net."
+}

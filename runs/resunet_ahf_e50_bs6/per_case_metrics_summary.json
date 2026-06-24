@@ -1,0 +1,17 @@
+{
+  "run_name": "resunet_ahf_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8360369175685167,
+  "mean_iou": 0.7401210380491884,
+  "mean_precision": 0.851900370915559,
+  "mean_recall": 0.8514581896993401,
+  "median_dice": 0.886191285984036,
+  "median_iou": 0.7956405875807255,
+  "median_precision": 0.9034303569487219,
+  "median_recall": 0.9178464255998271,
+  "module_name": "train_resunet_ahf_m7",
+  "class_name": "ResNet34UNetAHF",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resunet_ahf_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resunet_ahf_e50_bs6/per_case_metrics.csv"
+}

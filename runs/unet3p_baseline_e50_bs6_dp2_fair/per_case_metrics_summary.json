@@ -1,0 +1,17 @@
+{
+  "run_name": "unet3p_baseline_e50_bs6_dp2_fair",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8040283187852932,
+  "mean_iou": 0.7055080611472699,
+  "mean_precision": 0.8533713986956483,
+  "mean_recall": 0.81233894952726,
+  "median_dice": 0.8732292490237235,
+  "median_iou": 0.7749839855993659,
+  "median_precision": 0.9074950217404216,
+  "median_recall": 0.8931397495361973,
+  "module_name": "train_unet3p",
+  "class_name": "UNet3Plus",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/unet3p_baseline_e50_bs6_dp2_fair/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/unet3p_baseline_e50_bs6_dp2_fair/per_case_metrics.csv"
+}

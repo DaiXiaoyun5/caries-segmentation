@@ -1,0 +1,13 @@
+{
+  "run_name": "unet_auglite_e200_constlr_bs6",
+  "model": "unet",
+  "best_epoch": 160,
+  "best_val_dice": 0.8050409555435181,
+  "test_metrics": {
+    "dice": 0.8441568613052368,
+    "iou": 0.7491779923439026,
+    "precision": 0.8646284341812134,
+    "recall": 0.850431501865387,
+    "loss": 0.20285083577036858
+  }
+}

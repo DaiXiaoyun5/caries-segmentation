@@ -1,0 +1,17 @@
+{
+  "run_name": "resunet_blaspp_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8430334483231063,
+  "mean_iou": 0.7517357109539283,
+  "mean_precision": 0.8636949586576398,
+  "mean_recall": 0.8516340050799187,
+  "median_dice": 0.8934390293866931,
+  "median_iou": 0.8074015686566445,
+  "median_precision": 0.9192179289235582,
+  "median_recall": 0.9162642824652123,
+  "module_name": "train_resunet_skip_cbsa_blaspp_boundary",
+  "class_name": "ResNet34UNetBottleneckLiteASPP",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resunet_blaspp_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resunet_blaspp_e50_bs6/per_case_metrics.csv"
+}

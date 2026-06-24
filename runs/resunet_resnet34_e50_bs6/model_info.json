@@ -1,0 +1,7 @@
+{
+  "model_type": "resunet",
+  "run_name": "resunet_resnet34_e50_bs6",
+  "params_m": 24.436369,
+  "gflops_512": 31.399084032,
+  "profile_error": ""
+}

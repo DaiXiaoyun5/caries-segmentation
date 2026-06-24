@@ -1,0 +1,22 @@
+{
+  "missing_models": [],
+  "out_dir": "/share/home/u2515283028/caries_project/runs/group_analysis/top_cbsa_final",
+  "files": [
+    "runs/group_analysis/top_cbsa_final/analysis_manifest.json",
+    "runs/group_analysis/top_cbsa_final/delta_cases_vs_resnet34_unet3p.csv",
+    "runs/group_analysis/top_cbsa_final/delta_cases_vs_unet3p.csv",
+    "runs/group_analysis/top_cbsa_final/delta_summary_vs_resnet34_unet3p.csv",
+    "runs/group_analysis/top_cbsa_final/delta_summary_vs_unet3p.csv",
+    "runs/group_analysis/top_cbsa_final/difficulty_group_merged_per_case.csv",
+    "runs/group_analysis/top_cbsa_final/difficulty_group_metrics.csv",
+    "runs/group_analysis/top_cbsa_final/difficulty_group_metrics_wide.csv",
+    "runs/group_analysis/top_cbsa_final/difficulty_groups_by_resnet34_unet3p.csv",
+    "runs/group_analysis/top_cbsa_final/final_paper_tables.xlsx",
+    "runs/group_analysis/top_cbsa_final/final_recommendation_summary.json",
+    "runs/group_analysis/top_cbsa_final/lesion_size_group_merged_per_case.csv",
+    "runs/group_analysis/top_cbsa_final/lesion_size_group_metrics.csv",
+    "runs/group_analysis/top_cbsa_final/lesion_size_group_metrics_wide.csv",
+    "runs/group_analysis/top_cbsa_final/overall_micro_test_metrics.csv",
+    "runs/group_analysis/top_cbsa_final/overall_per_case_summary.csv"
+  ]
+}

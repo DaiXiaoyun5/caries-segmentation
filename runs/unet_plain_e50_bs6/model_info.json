@@ -1,0 +1,7 @@
+{
+  "model_type": "plain_unet",
+  "run_name": "unet_plain_e50_bs6",
+  "params_m": 31.037633,
+  "gflops_512": 218.951057408,
+  "profile_error": ""
+}

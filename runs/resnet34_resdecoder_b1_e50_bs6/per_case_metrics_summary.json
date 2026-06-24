@@ -1,0 +1,17 @@
+{
+  "run_name": "resnet34_resdecoder_b1_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8315564394961371,
+  "mean_iou": 0.7377704030783847,
+  "mean_precision": 0.8658040193678262,
+  "mean_recall": 0.8411346810489135,
+  "median_dice": 0.8846520895420207,
+  "median_iou": 0.7931625240990459,
+  "median_precision": 0.909557447297831,
+  "median_recall": 0.9139749946672848,
+  "module_name": "train_resnet34_resdecoder_b1",
+  "class_name": "ResNet34ResDecoderUNet",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resnet34_resdecoder_b1_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resnet34_resdecoder_b1_e50_bs6/per_case_metrics.csv"
+}

@@ -1,0 +1,17 @@
+{
+  "run_name": "resunet_cbsa_pfesa_p1_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.840318788355985,
+  "mean_iou": 0.7468857381608678,
+  "mean_precision": 0.8578928698172807,
+  "mean_recall": 0.8549663480165524,
+  "median_dice": 0.8879228645306253,
+  "median_iou": 0.7984392345885034,
+  "median_precision": 0.9105240149276213,
+  "median_recall": 0.9168295233194643,
+  "module_name": "train_resunet_cbsa_pfesa_p1",
+  "class_name": "ResNet34UNetCBSAPFESA",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resunet_cbsa_pfesa_p1_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resunet_cbsa_pfesa_p1_e50_bs6/per_case_metrics.csv"
+}

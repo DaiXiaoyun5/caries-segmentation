@@ -1,0 +1,48 @@
+{
+  "num_samples": 358,
+  "grouping_basis": "GT mask foreground area after resizing mask to 512x512",
+  "image_size": 512,
+  "groups": {
+    "small": {
+      "num_samples": 119,
+      "area_min": 304,
+      "area_max": 4713,
+      "area_mean": 3025.109243697479,
+      "area_median": 3155.0,
+      "ratio_min": 0.00115966796875,
+      "ratio_max": 0.017978668212890625,
+      "ratio_mean": 0.011539875960149685,
+      "ratio_median": 0.012035369873046875
+    },
+    "medium": {
+      "num_samples": 119,
+      "area_min": 4747,
+      "area_max": 9486,
+      "area_mean": 7057.151260504202,
+      "area_median": 7018.0,
+      "ratio_min": 0.018108367919921875,
+      "ratio_max": 0.03618621826171875,
+      "ratio_mean": 0.0269208956165474,
+      "ratio_median": 0.02677154541015625
+    },
+    "large": {
+      "num_samples": 120,
+      "area_min": 9664,
+      "area_max": 32930,
+      "area_mean": 15736.975,
+      "area_median": 13772.0,
+      "ratio_min": 0.036865234375,
+      "ratio_max": 0.12561798095703125,
+      "ratio_mean": 0.060031795501708986,
+      "ratio_median": 0.0525360107421875
+    }
+  },
+  "area_min": 304,
+  "area_max": 32930,
+  "area_mean": 8626.329608938548,
+  "area_median": 7040.0,
+  "ratio_min": 0.00115966796875,
+  "ratio_max": 0.12561798095703125,
+  "ratio_mean": 0.03290683597159785,
+  "ratio_median": 0.02685546875
+}

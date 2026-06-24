@@ -1,0 +1,90 @@
+[
+  {
+    "model_name": "UNet3+ baseline",
+    "run_name": "unet3p_baseline_e50_bs6_dp2_fair",
+    "params_m": 26.721477,
+    "gflops_512": 716.371656704,
+    "dice": 0.804597528775533,
+    "iou": 0.7062417536973953,
+    "precision": 0.853669015566508,
+    "recall": 0.8129045148690541,
+    "error": ""
+  },
+  {
+    "model_name": "UNet++ baseline",
+    "run_name": "unetpp_baseline_v3_bs6",
+    "params_m": 26.078609,
+    "gflops_512": 73.799303168,
+    "dice": 0.8366599390904109,
+    "iou": 0.7442874684929848,
+    "precision": 0.8545041501522064,
+    "recall": 0.8554215997457504,
+    "error": ""
+  },
+  {
+    "model_name": "ResNet34-UNet3+",
+    "run_name": "resnet34_unet3p_baseline_e50",
+    "params_m": 28.982341,
+    "gflops_512": 181.039464448,
+    "dice": 0.8317363583379321,
+    "iou": 0.739046847820282,
+    "precision": 0.8726970871289571,
+    "recall": 0.8311904489994049,
+    "error": ""
+  },
+  {
+    "model_name": "Edge",
+    "run_name": "resnet34_unet3p_edge_e50",
+    "params_m": 28.982662,
+    "gflops_512": 181.060435968,
+    "dice": 0.8453928222258885,
+    "iou": 0.7551826357841491,
+    "precision": 0.8762693206469218,
+    "recall": 0.8528704891602198,
+    "error": ""
+  },
+  {
+    "model_name": "Edge + SimAM",
+    "run_name": "resnet34_unet3p_edge_simam_e50_bs6",
+    "params_m": 28.982662,
+    "gflops_512": 181.060435968,
+    "dice": 0.8497037221988042,
+    "iou": 0.7595553706089656,
+    "precision": 0.860076837738355,
+    "recall": 0.8701777031024297,
+    "error": ""
+  },
+  {
+    "model_name": "Edge + SimAM + RA",
+    "run_name": "resnet34_unet3p_edge_simam_ra_e50_bs6",
+    "params_m": 29.905223,
+    "gflops_512": 241.563271168,
+    "dice": 0.8445535292228062,
+    "iou": 0.7532889241973559,
+    "precision": 0.8571247160434723,
+    "recall": 0.8658922334512075,
+    "error": ""
+  },
+  {
+    "model_name": "DeepLabV3+",
+    "run_name": "deeplabv3plus_resnet34_e50_bs6",
+    "params_m": 22.437457,
+    "gflops_512": 31.700420096,
+    "dice": 0.8335136691729228,
+    "iou": 0.7383546461661656,
+    "precision": 0.8716011047363281,
+    "recall": 0.830984158317248,
+    "error": ""
+  },
+  {
+    "model_name": "PSPNet",
+    "run_name": "pspnet_resnet34_e50_bs6",
+    "params_m": 21.437985,
+    "gflops_512": 9.4339936,
+    "dice": 0.8047863403956096,
+    "iou": 0.6976735969384511,
+    "precision": 0.8225927025079727,
+    "recall": 0.8230118572711944,
+    "error": ""
+  }
+]

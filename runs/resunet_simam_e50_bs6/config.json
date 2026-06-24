@@ -1,0 +1,14 @@
+{
+  "run_name": "resunet_simam_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "simam_lambda": 0.0001,
+  "model_class": "ResNet34UNetSimAM"
+}

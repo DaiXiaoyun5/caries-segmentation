@@ -1,0 +1,11 @@
+{
+  "run_name": "unet3p_baseline_e50_bs6_dp2_fair",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "num_workers": 4,
+  "seed": 42,
+  "base_channels": 64,
+  "deep_supervision": 1
+}

@@ -1,0 +1,17 @@
+{
+  "run_name": "resunet_simam_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8334897470201608,
+  "mean_iou": 0.7427314151820084,
+  "mean_precision": 0.8750927223177686,
+  "mean_recall": 0.8365725739548134,
+  "median_dice": 0.8880569050266758,
+  "median_iou": 0.7986532968050855,
+  "median_precision": 0.9238803812420641,
+  "median_recall": 0.9110779931199614,
+  "module_name": "train_resunet_simam_m5",
+  "class_name": "ResNet34UNetSimAM",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resunet_simam_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resunet_simam_e50_bs6/per_case_metrics.csv"
+}

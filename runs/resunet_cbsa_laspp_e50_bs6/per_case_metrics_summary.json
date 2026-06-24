@@ -1,0 +1,17 @@
+{
+  "run_name": "resunet_cbsa_laspp_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8458251246715826,
+  "mean_iou": 0.7544799035022883,
+  "mean_precision": 0.8725023127079854,
+  "mean_recall": 0.8474189162274331,
+  "median_dice": 0.8937667372153326,
+  "median_iou": 0.8079370902921421,
+  "median_precision": 0.9314152413592538,
+  "median_recall": 0.9031535414433232,
+  "module_name": "train_resunet_cbsa_laspp_m4",
+  "class_name": "ResNet34UNetCBSALiteASPP",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resunet_cbsa_laspp_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resunet_cbsa_laspp_e50_bs6/per_case_metrics.csv"
+}

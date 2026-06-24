@@ -1,0 +1,18 @@
+{
+  "run_name": "resunet_cbsa_laspp_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cbsa_lambda": 0.0001,
+  "cbsa_alpha": 1.0,
+  "cbsa_beta": 0.1,
+  "laspp_mid_channels": 16,
+  "laspp_dropout": 0.1,
+  "model_class": "ResNet34UNetCBSALiteASPP"
+}

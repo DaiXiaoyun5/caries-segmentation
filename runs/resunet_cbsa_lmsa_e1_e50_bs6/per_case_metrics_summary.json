@@ -1,0 +1,17 @@
+{
+  "run_name": "resunet_cbsa_lmsa_e1_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8408527814224415,
+  "mean_iou": 0.7459298020369308,
+  "mean_precision": 0.8454704403060437,
+  "mean_recall": 0.8675032513066918,
+  "median_dice": 0.8869319431014595,
+  "median_iou": 0.7968353349634956,
+  "median_precision": 0.8932070740203358,
+  "median_recall": 0.9281078753815206,
+  "module_name": "train_resunet_cbsa_lmsa_e1",
+  "class_name": "ResNet34UNetCBSALMSA",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resunet_cbsa_lmsa_e1_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resunet_cbsa_lmsa_e1_e50_bs6/per_case_metrics.csv"
+}

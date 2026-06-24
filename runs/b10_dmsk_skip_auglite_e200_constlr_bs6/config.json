@@ -1,0 +1,63 @@
+{
+  "run_name": "b10_dmsk_skip_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "dmsk_hidden_channels": 32,
+  "dmsk_context_dilation": 3,
+  "dmsk_init_scale": 0.1,
+  "dmsk_hard_selection": 1,
+  "model_class": "ResNet34UNetBRRB10DMSKSkip",
+  "experiment": "B10: B2 + DMSK-Skip-lite at encoder 1/4 feature",
+  "note": "B10 keeps the complete B2 framework and adds one morphology/scale-adaptive dynamic kernel module to the ResNet34 1/4 skip feature. It introduces no new boundary/rim supervision, no additional segmentation loss, and no multi-scale RBSG gate.",
+  "design_references": [
+    {
+      "title": "Enhancing feature fusion of U-like networks with dynamic skip connections",
+      "journal": "Medical Image Analysis",
+      "year": 2026,
+      "doi": "10.1016/j.media.2026.104010",
+      "adopted_idea": "content-adaptive dynamic multi-scale kernel selection"
+    },
+    {
+      "title": "I2U-Net: A dual-path U-Net with rich information interaction",
+      "journal": "Medical Image Analysis",
+      "year": 2024,
+      "doi": "10.1016/j.media.2024.103241",
+      "adopted_idea": "reuse high-resolution detail and semantic information in U-like networks"
+    }
+  ],
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  },
+  "dmsk_skip": {
+    "position": "ResNet34 encoder feature[2], 1/4-resolution skip",
+    "local_kernel_sizes": [
+      3,
+      5
+    ],
+    "context_kernel_sizes": [
+      7,
+      9,
+      11
+    ],
+    "context_dilation": 3,
+    "hidden_channels": 32,
+    "initial_residual_scale": 0.1,
+    "residual_projection_init": "final BatchNorm scale initialized to zero",
+    "hard_selection": true,
+    "extra_supervision": false,
+    "uses_boundary_or_rim": false
+  }
+}

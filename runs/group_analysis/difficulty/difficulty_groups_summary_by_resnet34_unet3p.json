@@ -1,0 +1,27 @@
+{
+  "baseline_run": "resnet34_unet3p_baseline_e50",
+  "num_cases": 358,
+  "groups": {
+    "hard": {
+      "num_cases": 119,
+      "baseline_dice_min": 2.6888948641385078e-11,
+      "baseline_dice_max": 0.829946319020035,
+      "baseline_dice_mean": 0.6599575686624346,
+      "baseline_dice_median": 0.7224653198032714
+    },
+    "medium": {
+      "num_cases": 119,
+      "baseline_dice_min": 0.8311977715971478,
+      "baseline_dice_max": 0.9208226221083083,
+      "baseline_dice_mean": 0.8829029455669253,
+      "baseline_dice_median": 0.8889721781753237
+    },
+    "easy": {
+      "num_cases": 120,
+      "baseline_dice_min": 0.9209533973680473,
+      "baseline_dice_max": 0.9829830805988445,
+      "baseline_dice_mean": 0.9493074682674835,
+      "baseline_dice_median": 0.9512092542194769
+    }
+  }
+}

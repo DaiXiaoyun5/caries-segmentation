@@ -1,0 +1,23 @@
+{
+  "run_name": "resunet_cbsa_mkdc_mk2_t3_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cbsa_lambda": 0.0001,
+  "cbsa_alpha": 1.0,
+  "cbsa_beta": 0.1,
+  "mk_expansion_factor": 2,
+  "mk_kernel_sizes": "1,3,5",
+  "mk_depth": 2,
+  "mk_add": true,
+  "mk_activation": "relu6",
+  "model_class": "ResNet34UNetCBSAMKDCMK2",
+  "experiment": "T3/P2-MK2: ResNet34-U-Net + CBSA + MKDC depth=2",
+  "note": "Parameter tuning against P2: only MKDC depth is increased from 1 to 2; CBSA, decoder, kernel sizes, and expansion factor remain unchanged."
+}

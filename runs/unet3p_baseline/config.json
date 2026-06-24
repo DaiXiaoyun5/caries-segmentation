@@ -1,0 +1,11 @@
+{
+  "run_name": "unet3p_baseline",
+  "image_size": 512,
+  "batch_size": 4,
+  "epochs": 30,
+  "lr": 0.0003,
+  "num_workers": 2,
+  "seed": 42,
+  "base_channels": 64,
+  "deep_supervision": 1
+}

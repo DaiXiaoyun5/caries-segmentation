@@ -1,0 +1,17 @@
+{
+  "run_name": "b10_dmsk_skip_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8597327415405727,
+  "mean_iou": 0.7727209683198834,
+  "mean_precision": 0.8748445921849621,
+  "mean_recall": 0.8698457913849178,
+  "median_dice": 0.9034479431068563,
+  "median_iou": 0.823898842855334,
+  "median_precision": 0.914803907851131,
+  "median_recall": 0.9191331997672292,
+  "module_name": "train_resnet34_unet_brr_b10_dmsk_skip_e200",
+  "class_name": "ResNet34UNetBRRB10DMSKSkip",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b10_dmsk_skip_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b10_dmsk_skip_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}

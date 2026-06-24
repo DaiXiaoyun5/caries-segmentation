@@ -1,0 +1,314 @@
+[
+  {
+    "case_id": "test_crawling_248",
+    "image_path": "/share/home/u2515283028/caries_project/data/unzip/images/test_crawling_248.jpg",
+    "mask_path": "/share/home/u2515283028/caries_project/data/masks/all/test_crawling_248.png",
+    "lesion_size_group": "small",
+    "difficulty_group": "hard",
+    "resnet_dice": 2.6888948641385078e-11,
+    "main_dice": 0.8654096999897377,
+    "delta_main_vs_resnet": 0.8654096999628488,
+    "main_recall": 0.9811777359510304,
+    "main_precision": 0.7740772168058109,
+    "gt_area": 3719.0,
+    "ppm_dice": 0.8845632622904452,
+    "delta_ppm_vs_main": 0.019153562300707527,
+    "category": "small_improved",
+    "panel_png": "/share/home/u2515283028/caries_project/runs/final_visual_cases/small_improved/test_crawling_248_small_improved.png",
+    "pred_records": {
+      "unet3p": {
+        "pred_area": 4442,
+        "prob_mean": 0.016945699229836464
+      },
+      "resnet34_unet3p": {
+        "pred_area": 0,
+        "prob_mean": 8.83924076333642e-05
+      },
+      "cbsa": {
+        "pred_area": 4143,
+        "prob_mean": 0.015782669186592102
+      },
+      "cbsa_laspp": {
+        "pred_area": 4715,
+        "prob_mean": 0.017916515469551086
+      },
+      "cbsa_ppm": {
+        "pred_area": 4398,
+        "prob_mean": 0.016774166375398636
+      }
+    }
+  },
+  {
+    "case_id": "test_crawling_315",
+    "image_path": "/share/home/u2515283028/caries_project/data/unzip/images/test_crawling_315.jpg",
+    "mask_path": "/share/home/u2515283028/caries_project/data/masks/all/test_crawling_315.png",
+    "lesion_size_group": "small",
+    "difficulty_group": "hard",
+    "resnet_dice": 5.841121494985915e-11,
+    "main_dice": 0.6306504961818467,
+    "delta_main_vs_resnet": 0.6306504961234355,
+    "main_recall": 0.9407894737036877,
+    "main_precision": 0.47429519080028276,
+    "gt_area": 304.0,
+    "ppm_dice": 0.6842709529639184,
+    "delta_ppm_vs_main": 0.053620456782071724,
+    "category": "small_improved",
+    "panel_png": "/share/home/u2515283028/caries_project/runs/final_visual_cases/small_improved/test_crawling_315_small_improved.png",
+    "pred_records": {
+      "unet3p": {
+        "pred_area": 835,
+        "prob_mean": 0.003415793878957629
+      },
+      "resnet34_unet3p": {
+        "pred_area": 1411,
+        "prob_mean": 0.005476492457091808
+      },
+      "cbsa": {
+        "pred_area": 572,
+        "prob_mean": 0.0021985704079270363
+      },
+      "cbsa_laspp": {
+        "pred_area": 603,
+        "prob_mean": 0.00229896092787385
+      },
+      "cbsa_ppm": {
+        "pred_area": 567,
+        "prob_mean": 0.0022394885309040546
+      }
+    }
+  },
+  {
+    "case_id": "test_crawling_249",
+    "image_path": "/share/home/u2515283028/caries_project/data/unzip/images/test_crawling_249.jpg",
+    "mask_path": "/share/home/u2515283028/caries_project/data/masks/all/test_crawling_249.png",
+    "lesion_size_group": "large",
+    "difficulty_group": "hard",
+    "resnet_dice": 0.008666633466112135,
+    "main_dice": 0.6460570159216676,
+    "delta_main_vs_resnet": 0.6373903824555555,
+    "main_recall": 0.48920661620767303,
+    "main_precision": 0.9509536784747826,
+    "gt_area": 14268.0,
+    "ppm_dice": 0.8308672338030445,
+    "delta_ppm_vs_main": 0.18481021788137686,
+    "category": "hard_improved",
+    "panel_png": "/share/home/u2515283028/caries_project/runs/final_visual_cases/hard_improved/test_crawling_249_hard_improved.png",
+    "pred_records": {
+      "unet3p": {
+        "pred_area": 6038,
+        "prob_mean": 0.023675253614783287
+      },
+      "resnet34_unet3p": {
+        "pred_area": 5809,
+        "prob_mean": 0.024018215015530586
+      },
+      "cbsa": {
+        "pred_area": 8226,
+        "prob_mean": 0.03152158856391907
+      },
+      "cbsa_laspp": {
+        "pred_area": 7339,
+        "prob_mean": 0.02887539751827717
+      },
+      "cbsa_ppm": {
+        "pred_area": 10536,
+        "prob_mean": 0.04022311046719551
+      }
+    }
+  },
+  {
+    "case_id": "test_crawling_321",
+    "image_path": "/share/home/u2515283028/caries_project/data/unzip/images/test_crawling_321.jpg",
+    "mask_path": "/share/home/u2515283028/caries_project/data/masks/all/test_crawling_321.png",
+    "lesion_size_group": "large",
+    "difficulty_group": "hard",
+    "resnet_dice": 0.276929715738298,
+    "main_dice": 0.8384001096759831,
+    "delta_main_vs_resnet": 0.561470393937685,
+    "main_recall": 0.7778060413368661,
+    "main_precision": 0.9092328278329673,
+    "gt_area": 15725.0,
+    "ppm_dice": 0.7859956792483607,
+    "delta_ppm_vs_main": -0.05240443042762244,
+    "category": "hard_improved",
+    "panel_png": "/share/home/u2515283028/caries_project/runs/final_visual_cases/hard_improved/test_crawling_321_hard_improved.png",
+    "pred_records": {
+      "unet3p": {
+        "pred_area": 13347,
+        "prob_mean": 0.05097756162285805
+      },
+      "resnet34_unet3p": {
+        "pred_area": 2815,
+        "prob_mean": 0.011003854684531689
+      },
+      "cbsa": {
+        "pred_area": 7346,
+        "prob_mean": 0.027881314978003502
+      },
+      "cbsa_laspp": {
+        "pred_area": 13453,
+        "prob_mean": 0.05164080113172531
+      },
+      "cbsa_ppm": {
+        "pred_area": 15752,
+        "prob_mean": 0.06010344624519348
+      }
+    }
+  },
+  {
+    "case_id": "test_crawling_280",
+    "image_path": "/share/home/u2515283028/caries_project/data/unzip/images/test_crawling_280.jpg",
+    "mask_path": "/share/home/u2515283028/caries_project/data/masks/all/test_crawling_280.png",
+    "lesion_size_group": "small",
+    "difficulty_group": "easy",
+    "resnet_dice": 0.9636044470454815,
+    "main_dice": 0.464408174469011,
+    "delta_main_vs_resnet": -0.49919627257647053,
+    "main_recall": 0.38608893958070495,
+    "main_precision": 0.5825877494981905,
+    "gt_area": 4385.0,
+    "ppm_dice": 0.9507225775888328,
+    "delta_ppm_vs_main": 0.4863144031198218,
+    "category": "ppm_small_better",
+    "panel_png": "/share/home/u2515283028/caries_project/runs/final_visual_cases/ppm_small_better/test_crawling_280_ppm_small_better.png",
+    "pred_records": {
+      "unet3p": {
+        "pred_area": 1663,
+        "prob_mean": 0.006421907804906368
+      },
+      "resnet34_unet3p": {
+        "pred_area": 4160,
+        "prob_mean": 0.015817172825336456
+      },
+      "cbsa": {
+        "pred_area": 1671,
+        "prob_mean": 0.006383894477039576
+      },
+      "cbsa_laspp": {
+        "pred_area": 2907,
+        "prob_mean": 0.01087005715817213
+      },
+      "cbsa_ppm": {
+        "pred_area": 4057,
+        "prob_mean": 0.015593670308589935
+      }
+    }
+  },
+  {
+    "case_id": "test_crawling_260",
+    "image_path": "/share/home/u2515283028/caries_project/data/unzip/images/test_crawling_260.jpg",
+    "mask_path": "/share/home/u2515283028/caries_project/data/masks/all/test_crawling_260.png",
+    "lesion_size_group": "small",
+    "difficulty_group": "medium",
+    "resnet_dice": 0.8517090722198444,
+    "main_dice": 0.4876721646065691,
+    "delta_main_vs_resnet": -0.3640369076132753,
+    "main_recall": 0.3434730539079408,
+    "main_precision": 0.8405627198217724,
+    "gt_area": 4175.0,
+    "ppm_dice": 0.8828698687867716,
+    "delta_ppm_vs_main": 0.39519770418020256,
+    "category": "ppm_small_better",
+    "panel_png": "/share/home/u2515283028/caries_project/runs/final_visual_cases/ppm_small_better/test_crawling_260_ppm_small_better.png",
+    "pred_records": {
+      "unet3p": {
+        "pred_area": 3578,
+        "prob_mean": 0.0137249194085598
+      },
+      "resnet34_unet3p": {
+        "pred_area": 3607,
+        "prob_mean": 0.013804148882627487
+      },
+      "cbsa": {
+        "pred_area": 3661,
+        "prob_mean": 0.013972004875540733
+      },
+      "cbsa_laspp": {
+        "pred_area": 1706,
+        "prob_mean": 0.006575434003025293
+      },
+      "cbsa_ppm": {
+        "pred_area": 4132,
+        "prob_mean": 0.015813404694199562
+      }
+    }
+  },
+  {
+    "case_id": "test_crawling_58",
+    "image_path": "/share/home/u2515283028/caries_project/data/unzip/images/test_crawling_58.jpg",
+    "mask_path": "/share/home/u2515283028/caries_project/data/masks/all/test_crawling_58.png",
+    "lesion_size_group": "small",
+    "difficulty_group": "hard",
+    "resnet_dice": 7.843137254286811e-11,
+    "main_dice": 7.843137254286811e-11,
+    "delta_main_vs_resnet": 0.0,
+    "main_recall": 7.843137254286811e-11,
+    "main_precision": 1.0,
+    "gt_area": 1275.0,
+    "ppm_dice": 7.24112961569579e-11,
+    "delta_ppm_vs_main": -6.020076385910207e-12,
+    "category": "failure_or_degraded",
+    "panel_png": "/share/home/u2515283028/caries_project/runs/final_visual_cases/failure_or_degraded/test_crawling_58_failure_or_degraded.png",
+    "pred_records": {
+      "unet3p": {
+        "pred_area": 127,
+        "prob_mean": 0.0006500128074549139
+      },
+      "resnet34_unet3p": {
+        "pred_area": 0,
+        "prob_mean": 4.364675532997353e-06
+      },
+      "cbsa": {
+        "pred_area": 0,
+        "prob_mean": 2.0356280856503872e-06
+      },
+      "cbsa_laspp": {
+        "pred_area": 0,
+        "prob_mean": 1.510377387603512e-06
+      },
+      "cbsa_ppm": {
+        "pred_area": 106,
+        "prob_mean": 0.0005476862424984574
+      }
+    }
+  },
+  {
+    "case_id": "test_crawling_114",
+    "image_path": "/share/home/u2515283028/caries_project/data/unzip/images/test_crawling_114.jpg",
+    "mask_path": "/share/home/u2515283028/caries_project/data/masks/all/test_crawling_114.png",
+    "lesion_size_group": "small",
+    "difficulty_group": "hard",
+    "resnet_dice": 0.5174683544425958,
+    "main_dice": 0.21869321324785734,
+    "delta_main_vs_resnet": -0.2987751411947384,
+    "main_recall": 0.9472963723513144,
+    "main_precision": 0.12361557699961044,
+    "gt_area": 1461.0,
+    "ppm_dice": 0.2367256637252574,
+    "delta_ppm_vs_main": 0.01803245047740007,
+    "category": "failure_or_degraded",
+    "panel_png": "/share/home/u2515283028/caries_project/runs/final_visual_cases/failure_or_degraded/test_crawling_114_failure_or_degraded.png",
+    "pred_records": {
+      "unet3p": {
+        "pred_area": 5069,
+        "prob_mean": 0.019733190536499023
+      },
+      "resnet34_unet3p": {
+        "pred_area": 2489,
+        "prob_mean": 0.010210233740508556
+      },
+      "cbsa": {
+        "pred_area": 9198,
+        "prob_mean": 0.035042665898799896
+      },
+      "cbsa_laspp": {
+        "pred_area": 11198,
+        "prob_mean": 0.04218237102031708
+      },
+      "cbsa_ppm": {
+        "pred_area": 7577,
+        "prob_mean": 0.02908278815448284
+      }
+    }
+  }
+]

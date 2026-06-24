@@ -1,0 +1,20 @@
+{
+  "variant": "m10_skip_cbsa_bottleneck_laspp",
+  "run_name": "resunet_skipcbsa_blaspp_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cbsa_lambda": 0.0001,
+  "cbsa_alpha": 1.0,
+  "cbsa_beta": 0.1,
+  "laspp_mid_channels": 128,
+  "laspp_dropout": 0.1,
+  "edge_weight": 0.2,
+  "model_class": "ResNet34UNetSkipCBSABottleneckLiteASPP"
+}

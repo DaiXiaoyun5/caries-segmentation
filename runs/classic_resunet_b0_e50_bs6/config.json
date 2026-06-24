@@ -1,0 +1,14 @@
+{
+  "run_name": "classic_resunet_b0_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "base_channels": 64,
+  "model_class": "ClassicResUNet",
+  "experiment": "B0: Classic ResUNet baseline with residual encoder, bridge, and decoder blocks",
+  "note": "Classic ResUNet baseline trained from scratch. Unlike ResNet34-U-Net, this model does not load ImageNet-pretrained encoder weights. Encoder, bridge, and decoder are all residual convolution blocks."
+}

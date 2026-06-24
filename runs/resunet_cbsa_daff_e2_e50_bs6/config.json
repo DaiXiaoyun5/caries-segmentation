@@ -1,0 +1,22 @@
+{
+  "run_name": "resunet_cbsa_daff_e2_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cbsa_lambda": 0.0001,
+  "cbsa_alpha": 1.0,
+  "cbsa_beta": 0.1,
+  "daff_reduction": 8,
+  "daff_freq_pool_size": 8,
+  "daff_scale_init": 0.1,
+  "daff_feature_index": -1,
+  "model_class": "ResNet34UNetCBSADAFF",
+  "experiment": "E2: ResNet34-U-Net + CBSA + DAFF-2D-paper-adapt",
+  "note": "Not official EFMS-Net DAFF. No Mamba dependency; 2D no-Mamba paper-adapted exploratory implementation."
+}

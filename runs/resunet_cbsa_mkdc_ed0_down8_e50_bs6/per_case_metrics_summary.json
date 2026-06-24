@@ -1,0 +1,17 @@
+{
+  "run_name": "resunet_cbsa_mkdc_ed0_down8_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8420200564563326,
+  "mean_iou": 0.7471115649189772,
+  "mean_precision": 0.8624893364708662,
+  "mean_recall": 0.8515910020574099,
+  "median_dice": 0.8869461996363343,
+  "median_iou": 0.7968584340956069,
+  "median_precision": 0.9051932734711767,
+  "median_recall": 0.9086445988046725,
+  "module_name": "train_resunet_cbsa_mkdc_ed0_down8",
+  "class_name": "ResNet34UNetDown8CBSAMKDC",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resunet_cbsa_mkdc_ed0_down8_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resunet_cbsa_mkdc_ed0_down8_e50_bs6/per_case_metrics.csv"
+}

@@ -1,0 +1,108 @@
+{
+  "run_name": "b9_dcf_b8b_context_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "context_branch_channels": 128,
+  "context_dropout": 0.0,
+  "context_init_scale": 0.1,
+  "dcf_channels": 16,
+  "dcf_beta": 0.2,
+  "model_class": "ResNet34UNetBRRB9DCF",
+  "experiment": "B9-DCF: B8B Context Bottleneck + Detail-aware Cross-Layer Decoder Fusion",
+  "note": "B9-DCF keeps B8B multi-scale context bottleneck and final RBSG-lite, and adds a lightweight detail-aware cross-layer decoder fusion module. DCF fuses decoder 1/8, decoder 1/4 and final refined features without adding extra boundary/rim gates, aiming to improve small-lesion detail while avoiding over-conservative rim suppression.",
+  "aux_targets": {
+    "boundary": "dilate(mask,3)-erode(mask,3)",
+    "rim": "dilate(mask,9)-dilate(mask,3)"
+  },
+  "rbsg": {
+    "position": "final decoder feature before segmentation head",
+    "lambda_pos": 0.2,
+    "lambda_rim": 0.1,
+    "positive_gate": "enhance boundary-supportive decoder feature",
+    "rim_gate": "suppress likely peri-lesion hard-negative activation"
+  },
+  "context_bottleneck": {
+    "enabled": true,
+    "position": "deepest encoder feature before decoder",
+    "branches": [
+      "dilation=1",
+      "dilation=3",
+      "dilation=5",
+      "global average pooling"
+    ],
+    "branch_channels": 128,
+    "dropout": 0.0,
+    "init_scale": 0.1,
+    "fusion": "residual: x + learnable_scale * context(x)"
+  },
+  "dcf": {
+    "enabled": true,
+    "position": "after final RBSG-lite before output heads",
+    "features": [
+      "decoder_1/8",
+      "decoder_1/4",
+      "final_refined"
+    ],
+    "dcf_channels": 16,
+    "dcf_beta": 0.2,
+    "fusion": "F_out = F_refined + beta * DCF(F_refined, F_1/4, F_1/8)",
+    "note": "DCF fuses multi-level decoder features without additional boundary/rim suppression."
+  },
+  "loss": {
+    "main": "BCEWithLogits + Dice",
+    "boundary": "BCEWithLogits + Dice",
+    "rim": "BCEWithLogits",
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  },
+  "augmentation": {
+    "type": "online",
+    "profile": "lite",
+    "train_only": true,
+    "geometry": {
+      "rotation_deg": [
+        -15.0,
+        15.0
+      ],
+      "scale": [
+        0.85,
+        1.2
+      ],
+      "translate_ratio": 0.05,
+      "horizontal_flip_p": 0.5,
+      "vertical_flip_p": 0.0
+    },
+    "photometric": {
+      "brightness_factor": [
+        0.85,
+        1.15
+      ],
+      "contrast_factor": [
+        0.85,
+        1.15
+      ],
+      "gamma": [
+        0.8,
+        1.25
+      ],
+      "gaussian_noise_p": 0.1,
+      "noise_std": [
+        0.005,
+        0.02
+      ],
+      "gaussian_blur_p": 0.1,
+      "blur_radius": [
+        0.2,
+        0.8
+      ]
+    }
+  }
+}

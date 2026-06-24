@@ -1,0 +1,23 @@
+{
+  "run_name": "resunet_cbsa_cdfe_u6_e50_bs6",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cbsa_lambda": 0.0001,
+  "cbsa_alpha": 1.0,
+  "cbsa_beta": 0.1,
+  "cdfe_reduction": 4,
+  "cdfe_fg_thr": 0.6,
+  "cdfe_bg_thr": 0.3,
+  "cdfe_contrast_scale_init": 0.1,
+  "cdfe_uncertain_scale_init": 0.1,
+  "cdfe_detach_prob": true,
+  "model_class": "ResNet34UNetCBSACDFE",
+  "experiment": "U6: ResNet34-U-Net + CBSA + CDFE-lite"
+}

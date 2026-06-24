@@ -1,0 +1,14 @@
+{
+  "run_name": "unetpp_simam_v1_e30_bs6_fix",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 30,
+  "lr": 0.0003,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "simam_lambda": 0.0001,
+  "model_name": "UnetPlusPlusSimAM",
+  "simam_position": "decoder_output_before_segmentation_head"
+}

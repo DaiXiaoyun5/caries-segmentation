@@ -1,0 +1,13 @@
+{
+  "run_name": "deeplabv3plus_resnet34_e50_bs6",
+  "model_type": "deeplabv3plus",
+  "image_size": 512,
+  "batch_size": 6,
+  "epochs": 50,
+  "lr": 0.0003,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "script": "train_smp_segmentation.py"
+}

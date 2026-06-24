@@ -1,0 +1,17 @@
+{
+  "run_name": "resnet34_unet3p_cbsa_laspp_boundaryloss_e50_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8507146003027662,
+  "mean_iou": 0.762154982571242,
+  "mean_precision": 0.8802304992397498,
+  "mean_recall": 0.8485206234059636,
+  "median_dice": 0.8963693917185281,
+  "median_iou": 0.8122012126083327,
+  "median_precision": 0.9274608861024889,
+  "median_recall": 0.9158945872370116,
+  "module_name": "train_resnet34_unet3p_cbsa_laspp",
+  "class_name": "ResNet34UNet3PlusCBSALiteASPP",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resnet34_unet3p_cbsa_laspp_boundaryloss_e50_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resnet34_unet3p_cbsa_laspp_boundaryloss_e50_bs6/per_case_metrics.csv"
+}

@@ -1,0 +1,17 @@
+{
+  "run_name": "resnet34_unet_dpu_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8526716230005531,
+  "mean_iou": 0.7627378616497006,
+  "mean_precision": 0.8635424647183201,
+  "mean_recall": 0.8688182584991226,
+  "median_dice": 0.8992004532669998,
+  "median_iou": 0.8168613116938281,
+  "median_precision": 0.9100889668478667,
+  "median_recall": 0.9188294200456609,
+  "module_name": "train_resnet34_unet_dpu_auglite_e200_constlr",
+  "class_name": "ResNet34UNetDPU",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/resnet34_unet_dpu_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/resnet34_unet_dpu_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}
