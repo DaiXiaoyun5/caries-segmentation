@@ -1,0 +1,17 @@
+{
+  "run_name": "b15_edge_simam_rescue_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8610799771447365,
+  "mean_iou": 0.7725314037951166,
+  "mean_precision": 0.8700908609615464,
+  "mean_recall": 0.8747592578209703,
+  "median_dice": 0.9000536207385839,
+  "median_iou": 0.818270452768747,
+  "median_precision": 0.917531092144493,
+  "median_recall": 0.9267158932139758,
+  "module_name": "train_resnet34_unet_brr_b15_edge_simam_rescue_e200",
+  "class_name": "ResNet34UNetBRRB15EdgeSimAMRescue",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b15_edge_simam_rescue_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b15_edge_simam_rescue_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}
