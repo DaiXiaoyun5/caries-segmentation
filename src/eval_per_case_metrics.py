@@ -120,6 +120,10 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b17_wavelet" in rn or "b17_wfpr" in rn:
+        return "train_resnet34_unet_brr_b17_wavelet_rescue_e200", "ResNet34UNetBRRB17WaveletRescue"
+    if "b16_sgdf" in rn:
+        return "train_resnet34_unet_brr_b16_sgdf_e200", "ResNet34UNetBRRB16SGDF"
     if "b15_edge_simam" in rn or "b15_esdr" in rn:
         return "train_resnet34_unet_brr_b15_edge_simam_rescue_e200", "ResNet34UNetBRRB15EdgeSimAMRescue"
     if "b14_ppm" in rn:
@@ -222,6 +226,20 @@ def build_model(model_cls, cfg):
         "esdr_bias_init": cfg.get("esdr_bias_init", -4.0),
         "esdr_contrast_kernel": cfg.get("esdr_contrast_kernel", 7),
         "esdr_simam_lambda": cfg.get("esdr_simam_lambda", 1e-4),
+
+        # B16 Semantic-Guided Detail Fusion optional parameters.
+        "sgdf_hidden_channels": cfg.get("sgdf_hidden_channels", 32),
+        "sgdf_init_scale": cfg.get("sgdf_init_scale", 0.05),
+        "sgdf_use_skip1": bool(cfg.get("sgdf_use_skip1", 1)),
+        "sgdf_use_skip2": bool(cfg.get("sgdf_use_skip2", 1)),
+
+        # B17 Wavelet Frequency Prompt Rescue optional parameters.
+        "wfpr_hidden_channels": cfg.get("wfpr_hidden_channels", 16),
+        "wfpr_max_delta": cfg.get("wfpr_max_delta", 0.55),
+        "wfpr_init_scale": cfg.get("wfpr_init_scale", 0.08),
+        "wfpr_bias_init": cfg.get("wfpr_bias_init", -4.0),
+        "wfpr_candidate_tau": cfg.get("wfpr_candidate_tau", 0.12),
+        "wfpr_candidate_sharpness": cfg.get("wfpr_candidate_sharpness", 12.0),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
