@@ -1,0 +1,57 @@
+{
+  "run_name": "b16_sgdf_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "sgdf_hidden_channels": 32,
+  "sgdf_init_scale": 0.05,
+  "sgdf_use_skip1": 1,
+  "sgdf_use_skip2": 1,
+  "model_class": "ResNet34UNetBRRB16SGDF",
+  "experiment": "B16: B2 + Semantic-Guided Detail Fusion",
+  "note": "B16 keeps B2 unchanged and injects deepest semantic context into shallow encoder skips through zero-initialized residual fusion. It is motivated by recent U-like skip-fusion literature and by the project's observation that dynamic/attention modules often hurt recall.",
+  "dataset_observation": {
+    "test_cases": 358,
+    "small_group_cases": 119,
+    "small_area_ratio_mean_512": 0.011539875960149685,
+    "overall_area_ratio_mean_512": 0.03290683597159785,
+    "implication": "small sparse lesions need high-resolution detail, but shallow detail should be constrained by lesion-level semantics"
+  },
+  "design_references": [
+    {
+      "title": "Enhancing Feature Fusion of U-like Networks with Dynamic Skip Connections",
+      "year": 2025,
+      "adopted_idea": "skip connections should interact semantics and spatial details rather than pass static features"
+    },
+    {
+      "title": "PRAD: Periapical Radiograph Analysis Dataset and Benchmark Model Development",
+      "year": 2025,
+      "adopted_idea": "periapical radiographs retain detailed local lesions but are affected by resolution limits and artifacts"
+    }
+  ],
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  },
+  "sgdf": {
+    "position": "ResNet34 encoder skip features[1] and features[2] before SMP decoder",
+    "hidden_channels": 32,
+    "init_scale": 0.05,
+    "use_skip1": true,
+    "use_skip2": true,
+    "output_init": "zero conv, so initial network is exactly B2",
+    "uses_boundary_or_rim": false,
+    "extra_supervision": false
+  }
+}

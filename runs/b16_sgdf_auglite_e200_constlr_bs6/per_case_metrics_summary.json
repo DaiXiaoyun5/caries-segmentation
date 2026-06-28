@@ -1,0 +1,17 @@
+{
+  "run_name": "b16_sgdf_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8641895919227479,
+  "mean_iou": 0.7753647067243401,
+  "mean_precision": 0.8652891590008562,
+  "mean_recall": 0.8867461408445283,
+  "median_dice": 0.8997046873671912,
+  "median_iou": 0.8176938293034066,
+  "median_precision": 0.9102320536522288,
+  "median_recall": 0.927084303476912,
+  "module_name": "train_resnet34_unet_brr_b16_sgdf_e200",
+  "class_name": "ResNet34UNetBRRB16SGDF",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b16_sgdf_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b16_sgdf_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}
