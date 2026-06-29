@@ -120,6 +120,10 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b21_ife" in rn or "b21_ifelite" in rn:
+        return "train_resnet34_unet_brr_b21_ife_lite_e200", "ResNet34UNetBRRB21IFELite"
+    if "b20_dmr" in rn:
+        return "train_resnet34_unet_brr_b20_dmr_e200", "ResNet34UNetBRRB20DMR"
     if "b19_flip" in rn or "b19_consistency" in rn:
         return "train_resnet34_unet_brr_b19_flip_consistency_e200", "ResNet34UNetBRRB19FlipConsistency"
     if "b18_ema" in rn:
@@ -244,6 +248,11 @@ def build_model(model_cls, cfg):
         "wfpr_bias_init": cfg.get("wfpr_bias_init", -4.0),
         "wfpr_candidate_tau": cfg.get("wfpr_candidate_tau", 0.12),
         "wfpr_candidate_sharpness": cfg.get("wfpr_candidate_sharpness", 12.0),
+
+        # B21 IFE-lite optional parameters.
+        "ife_init_scale": cfg.get("ife_init_scale", 0.0),
+        "ife_max_scale": cfg.get("ife_max_scale", 0.30),
+        "ife_curvature_weight": cfg.get("ife_curvature_weight", 0.60),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
