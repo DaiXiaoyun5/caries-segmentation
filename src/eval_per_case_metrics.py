@@ -120,6 +120,10 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b19_flip" in rn or "b19_consistency" in rn:
+        return "train_resnet34_unet_brr_b19_flip_consistency_e200", "ResNet34UNetBRRB19FlipConsistency"
+    if "b18_ema" in rn:
+        return "train_resnet34_unet_brr_b18_ema_e200", "ResNet34UNetBRRB18EMA"
     if "b17_wavelet" in rn or "b17_wfpr" in rn:
         return "train_resnet34_unet_brr_b17_wavelet_rescue_e200", "ResNet34UNetBRRB17WaveletRescue"
     if "b16_sgdf" in rn:
