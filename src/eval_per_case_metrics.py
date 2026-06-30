@@ -120,6 +120,10 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b25_lkdr" in rn:
+        return "train_resnet34_unet_brr_b25_lkdr_e200", "ResNet34UNetBRRB25LKDR"
+    if "b24_wtconv" in rn or "b24_wt" in rn:
+        return "train_resnet34_unet_brr_b24_wtconv_context_e200", "ResNet34UNetBRRB24WTConvContext"
     if "b23_ram" in rn:
         return "train_resnet34_unet_brr_b23_ram_lite_e200", "ResNet34UNetBRRB23RAMLite"
     if "b22_recall" in rn or "b22_tversky" in rn:
@@ -257,6 +261,21 @@ def build_model(model_cls, cfg):
         "ife_init_scale": cfg.get("ife_init_scale", 0.0),
         "ife_max_scale": cfg.get("ife_max_scale", 0.30),
         "ife_curvature_weight": cfg.get("ife_curvature_weight", 0.60),
+
+        # B24 WTConv context optional parameters.
+        "wt_kernel_size": cfg.get("wt_kernel_size", 5),
+        "wt_levels": cfg.get("wt_levels", 2),
+        "wt_init_scale": cfg.get("wt_init_scale", 0.05),
+        "wt_wavelet_init_scale": cfg.get("wt_wavelet_init_scale", 0.10),
+
+        # B25 Large-Kernel Decoder Refiner optional parameters.
+        "lkdr_hidden_channels": cfg.get("lkdr_hidden_channels", 48),
+        "lkdr_expansion": cfg.get("lkdr_expansion", 3.0),
+        "lkdr_local_kernel": cfg.get("lkdr_local_kernel", 5),
+        "lkdr_context_kernel": cfg.get("lkdr_context_kernel", 7),
+        "lkdr_context_dilation": cfg.get("lkdr_context_dilation", 2),
+        "lkdr_init_scale": cfg.get("lkdr_init_scale", 0.05),
+        "lkdr_max_scale": cfg.get("lkdr_max_scale", 0.50),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
