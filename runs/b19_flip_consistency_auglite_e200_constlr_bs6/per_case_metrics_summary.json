@@ -1,0 +1,17 @@
+{
+  "run_name": "b19_flip_consistency_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8622801358858393,
+  "mean_iou": 0.7745660896489397,
+  "mean_precision": 0.8651690959189269,
+  "mean_recall": 0.8821148281182741,
+  "median_dice": 0.9008100887776436,
+  "median_iou": 0.8195218004532232,
+  "median_precision": 0.9128023777100984,
+  "median_recall": 0.9212149416306745,
+  "module_name": "train_resnet34_unet_brr_b19_flip_consistency_e200",
+  "class_name": "ResNet34UNetBRRB19FlipConsistency",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b19_flip_consistency_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b19_flip_consistency_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}

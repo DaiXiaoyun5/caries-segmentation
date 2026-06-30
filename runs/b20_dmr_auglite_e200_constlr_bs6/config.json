@@ -1,0 +1,64 @@
+{
+  "run_name": "b20_dmr_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "distance_max_radius": 16,
+  "distance_weight_warmup": 0.02,
+  "distance_weight": 0.05,
+  "model_class": "ResNet34UNetBRRB20DMR",
+  "experiment": "B20: B2 + lightweight inner Distance Map Regression auxiliary supervision",
+  "note": "B20 keeps the B2 boundary/rim auxiliary supervision and RBSG-lite unchanged, then adds a single distance-map regression head on the refined final decoder feature. The goal is to improve sparse caries lesion completeness without increasing rim suppression or spatial attention strength.",
+  "failure_reflection": {
+    "b2": "stable high-recall baseline; test Dice around 0.8842",
+    "b2_preaux_and_multiscale_gate": "often raised precision but reduced recall",
+    "b17_wavelet_rescue": "validation looked promising but test Dice stayed below B2, suggesting candidate-residual texture rescue can overfit",
+    "design_implication": "try an auxiliary target that supplies shape/core information while preserving the exact B2 inference path"
+  },
+  "design_references": [
+    {
+      "title": "Deep Distance Map Regression Network with Shape-aware Loss for Imbalanced Medical Image Segmentation",
+      "year": 2025,
+      "adopted_idea": "distance maps provide richer small-object shape supervision than binary masks"
+    },
+    {
+      "title": "nnU-Net Revisited: A Call for Rigorous Validation in 3D Medical Image Segmentation",
+      "year": 2024,
+      "adopted_idea": "keep a strong CNN/U-Net recipe and make conservative, well-controlled additions"
+    },
+    {
+      "title": "When CNNs Outperform Transformers and Mambas: Revisiting Deep Architectures for Dental Caries Segmentation",
+      "year": 2025,
+      "adopted_idea": "dental caries segmentation can favor CNN inductive bias over heavy transformer/state-space complexity"
+    }
+  ],
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  },
+  "dmr": {
+    "target": "normalized inner distance target approximated by repeated binary erosions",
+    "position": "1x1 head on RBSG-refined final decoder feature",
+    "loss": "SmoothL1(sigmoid(distance_logits), inner_distance_gt)",
+    "distance_max_radius": 16,
+    "epoch_1_to_20": "0.02 * L_distance",
+    "epoch_21_to_end": "0.05 * L_distance",
+    "inference": "mask logits only; distance head is auxiliary"
+  },
+  "augmentation": {
+    "type": "online",
+    "profile": "lite",
+    "train_only": true
+  }
+}

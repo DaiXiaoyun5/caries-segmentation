@@ -1,0 +1,63 @@
+{
+  "run_name": "b21_ife_lite_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "ife_init_scale": 0.0,
+  "ife_max_scale": 0.3,
+  "ife_curvature_weight": 0.6,
+  "model_class": "ResNet34UNetBRRB21IFELite",
+  "experiment": "B21: B2 + IFE-lite local-curvature/global-entropy channel enhancement",
+  "note": "B21 keeps the B2 auxiliary losses and RBSG-lite unchanged, then inserts a lightweight IFE-style channel enhancement on the final decoder feature. It is designed for low-contrast X-ray texture discrimination and avoids adding more boundary/rim supervision, rim suppression, multi-scale gates, or post-mask residual rescue.",
+  "failure_reflection": {
+    "boundary_rim_reinforcement": "pre-rim, stronger rim/gate, and consistency-style variants tended to raise precision but lower recall",
+    "context_or_rescue_modules": "PPM/detail/wavelet-style additions did not consistently beat B2 on held-out test results",
+    "design_implication": "try a near-identity channel-only enhancement that complements B2's spatial prior instead of competing with it"
+  },
+  "design_references": [
+    {
+      "title": "Instructive Feature Enhancement for Dichotomous Medical Image Segmentation",
+      "year": 2023,
+      "adopted_idea": "use local curvature and global entropy/information cues to enhance discriminative medical-image features"
+    },
+    {
+      "title": "nnU-Net Revisited: A Call for Rigorous Validation in 3D Medical Image Segmentation",
+      "year": 2024,
+      "adopted_idea": "make conservative architecture changes on top of a strong U-Net baseline"
+    },
+    {
+      "title": "When CNNs Outperform Transformers and Mambas: Revisiting Deep Architectures for Dental Caries Segmentation",
+      "year": 2025,
+      "adopted_idea": "favor lightweight CNN-compatible modules for dental caries radiographs"
+    }
+  ],
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  },
+  "ife_lite": {
+    "position": "final decoder feature before B2 pre-boundary/pre-rim heads and RBSG-lite",
+    "local_score": "mean absolute first-order feature differences as a curvature/texture proxy",
+    "global_score": "1 - normalized spatial entropy of absolute channel activations",
+    "mode": "channel-only residual amplification; detached statistics; no extra spatial attention map",
+    "init_scale": 0.0,
+    "max_scale": 0.3,
+    "curvature_weight": 0.6
+  },
+  "augmentation": {
+    "type": "online",
+    "profile": "lite",
+    "train_only": true
+  }
+}

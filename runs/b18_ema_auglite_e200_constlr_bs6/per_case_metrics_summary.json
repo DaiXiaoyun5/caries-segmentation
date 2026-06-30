@@ -1,0 +1,17 @@
+{
+  "run_name": "b18_ema_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8713875027497103,
+  "mean_iou": 0.7869177959003432,
+  "mean_precision": 0.8728576366198729,
+  "mean_recall": 0.8901875285486787,
+  "median_dice": 0.908604764160265,
+  "median_iou": 0.8325167055462044,
+  "median_precision": 0.9152819006375466,
+  "median_recall": 0.9350747252298721,
+  "module_name": "train_resnet34_unet_brr_b18_ema_e200",
+  "class_name": "ResNet34UNetBRRB18EMA",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b18_ema_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b18_ema_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}

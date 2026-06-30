@@ -1,0 +1,45 @@
+{
+  "run_name": "b18_ema_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "ema_decay": 0.999,
+  "model_class": "ResNet34UNetBRRB18EMA",
+  "experiment": "B18: B2 architecture + EMA weight averaging",
+  "note": "B18 keeps the exact B2 ResNet34-U-Net + BRR/RBSG architecture and changes only the training protocol. Multiple previous B2 extensions improved one axis but failed to beat B2 on test Dice, suggesting that generalization stability may be more valuable than another module.",
+  "design_references": [
+    {
+      "title": "Mean teachers are better role models",
+      "adopted_idea": "EMA of weights provides smoother, more stable evaluation targets without changing the architecture"
+    },
+    {
+      "title": "nnU-Net Revisited",
+      "adopted_idea": "strong CNN/U-Net baselines should be improved with rigorous, minimal, well-controlled changes"
+    },
+    {
+      "title": "When CNNs Outperform Transformers and Mambas",
+      "adopted_idea": "dental caries segmentation benefits from task-aligned CNN inductive bias under limited data"
+    }
+  ],
+  "failure_reflection": {
+    "b10_dmsk": "test Dice and Recall dropped, suggesting dynamic skip selection overfit or became conservative",
+    "b12_tdr": "higher Precision but lower Recall, not enough Dice gain",
+    "b17_wavelet": "best validation Dice but lower test Dice, suggesting validation/checkpoint instability",
+    "b18_hypothesis": "EMA may reduce checkpoint variance without changing B2's precision/recall balance"
+  },
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  }
+}

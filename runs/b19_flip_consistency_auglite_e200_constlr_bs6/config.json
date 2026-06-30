@@ -1,0 +1,47 @@
+{
+  "run_name": "b19_flip_consistency_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "consistency_max_weight": 0.05,
+  "consistency_warmup_epochs": 30,
+  "consistency_candidate_tau": 0.15,
+  "model_class": "ResNet34UNetBRRB19FlipConsistency",
+  "experiment": "B19: B2 architecture + candidate-weighted flip consistency",
+  "note": "B19 keeps the exact B2 architecture and adds a mild horizontal-flip consistency regularizer. The consistency term is weighted toward B2 candidate and uncertain pixels so sparse foreground is not overwhelmed by easy background.",
+  "design_references": [
+    {
+      "title": "Mean teachers are better role models / consistency regularization line",
+      "adopted_idea": "prediction consistency under perturbations can improve generalization without changing architecture"
+    },
+    {
+      "title": "When CNNs Outperform Transformers and Mambas",
+      "adopted_idea": "for dental caries segmentation, lightweight CNN priors and robust training can be preferable to heavier modules"
+    },
+    {
+      "title": "PRAD periapical radiograph benchmark",
+      "adopted_idea": "periapical radiographs contain artifacts and resolution limits, so invariance to benign geometric perturbation is valuable"
+    }
+  ],
+  "failure_reflection": {
+    "b10_b16_skip_modules": "skip/detail modules did not beat B2, suggesting more structural fusion is not the bottleneck",
+    "b12_b15_rescue_heads": "positive residual heads often traded recall/precision without improving global Dice",
+    "b17_wavelet": "validation improvement did not transfer to test, suggesting robustness/generalization needs attention",
+    "b19_hypothesis": "mild candidate-weighted flip consistency improves B2 robustness while preserving its architecture"
+  },
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  }
+}
