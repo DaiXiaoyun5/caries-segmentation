@@ -120,6 +120,10 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b23_ram" in rn:
+        return "train_resnet34_unet_brr_b23_ram_lite_e200", "ResNet34UNetBRRB23RAMLite"
+    if "b22_recall" in rn or "b22_tversky" in rn:
+        return "train_resnet34_unet_brr_b22_recall_tversky_e200", "ResNet34UNetBRRB22RecallTversky"
     if "b21_ife" in rn or "b21_ifelite" in rn:
         return "train_resnet34_unet_brr_b21_ife_lite_e200", "ResNet34UNetBRRB21IFELite"
     if "b20_dmr" in rn:
