@@ -120,6 +120,10 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b27_comp" in rn or "b27_topk" in rn:
+        return "train_resnet34_unet_brr_b27_comp_topk_e200", "ResNet34UNetBRRB27CompTopK"
+    if "b26_cemia" in rn:
+        return "train_resnet34_unet_brr_b26_cemia_lite_e200", "ResNet34UNetBRRB26CEMIALite"
     if "b25_lkdr" in rn:
         return "train_resnet34_unet_brr_b25_lkdr_e200", "ResNet34UNetBRRB25LKDR"
     if "b24_wtconv" in rn or "b24_wt" in rn:
@@ -276,6 +280,10 @@ def build_model(model_cls, cfg):
         "lkdr_context_dilation": cfg.get("lkdr_context_dilation", 2),
         "lkdr_init_scale": cfg.get("lkdr_init_scale", 0.05),
         "lkdr_max_scale": cfg.get("lkdr_max_scale", 0.50),
+
+        # B26 CEMIA-lite optional parameters.
+        "cemia_alpha": cfg.get("cemia_alpha", 0.10),
+        "cemia_beta": cfg.get("cemia_beta", 0.10),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
