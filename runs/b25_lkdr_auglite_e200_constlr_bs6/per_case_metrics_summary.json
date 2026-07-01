@@ -1,0 +1,17 @@
+{
+  "run_name": "b25_lkdr_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8673959285331779,
+  "mean_iou": 0.7802705486228956,
+  "mean_precision": 0.8701323412368401,
+  "mean_recall": 0.886072868674507,
+  "median_dice": 0.9031577617796389,
+  "median_iou": 0.8234164136066949,
+  "median_precision": 0.9059546395160152,
+  "median_recall": 0.9346455227997866,
+  "module_name": "train_resnet34_unet_brr_b25_lkdr_e200",
+  "class_name": "ResNet34UNetBRRB25LKDR",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b25_lkdr_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b25_lkdr_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}

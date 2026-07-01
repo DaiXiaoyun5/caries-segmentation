@@ -1,0 +1,17 @@
+{
+  "run_name": "b22_recall_tversky_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8633596309208073,
+  "mean_iou": 0.776062263659123,
+  "mean_precision": 0.8699148336705004,
+  "mean_recall": 0.8810504866100026,
+  "median_dice": 0.9047968131534959,
+  "median_iou": 0.8261452093638868,
+  "median_precision": 0.9151854692541157,
+  "median_recall": 0.9268118727523185,
+  "module_name": "train_resnet34_unet_brr_b22_recall_tversky_e200",
+  "class_name": "ResNet34UNetBRRB22RecallTversky",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b22_recall_tversky_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b22_recall_tversky_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}

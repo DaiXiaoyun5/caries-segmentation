@@ -1,0 +1,62 @@
+{
+  "run_name": "b25_lkdr_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "lkdr_hidden_channels": 48,
+  "lkdr_expansion": 3.0,
+  "lkdr_local_kernel": 5,
+  "lkdr_context_kernel": 7,
+  "lkdr_context_dilation": 2,
+  "lkdr_init_scale": 0.05,
+  "lkdr_max_scale": 0.5,
+  "model_class": "ResNet34UNetBRRB25LKDR",
+  "experiment": "B25: B2 + Large-Kernel Decoder Refiner",
+  "note": "B25 keeps B2 boundary/rim auxiliary supervision and RBSG-lite unchanged. It inserts a lightweight large-kernel inverted bottleneck refiner on the final decoder feature before B2's pre-boundary/pre-rim heads and RBSG-lite. This provides local-to-long decoder context without adding another boundary/rim gate or output-logit rescue branch.",
+  "design_reflection": {
+    "why_decoder": "final decoder features are closest to pixel-level caries decisions and have only 16 channels, so large-kernel context is cheap",
+    "why_before_rbsg": "B2's RBSG-lite can recalibrate the refined decoder feature using its established boundary/rim priors",
+    "why_not_dynamic_skip": "B10 dynamic skip selection did not beat B2; B25 uses a fixed residual block instead of hard branch selection",
+    "why_not_channel_only": "B21 channel-only IFE learned scale 0.0, so B25 uses spatial depthwise large kernels with near-identity residual initialization"
+  },
+  "design_references": [
+    {
+      "title": "CMUNeXt-style large-kernel CNN modules for medical image segmentation",
+      "adopted_idea": "large-kernel depthwise context with efficient inverted bottleneck"
+    },
+    {
+      "title": "EMCAD: Efficient Multi-scale Convolutional Attention Decoding for Medical Image Segmentation",
+      "adopted_idea": "decoder-side lightweight convolutional context can improve segmentation without replacing the encoder backbone"
+    },
+    {
+      "title": "PRAD: A Benchmark Dataset for Periapical Radiograph Analysis and Diagnosis",
+      "adopted_idea": "dental periapical radiographs favor lightweight CNN-compatible modules over full backbone replacement"
+    }
+  ],
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  },
+  "lkdr": {
+    "position": "final SMP decoder feature before pre-boundary/pre-rim heads and RBSG-lite",
+    "hidden_channels": 48,
+    "expansion": 3.0,
+    "local_kernel": 5,
+    "context_kernel": 7,
+    "context_dilation": 2,
+    "init_scale": 0.05,
+    "max_scale": 0.5,
+    "final_projection_bn_gamma_init": 0.0
+  }
+}
