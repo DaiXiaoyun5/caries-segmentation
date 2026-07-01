@@ -1,0 +1,69 @@
+{
+  "run_name": "b22_recall_tversky_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "tversky_warmup_epochs": 20,
+  "tversky_alpha_warmup": 0.45,
+  "tversky_beta_warmup": 0.55,
+  "tversky_alpha": 0.4,
+  "tversky_beta": 0.6,
+  "tversky_gamma": 1.0,
+  "dice_weight": 0.6,
+  "tversky_weight": 0.4,
+  "model_class": "ResNet34UNetBRRB22RecallTversky",
+  "experiment": "B22: B2 unchanged + mild recall-biased Tversky main mask loss",
+  "note": "B22 keeps the B2 architecture, boundary/rim targets, auxiliary weights, and RBSG-lite unchanged. It only replaces the main mask Dice term with a Dice/Tversky mixture that penalizes false negatives slightly more than false positives. This directly targets the recall drop observed in B19, B20 and B21 without introducing another boundary/rim gate.",
+  "result_reflection": {
+    "b18": "EMA nearly tied B2 but shifted toward higher precision and lower recall",
+    "b19": "flip consistency reduced both test Dice and recall",
+    "b20": "inner distance supervision was too weak and core-biased; recall dropped",
+    "b21": "IFE scale stayed at 0.0, so the new branch was effectively inactive",
+    "design_implication": "use a small, interpretable loss-side correction for false negatives instead of more spatial modules"
+  },
+  "design_references": [
+    {
+      "title": "Focal Tversky Loss for Image Segmentation",
+      "adopted_idea": "asymmetric Tversky weighting is useful for highly imbalanced medical foregrounds and small lesions"
+    },
+    {
+      "title": "nnU-Net Revisited",
+      "adopted_idea": "retain a strong U-Net recipe and validate conservative, isolated changes"
+    }
+  ],
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L_aux = 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_aux = 0.20*L_boundary + 0.10*L_rim"
+  },
+  "recall_tversky_loss": {
+    "main_loss": "BCE + dice_weight*Dice + tversky_weight*Tversky",
+    "warmup": {
+      "epochs": 20,
+      "alpha_fp": 0.45,
+      "beta_fn": 0.55
+    },
+    "after_warmup": {
+      "alpha_fp": 0.4,
+      "beta_fn": 0.6,
+      "gamma": 1.0,
+      "dice_weight": 0.6,
+      "tversky_weight": 0.4
+    }
+  },
+  "augmentation": {
+    "type": "online",
+    "profile": "lite",
+    "train_only": true
+  }
+}

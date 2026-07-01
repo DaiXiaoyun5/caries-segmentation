@@ -1,0 +1,53 @@
+{
+  "run_name": "b24_wtconv_context_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "wt_kernel_size": 5,
+  "wt_levels": 2,
+  "wt_init_scale": 0.05,
+  "wt_wavelet_init_scale": 0.1,
+  "model_class": "ResNet34UNetBRRB24WTConvContext",
+  "experiment": "B24: B2 + WTConv-lite bottleneck context adapter",
+  "note": "B24 keeps B2 boundary/rim auxiliary supervision and RBSG-lite unchanged. It adds a dependency-free Haar WTConv-lite residual adapter on the deepest ResNet34 encoder feature to provide large receptive field context without changing the decoder, mask threshold, or inference interface.",
+  "design_reflection": {
+    "why_not_more_boundary_rim": "previous pre-rim, consistency, and gate variants tended to increase conservativeness and reduce recall",
+    "why_not_output_rescue": "B17 wavelet logit residual improved validation but did not beat B2 on test, suggesting direct mask residuals can overfit texture",
+    "why_bottleneck_context": "context is injected before decoding so the original B2 decoder/RBSG can still decide how to use it"
+  },
+  "design_references": [
+    {
+      "title": "Wavelet Convolutions for Large Receptive Fields",
+      "venue": "ECCV 2024",
+      "source": "WTConv-main.zip provided by user; simplified to plain PyTorch Haar filters"
+    },
+    {
+      "title": "PRAD: A Benchmark Dataset for Periapical Radiograph Analysis and Diagnosis",
+      "year": 2025,
+      "adopted_idea": "same dental periapical radiograph domain motivates lightweight CNN-compatible context rather than heavy backbone replacement"
+    }
+  ],
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  },
+  "wtconv_context": {
+    "position": "deepest ResNet34 encoder feature before SMP decoder",
+    "kernel_size": 5,
+    "wt_levels": 2,
+    "init_scale": 0.05,
+    "wavelet_init_scale": 0.1,
+    "dependency_free": true
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "run_name": "b24_wtconv_context_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8620234875160214,
+  "mean_iou": 0.775384379503518,
+  "mean_precision": 0.8674021628319154,
+  "mean_recall": 0.8787662456783568,
+  "median_dice": 0.9034193487210651,
+  "median_iou": 0.823851359562068,
+  "median_precision": 0.9069637074930877,
+  "median_recall": 0.9326370608321464,
+  "module_name": "train_resnet34_unet_brr_b24_wtconv_context_e200",
+  "class_name": "ResNet34UNetBRRB24WTConvContext",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b24_wtconv_context_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b24_wtconv_context_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}

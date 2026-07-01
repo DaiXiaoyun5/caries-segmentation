@@ -1,0 +1,58 @@
+{
+  "run_name": "b23_ram_lite_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "ram_prob": 0.5,
+  "ram_max_strength": 0.2,
+  "ram_low_freq_ratio": 0.08,
+  "model_class": "ResNet34UNetBRRB23RAMLite",
+  "experiment": "B23: B2 unchanged + Fourier Random Amplitude Mixup training",
+  "note": "B23 keeps the exact B2 network and losses. The only change is applying low-frequency Fourier amplitude mixup during training to simulate radiograph exposure/contrast/style shifts while preserving phase-driven anatomical structure and the original mask label.",
+  "result_reflection": {
+    "b18": "EMA reduced loss and almost matched B2, implying the base model is strong but may need better style-level generalization",
+    "b19": "flip consistency over-regularized ambiguous lesions",
+    "b20": "distance supervision was dominated by near-zero background and did not improve lesion recall",
+    "b21": "feature enhancement branch learned no useful scale",
+    "design_implication": "avoid more branches; improve robustness of the already-good B2 decision boundary through realistic X-ray style perturbation"
+  },
+  "design_references": [
+    {
+      "title": "Generalizable Medical Image Segmentation via Random Amplitude Mixup and Domain-Specific Image Restoration",
+      "adopted_idea": "Fourier amplitude perturbation can improve robustness to acquisition/style variation"
+    },
+    {
+      "title": "When CNNs Outperform Transformers and Mambas: Revisiting Deep Architectures for Dental Caries Segmentation",
+      "adopted_idea": "dental caries radiograph segmentation benefits from strong CNN baselines and careful validation more than unnecessary architectural complexity"
+    }
+  ],
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L = L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L = L_seg + 0.20*L_boundary + 0.10*L_rim"
+  },
+  "ram_lite": {
+    "position": "training batch only, before forward pass",
+    "phase": "preserved from the original image",
+    "amplitude": "low-frequency amplitude softly mixed with another batch image",
+    "mask": "unchanged",
+    "prob": 0.5,
+    "max_strength": 0.2,
+    "low_freq_ratio": 0.08
+  },
+  "augmentation": {
+    "type": "online + RAM-lite",
+    "profile": "lite",
+    "train_only": true
+  }
+}
