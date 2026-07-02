@@ -1,0 +1,17 @@
+{
+  "run_name": "b26_cemia_lite_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8639182198272892,
+  "mean_iou": 0.7772536104884704,
+  "mean_precision": 0.869531724224927,
+  "mean_recall": 0.8822555528550575,
+  "median_dice": 0.9031674497784304,
+  "median_iou": 0.8234328157812245,
+  "median_precision": 0.9056694764012712,
+  "median_recall": 0.9293047012422391,
+  "module_name": "train_resnet34_unet_brr_b26_cemia_lite_e200",
+  "class_name": "ResNet34UNetBRRB26CEMIALite",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b26_cemia_lite_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b26_cemia_lite_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}

@@ -1,0 +1,42 @@
+{
+  "run_name": "b26_cemia_lite_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "cemia_alpha": 0.1,
+  "cemia_beta": 0.1,
+  "model_class": "ResNet34UNetBRRB26CEMIALite",
+  "experiment": "B26: B2 + CEMIA-lite final-stage boundary/uncertainty gate",
+  "note": "B26 keeps B2 boundary/rim auxiliary supervision and RBSG-lite unchanged. It adds a final-stage CEMIA-inspired gate after RBSG-lite and before the final mask/boundary/rim heads. The gate uses pre-boundary and pre-mask uncertainty cues only; it does not add pre-mask supervision, rim suppression, a second decoder, or a new loss.",
+  "b2_unchanged": {
+    "boundary_target": "dilate(mask,3)-erode(mask,3)",
+    "rim_target": "dilate(mask,9)-dilate(mask,3)",
+    "rbsg_lambda_pos": 0.2,
+    "rbsg_lambda_rim": 0.1,
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  },
+  "cemia_lite": {
+    "position": "after RBSG-lite, before final mask/boundary/rim heads",
+    "inputs": "RBSG-refined feature, pre-boundary logits, pre-mask logits",
+    "uncertainty": "U_pre = 4 * sigmoid(mask_pre) * (1 - sigmoid(mask_pre))",
+    "spatial_gate": "sigmoid(Conv7x7([f_mean, f_max, B_pre, U_pre, B_pre*U_pre]))",
+    "gain": "1 + alpha*B_pre + beta*B_pre*U_pre",
+    "alpha": 0.1,
+    "beta": 0.1,
+    "extra_loss": false,
+    "extra_rim_suppression": false
+  },
+  "augmentation": {
+    "type": "online",
+    "profile": "lite",
+    "train_only": true
+  }
+}
