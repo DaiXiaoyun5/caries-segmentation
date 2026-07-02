@@ -120,6 +120,10 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b29_context" in rn or "b29_ctx" in rn:
+        return "train_resnet34_unet_brr_b29_context_only_e200", "ResNet34UNetBRRB29ContextOnly"
+    if "b28_rbsg" in rn or "b28_rbsgo" in rn:
+        return "train_resnet34_unet_brr_b28_rbsg_only_e200", "ResNet34UNetBRRB28RBSGOnly"
     if "b27_comp" in rn or "b27_topk" in rn:
         return "train_resnet34_unet_brr_b27_comp_topk_e200", "ResNet34UNetBRRB27CompTopK"
     if "b26_cemia" in rn:
@@ -284,6 +288,11 @@ def build_model(model_cls, cfg):
         # B26 CEMIA-lite optional parameters.
         "cemia_alpha": cfg.get("cemia_alpha", 0.10),
         "cemia_beta": cfg.get("cemia_beta", 0.10),
+
+        # B29 / B8B context bottleneck optional parameters.
+        "context_branch_channels": cfg.get("context_branch_channels", 128),
+        "context_dropout": cfg.get("context_dropout", 0.0),
+        "context_init_scale": cfg.get("context_init_scale", 0.10),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
