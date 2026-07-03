@@ -1,0 +1,84 @@
+{
+  "run_name": "b29_context_only_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "context_branch_channels": 128,
+  "context_dropout": 0.0,
+  "context_init_scale": 0.1,
+  "model_class": "ResNet34UNetBRRB29ContextOnly",
+  "experiment": "B29: ResNet34-U-Net + Multi-scale Context Bottleneck only",
+  "note": "Main ablation for the context branch. Inserts the B8B multi-scale context bottleneck on the deepest encoder feature, but removes RBSG-lite, boundary/rim heads, boundary/rim auxiliary targets, and all auxiliary losses. This tests whether context modeling alone contributes beyond the baseline.",
+  "context_only": true,
+  "br_auxiliary_supervision": false,
+  "rbsg": false,
+  "context_bottleneck": {
+    "enabled": true,
+    "position": "deepest encoder feature before decoder",
+    "branches": [
+      "dilation=1",
+      "dilation=3",
+      "dilation=5",
+      "global average pooling"
+    ],
+    "branch_channels": 128,
+    "dropout": 0.0,
+    "init_scale": 0.1,
+    "fusion": "residual: x + learnable_scale * context(x)"
+  },
+  "loss": {
+    "main": "BCEWithLogits + Dice",
+    "boundary": null,
+    "rim": null,
+    "total": "L_seg only"
+  },
+  "augmentation": {
+    "type": "online",
+    "profile": "lite",
+    "train_only": true,
+    "geometry": {
+      "rotation_deg": [
+        -15.0,
+        15.0
+      ],
+      "scale": [
+        0.85,
+        1.2
+      ],
+      "translate_ratio": 0.05,
+      "horizontal_flip_p": 0.5,
+      "vertical_flip_p": 0.0
+    },
+    "photometric": {
+      "brightness_factor": [
+        0.85,
+        1.15
+      ],
+      "contrast_factor": [
+        0.85,
+        1.15
+      ],
+      "gamma": [
+        0.8,
+        1.25
+      ],
+      "gaussian_noise_p": 0.1,
+      "noise_std": [
+        0.005,
+        0.02
+      ],
+      "gaussian_blur_p": 0.1,
+      "blur_radius": [
+        0.2,
+        0.8
+      ]
+    }
+  }
+}

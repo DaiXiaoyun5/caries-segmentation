@@ -1,0 +1,17 @@
+{
+  "run_name": "b29_context_only_auglite_e200_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8653254703586892,
+  "mean_iou": 0.7757102502256076,
+  "mean_precision": 0.8622033238628186,
+  "mean_recall": 0.8892625745798296,
+  "median_dice": 0.9001144830471214,
+  "median_iou": 0.8183710810526856,
+  "median_precision": 0.905851839609523,
+  "median_recall": 0.9320988669741181,
+  "module_name": "train_resnet34_unet_brr_b29_context_only_e200",
+  "class_name": "ResNet34UNetBRRB29ContextOnly",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b29_context_only_auglite_e200_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b29_context_only_auglite_e200_constlr_bs6/per_case_metrics.csv"
+}

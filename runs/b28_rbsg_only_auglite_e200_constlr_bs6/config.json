@@ -1,0 +1,73 @@
+{
+  "run_name": "b28_rbsg_only_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "model_class": "ResNet34UNetBRRB28RBSGOnly",
+  "experiment": "B28: ResNet34-U-Net + RBSG-lite only, no boundary/rim auxiliary supervision",
+  "note": "Main ablation for B2. Keeps final-stage RBSG-lite with unsupervised pre-boundary/pre-rim gate prompts, but removes boundary/rim final heads, GT-derived boundary/rim auxiliary targets, and two-stage auxiliary loss. This tests whether RBSG-lite remains useful without explicit boundary/rim supervision.",
+  "br_auxiliary_supervision": false,
+  "rbsg_only": true,
+  "rbsg": {
+    "position": "final decoder feature before segmentation head",
+    "lambda_pos": 0.2,
+    "lambda_rim": 0.1,
+    "gate_prompts": "unsupervised pre-boundary/pre-rim logits",
+    "warning": "self-gated ablation; not the full boundary/rim-guided B2 setting"
+  },
+  "loss": {
+    "main": "BCEWithLogits + Dice",
+    "boundary": null,
+    "rim": null,
+    "total": "L_seg only"
+  },
+  "augmentation": {
+    "type": "online",
+    "profile": "lite",
+    "train_only": true,
+    "geometry": {
+      "rotation_deg": [
+        -15.0,
+        15.0
+      ],
+      "scale": [
+        0.85,
+        1.2
+      ],
+      "translate_ratio": 0.05,
+      "horizontal_flip_p": 0.5,
+      "vertical_flip_p": 0.0
+    },
+    "photometric": {
+      "brightness_factor": [
+        0.85,
+        1.15
+      ],
+      "contrast_factor": [
+        0.85,
+        1.15
+      ],
+      "gamma": [
+        0.8,
+        1.25
+      ],
+      "gaussian_noise_p": 0.1,
+      "noise_std": [
+        0.005,
+        0.02
+      ],
+      "gaussian_blur_p": 0.1,
+      "blur_radius": [
+        0.2,
+        0.8
+      ]
+    }
+  }
+}
