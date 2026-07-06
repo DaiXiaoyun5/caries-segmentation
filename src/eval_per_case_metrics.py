@@ -120,6 +120,10 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b31_ssgcb" in rn:
+        return "train_resnet34_unet_brr_b31_ssgcb_e200", "ResNet34UNetBRRB31SSGCB"
+    if "b30_ssgcb" in rn:
+        return "train_resnet34_unet_brr_b30_ssgcb_light_e200", "ResNet34UNetBRRB30SSGCBLight"
     if "b29_context" in rn or "b29_ctx" in rn:
         return "train_resnet34_unet_brr_b29_context_only_e200", "ResNet34UNetBRRB29ContextOnly"
     if "b28_rbsg" in rn or "b28_rbsgo" in rn:
@@ -293,6 +297,13 @@ def build_model(model_cls, cfg):
         "context_branch_channels": cfg.get("context_branch_channels", 128),
         "context_dropout": cfg.get("context_dropout", 0.0),
         "context_init_scale": cfg.get("context_init_scale", 0.10),
+
+        # B30/B31 SSGCB optional parameters.
+        "ssgcb_branch_channels": cfg.get("ssgcb_branch_channels", 96),
+        "ssgcb_dilations": cfg.get("ssgcb_dilations", [1, 3, 5]),
+        "ssgcb_dropout": cfg.get("ssgcb_dropout", 0.0),
+        "ssgcb_scale_init": cfg.get("ssgcb_scale_init", 0.05),
+        "ssgcb_scale_max": cfg.get("ssgcb_scale_max", 0.30),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
