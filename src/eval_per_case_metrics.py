@@ -120,6 +120,10 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b33_lglb" in rn:
+        return "train_resnet34_unet_brr_b33_lglb_e200", "ResNet34UNetBRRB33LGLB"
+    if "b32_cglb" in rn:
+        return "train_resnet34_unet_brr_b32_cglb_e200", "ResNet34UNetBRRB32CGLB"
     if "b30_ssgcb_only" in rn or "b30_ssgcbonly" in rn:
         return "train_resnet34_unet_brr_b30_ssgcb_only_e200", "ResNet34UNetB30SSGCBOnly"
     if "b31_ssgcb" in rn:
@@ -306,6 +310,23 @@ def build_model(model_cls, cfg):
         "ssgcb_dropout": cfg.get("ssgcb_dropout", 0.0),
         "ssgcb_scale_init": cfg.get("ssgcb_scale_init", 0.05),
         "ssgcb_scale_max": cfg.get("ssgcb_scale_max", 0.30),
+
+        # B32 CGLB optional parameters.
+        "cglb_hidden_channels": cfg.get("cglb_hidden_channels", 128),
+        "cglb_kernel_size": cfg.get("cglb_kernel_size", 7),
+        "cglb_expansion": cfg.get("cglb_expansion", 2.0),
+        "cglb_dropout": cfg.get("cglb_dropout", 0.0),
+        "cglb_scale_init": cfg.get("cglb_scale_init", 0.05),
+        "cglb_scale_max": cfg.get("cglb_scale_max", 0.30),
+
+        # B33 LGLB optional parameters.
+        "lglb_hidden_channels": cfg.get("lglb_hidden_channels", 128),
+        "lglb_local_kernel": cfg.get("lglb_local_kernel", 5),
+        "lglb_global_kernel": cfg.get("lglb_global_kernel", 7),
+        "lglb_global_dilation": cfg.get("lglb_global_dilation", 3),
+        "lglb_dropout": cfg.get("lglb_dropout", 0.0),
+        "lglb_scale_init": cfg.get("lglb_scale_init", 0.05),
+        "lglb_scale_max": cfg.get("lglb_scale_max", 0.30),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
