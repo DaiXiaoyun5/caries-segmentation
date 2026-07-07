@@ -120,6 +120,8 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b30_ssgcb_only" in rn or "b30_ssgcbonly" in rn:
+        return "train_resnet34_unet_brr_b30_ssgcb_only_e200", "ResNet34UNetB30SSGCBOnly"
     if "b31_ssgcb" in rn:
         return "train_resnet34_unet_brr_b31_ssgcb_e200", "ResNet34UNetBRRB31SSGCB"
     if "b30_ssgcb" in rn:
