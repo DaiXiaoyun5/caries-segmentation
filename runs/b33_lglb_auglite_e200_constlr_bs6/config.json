@@ -1,0 +1,96 @@
+{
+  "run_name": "b33_lglb_auglite_e200_constlr_bs6",
+  "image_size": 512,
+  "augment_profile": "lite",
+  "batch_size": 6,
+  "epochs": 200,
+  "lr": 0.0003,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 42,
+  "encoder_name": "resnet34",
+  "encoder_weights": "imagenet",
+  "lglb_hidden_channels": 128,
+  "lglb_local_kernel": 5,
+  "lglb_global_kernel": 7,
+  "lglb_global_dilation": 3,
+  "lglb_dropout": 0.0,
+  "lglb_scale_init": 0.05,
+  "lglb_scale_max": 0.3,
+  "model_class": "ResNet34UNetBRRB33LGLB",
+  "experiment": "B33: B2 BRR-RBSG + Local-Global-Local Bottleneck",
+  "note": "B33 keeps the original B2 boundary/rim auxiliary supervision and RBSG-lite. It adds a local-global-local large-kernel bottleneck context module on the deepest encoder feature before the decoder.",
+  "aux_targets": {
+    "boundary": "dilate(mask,3)-erode(mask,3)",
+    "rim": "dilate(mask,9)-dilate(mask,3)"
+  },
+  "rbsg": {
+    "position": "final decoder feature before segmentation head",
+    "lambda_pos": 0.2,
+    "lambda_rim": 0.1,
+    "positive_gate": "enhance boundary-supportive decoder feature",
+    "rim_gate": "suppress likely peri-lesion hard-negative activation"
+  },
+  "lglb": {
+    "enabled": true,
+    "position": "deepest encoder bottleneck feature before decoder",
+    "hidden_channels": 128,
+    "local_kernel": 5,
+    "global_kernel": 7,
+    "global_dilation": 3,
+    "grn": true,
+    "dropout": 0.0,
+    "scale_init": 0.05,
+    "scale_max": 0.3,
+    "fusion": "F_out = F + bounded_scale * LGLB(F)"
+  },
+  "loss": {
+    "main": "BCEWithLogits + Dice",
+    "boundary": "BCEWithLogits + Dice",
+    "rim": "BCEWithLogits",
+    "epoch_1_to_20": "L_seg + 0.10*L_boundary + 0.05*L_rim",
+    "epoch_21_to_end": "L_seg + 0.20*L_boundary + 0.10*L_rim"
+  },
+  "augmentation": {
+    "type": "online",
+    "profile": "lite",
+    "train_only": true,
+    "geometry": {
+      "rotation_deg": [
+        -15.0,
+        15.0
+      ],
+      "scale": [
+        0.85,
+        1.2
+      ],
+      "translate_ratio": 0.05,
+      "horizontal_flip_p": 0.5,
+      "vertical_flip_p": 0.0
+    },
+    "photometric": {
+      "brightness_factor": [
+        0.85,
+        1.15
+      ],
+      "contrast_factor": [
+        0.85,
+        1.15
+      ],
+      "gamma": [
+        0.8,
+        1.25
+      ],
+      "gaussian_noise_p": 0.1,
+      "noise_std": [
+        0.005,
+        0.02
+      ],
+      "gaussian_blur_p": 0.1,
+      "blur_radius": [
+        0.2,
+        0.8
+      ]
+    }
+  }
+}
