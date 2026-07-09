@@ -1,0 +1,17 @@
+{
+  "run_name": "b8b_b2_context_bottleneck_auglite_e260_constlr1e4_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8643757754693175,
+  "mean_iou": 0.7784790627398013,
+  "mean_precision": 0.877721380118517,
+  "mean_recall": 0.8767895002337737,
+  "median_dice": 0.905546113254342,
+  "median_iou": 0.8273954699173325,
+  "median_precision": 0.923278139967984,
+  "median_recall": 0.9279551401305228,
+  "module_name": "train_resnet34_unet_brr_b8b_context_e200",
+  "class_name": "ResNet34UNetBRRB8BContext",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b8b_b2_context_bottleneck_auglite_e260_constlr1e4_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b8b_b2_context_bottleneck_auglite_e260_constlr1e4_bs6/per_case_metrics.csv"
+}
