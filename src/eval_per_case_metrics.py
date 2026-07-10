@@ -120,6 +120,8 @@ def infer_model_info(run_name: str):
     if "edge" in rn:
         return "train_resnet34_unet3p_edge", "ResNet34UNet3PlusEdge"
 
+    if "b34_dmrc" in rn:
+        return "train_resnet34_unet_brr_b34_dmrc_e260", "ResNet34UNetBRRB34DMRC"
     if "b33_lglb" in rn:
         return "train_resnet34_unet_brr_b33_lglb_e200", "ResNet34UNetBRRB33LGLB"
     if "b32_cglb" in rn:
@@ -327,6 +329,12 @@ def build_model(model_cls, cfg):
         "lglb_dropout": cfg.get("lglb_dropout", 0.0),
         "lglb_scale_init": cfg.get("lglb_scale_init", 0.05),
         "lglb_scale_max": cfg.get("lglb_scale_max", 0.30),
+
+        # B34 DMRC-lite optional parameters.
+        "dmrc_mid_channels": cfg.get("dmrc_mid_channels", 96),
+        "dmrc_dropout": cfg.get("dmrc_dropout", 0.0),
+        "dmrc_scale_init": cfg.get("dmrc_scale_init", 0.05),
+        "dmrc_scale_max": cfg.get("dmrc_scale_max", 0.30),
     }
 
     kwargs = {k: v for k, v in candidates.items() if k in params}
