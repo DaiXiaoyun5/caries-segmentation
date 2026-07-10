@@ -1,0 +1,17 @@
+{
+  "run_name": "b30_ablation_ssgcb_only_auglite_e260_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8676650136122035,
+  "mean_iou": 0.7808293585590714,
+  "mean_precision": 0.879568462730643,
+  "mean_recall": 0.8779454547789947,
+  "median_dice": 0.9062573497461637,
+  "median_iou": 0.8285837521571899,
+  "median_precision": 0.916032282529512,
+  "median_recall": 0.9259765003447451,
+  "module_name": "train_resnet34_unet_brr_b30_ssgcb_only_e200",
+  "class_name": "ResNet34UNetB30SSGCBOnly",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b30_ablation_ssgcb_only_auglite_e260_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b30_ablation_ssgcb_only_auglite_e260_constlr_bs6/per_case_metrics.csv"
+}
