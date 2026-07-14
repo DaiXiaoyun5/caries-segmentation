@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Controlled SegFormer-B2 comparison for CariXray binary segmentation."""
+"""DEPRECATED B30-controlled SegFormer experiment.
+
+This historical E260/constant-lr/BCE variant is retained for auditability but
+does not use SegFormer's official optimizer, two-class CE, or polynomial
+schedule. Use ``train_segformer_b2_official.py`` for the paper comparison.
+"""
 
 import argparse
 
@@ -135,6 +140,10 @@ def main(args):
 
 
 if __name__ == "__main__":
+    raise SystemExit(
+        "Deprecated comparison recipe. Submit "
+        "src/train_segformer_b2_official.py instead."
+    )
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--run-name",

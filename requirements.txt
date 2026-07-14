@@ -14,6 +14,12 @@ segmentation-models-pytorch
 # Reproducible SegFormer-B2 comparison baseline
 transformers==4.50.0
 
+# Official Swin-Unet adapter (third-party source/weights stay outside Git)
+yacs
+PyYAML
+timm
+einops
+
 # Optional model-complexity reporting used by some scripts
 thop
 

@@ -1,69 +1,128 @@
-# CariXray external comparison baseline status
+# CariXray external baseline reproduction status
 
-This inventory was checked against the repository after pulling `origin/main`.
-It prevents duplicate experiments and separates exploratory runs from final,
-controlled comparisons.
+This document separates faithful method reproductions from older exploratory
+or B30-controlled variants. The main comparison table must use only the rows
+marked **paper-ready after rerun**.
 
-## Existing experiments (not regenerated)
+## Status
 
-| Model | Repository evidence | Current protocol/result | Paper-table status |
+| Method | Architecture and recipe | Job | Status |
 |---|---|---|---|
-| nnU-Net v2 2D | `src/prepare_nnunet_caries.py`, `src/eval_nnunet_caries.py`, and `scripts/jobs/submitjob_nnunet_caries_2d_fold0_fixed.sh` | Official self-configuring pipeline and fixed project split are already implemented. Prediction metrics live under the ignored `nnunet_caries/` directory, so the numeric result is not present in Git. | Keep the official recipe. Copy its final metric JSON into the paper evidence package before writing the table. |
-| DeepLabV3+ (ResNet34) | `src/train_smp_segmentation.py` and `runs/deeplabv3plus_resnet34_e50_bs6/` | 512, batch 6, 50 epochs, lr 3e-4; test Dice 0.8335. No AugLite and no AdamW weight decay in this old run. | Existing exploratory result only; it is not an E260-controlled result. |
-| U-Net++ (ResNet34) | `src/train_unetpp.py` and `runs/unetpp_baseline_v3_bs6/` | 512, batch 6, 30 epochs, lr 3e-4; test Dice 0.8367. No AugLite and no E260 training. | Existing exploratory result only; it is not an E260-controlled result. |
+| nnU-Net v2 2D | Official self-configuring 2D pipeline and fixed CariXray split | `scripts/jobs/submitjob_nnunet_caries_2d_fold0_fixed.sh` | Already implemented; do not regenerate |
+| Attention U-Net | Native five-level U-Net, official feature scale 4, additive grid gates, first low-level skip ungated, deep supervision; Adam/Dice official CT recipe adapted only from 3D to 2D | `submit/submitjob_attention_unet_official_e1000_bs2.sh` | Paper-ready after rerun |
+| SegFormer-B2 | ImageNet MiT-B2 + standard all-MLP decoder; AdamW `6e-5`, head `10x`, weight decay `0.01`, warmup + poly schedule, two-class CE | `submit/submitjob_segformer_b2_official_40k_bs2.sh` | Paper-ready after rerun |
+| DeepLabV3+ | ResNet50 ImageNet, output stride 16, ASPP `12/24/36`, standard decoder; SGD, encoder `0.1x` LR, poly schedule, CE | `submit/submitjob_deeplabv3plus_r50_os16_30k_bs4.sh` | Paper-ready after rerun |
+| UNet++ | Native `32/64/128/256/512` encoder, nested dense skip pathways, four deep-supervision heads and accurate-mode averaging; Adam `3e-4`, BCE+Dice | `submit/submitjob_unetpp_official_ds_e200_bs4.sh` | Paper-ready after rerun |
+| Swin-Unet | User-supplied official Swin-T 224 source/config/checkpoint; official mirrored encoder/decoder initialization, SGD/poly and CE+Dice | `submit/submitjob_swin_unet_official_224_e150_bs6.sh` | Paper-ready after assets are uploaded |
+| U-Mamba-Bot 2D | User-supplied official repository and embedded nnU-Net trainer | Not generated yet | Waiting only for cluster CUDA/PyTorch compatibility information |
 
-The two short-run CNN results were not regenerated because the user explicitly
-requested that already completed models should only be reported. If they enter
-the final main table, their different protocol must be disclosed or they should
-later be rerun under the controlled E260 protocol.
+## Superseded results that must not enter the paper table
 
-## New controlled experiments
+- `train_attention_unet_r34_auglite_e260.py` is a project-specific
+  ResNet34 U-Net with additive gates. It is not the native Attention U-Net.
+- `train_segformer_b2_auglite_e260.py` uses the B30 constant-AdamW/BCE
+  protocol instead of SegFormer's official optimizer groups, CE, warmup, and
+  polynomial schedule.
+- `runs/deeplabv3plus_resnet34_e50_bs6/` is a short ResNet34 exploratory run.
+- `runs/unetpp_baseline_v3_bs6/` is a short generic SMP run without the
+  original four-head deep-supervision setup.
 
-Both new experiments use the same split and controlled protocol as B30 E260:
-512 x 512, AugLite, batch size 6, 260 epochs, constant AdamW lr 3e-4,
-weight decay 1e-4, BCE + Dice, and seed 42.
+The historical Python and submit files remain in Git for auditability, but the
+two obsolete submit scripts now stop with a clear error to prevent accidental
+use.
 
-| Model | Training script | Submit script |
-|---|---|---|
-| Attention U-Net (ResNet34) | `src/train_attention_unet_r34_auglite_e260.py` | `submit/submitjob_attention_unet_r34_auglite_e260_constlr_bs6.sh` |
-| SegFormer-B2 | `src/train_segformer_b2_auglite_e260.py` | `submit/submitjob_segformer_b2_auglite_e260_constlr_bs6.sh` |
+## Swin-Unet asset placement
 
-Attention U-Net uses ordinary additive attention gates on four skip features.
-It has no boundary/rim supervision and no RBSG, so it directly tests whether
-B2's task-prior mechanism is more useful than generic attention filtering.
+Do not commit the ZIP or checkpoint. Upload the supplied local files to exactly:
 
-SegFormer-B2 uses the official NVIDIA `nvidia/mit-b2` ImageNet checkpoint and
-the standard SegFormer all-MLP decoder. It tests whether generic hierarchical
-Transformer context is sufficient for the weak-boundary, small-lesion task.
+```text
+/share/home/u2515283028/caries_project/external_assets/Swin-Unet-main.zip
+/share/home/u2515283028/caries_project/external_assets/swin_tiny_patch4_window7_224.pth
+```
 
-## Deferred official implementations (no substitute model generated)
+Verified local SHA256 values:
 
-### Swin-Unet
+```text
+Swin-Unet-main.zip
+0dff0004b71514fb3509b4fabc6b5ffd76d33aee283ba9fca8e0b1ceeb6215dc
 
-Required assets and decisions:
+swin_tiny_patch4_window7_224.pth
+9f71c168d837d1b99dd1dc29e14990a7a9e8bdc5f673d46b04fe36fe15590ad3
+```
 
-1. Official source: <https://github.com/HUCAOFIGHTING/SWIN-UNET>
-2. Official Swin-T pretrained checkpoint linked from that repository:
-   <https://drive.google.com/drive/folders/1UC3XOoezeum0uck4KBVGa8osahs6rKUY>
-3. Confirm the fair input policy. The official configuration is 224 x 224 with
-   window size 7, whereas this project uses 512 x 512. A 512 adaptation changes
-   the fixed-resolution/window configuration and pretrained decoder loading.
+The submit job verifies both hashes, extracts the source to the ignored
+`external_models/` directory, and imports the official network directly. It
+does not copy or reimplement the Swin-Unet architecture.
 
-Please provide the official repository ZIP and pretrained checkpoint if the
-supercomputer cannot access GitHub/Google Drive. They should remain outside Git
-because checkpoints and third-party repositories are ignored.
+## Install/check dependencies
 
-### U-Mamba-Bot 2D
+Run once after pulling this branch:
 
-Required assets and environment:
+```bash
+cd /share/home/u2515283028/caries_project
+module load anaconda3/4.12.0
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate caries-train
 
-1. Official source: <https://github.com/bowang-lab/U-Mamba>
-2. A separate official-compatible environment (the repository specifies Ubuntu
-   20.04, CUDA 11.8, Python 3.10, PyTorch 2.0.1, `causal-conv1d`, and
-   `mamba-ssm`).
-3. Install `U-Mamba/umamba` in editable mode and point its nnU-Net paths to the
-   existing Dataset701 conversion.
+pip install -r requirements.txt
+python -c "import torch, transformers, segmentation_models_pytorch, timm, yacs, einops; print(torch.__version__)"
+```
 
-The official 2D command uses `nnUNetTrainerUMambaBot`. Reimplementing only a
-home-made bottleneck block inside the current SMP U-Net would not be a valid
-U-Mamba comparison, so no such substitute was generated.
+SegFormer may download `nvidia/mit-b2` on its first run. DeepLabV3+ may
+download ImageNet ResNet50 weights on its first run. Their caches are kept in
+the project `.cache/` directory and are excluded from Git.
+
+## Submit commands
+
+```bash
+cd /share/home/u2515283028/caries_project
+module load anaconda3/4.12.0
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate caries-train
+
+sbatch submit/submitjob_attention_unet_official_e1000_bs2.sh
+sbatch submit/submitjob_segformer_b2_official_40k_bs2.sh
+sbatch submit/submitjob_deeplabv3plus_r50_os16_30k_bs4.sh
+sbatch submit/submitjob_unetpp_official_ds_e200_bs4.sh
+sbatch submit/submitjob_swin_unet_official_224_e150_bs6.sh
+```
+
+## Output contract
+
+Every new runner saves:
+
+```text
+runs/{run_name}/config.json
+runs/{run_name}/history.csv
+runs/{run_name}/best_val_metrics.json
+runs/{run_name}/best_train_metrics.json
+runs/{run_name}/test_metrics.json
+runs/{run_name}/summary_metrics.json
+runs/{run_name}/per_case_metrics.csv
+runs/{run_name}/per_case_metrics_summary.json
+runs/{run_name}/checkpoints/{best,last}.pth
+runs/{run_name}/preds/test_preview.png
+```
+
+The architecture, optimizer, loss, scheduler, budget, input size, and
+checkpoint rule are recorded in each `config.json`. Only the CariXray split and
+final metric implementation are shared across methods. Swin-Unet still trains
+and selects its checkpoint at the official 224 resolution, but its final
+prediction is bilinearly restored to 512 and compared with the source GT mask
+resized directly to 512. This avoids scoring a 224-round-tripped mask against
+the 512-resolution results of the other methods.
+
+## Primary references
+
+- Attention U-Net: <https://arxiv.org/abs/1804.03999> and
+  <https://github.com/ozan-oktay/Attention-Gated-Networks>
+- SegFormer: <https://arxiv.org/abs/2105.15203> and
+  <https://github.com/NVlabs/SegFormer>
+- DeepLabV3+: <https://arxiv.org/abs/1802.02611> and
+  <https://github.com/VainF/DeepLabV3Plus-Pytorch>
+- UNet++: <https://arxiv.org/abs/1807.10165> and
+  <https://github.com/MrGiovanni/UNetPlusPlus>
+- Swin-Unet: <https://arxiv.org/abs/2105.05537> and
+  <https://github.com/HuCaoFighting/Swin-Unet>
+- U-Mamba: <https://arxiv.org/abs/2401.04722> and
+  <https://github.com/bowang-lab/U-Mamba>
