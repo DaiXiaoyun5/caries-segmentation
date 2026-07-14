@@ -14,6 +14,10 @@ module load anaconda3/4.12.0
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate caries-train
 
+echo "ERROR: this E260 constant-lr run is not the official SegFormer recipe."
+echo "Use: sbatch submit/submitjob_segformer_b2_official_40k_bs2.sh"
+exit 2
+
 mkdir -p runs/logs .cache/huggingface
 
 export HF_HOME=/share/home/u2515283028/caries_project/.cache/huggingface

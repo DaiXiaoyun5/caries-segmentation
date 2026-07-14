@@ -79,6 +79,7 @@ tensorboard/
 data/
 datasets/
 external_models/
+external_assets/
 third_party/
 nnunet_caries/
 

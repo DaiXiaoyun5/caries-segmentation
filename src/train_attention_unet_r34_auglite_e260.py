@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Controlled Attention U-Net comparison for CariXray.
+"""DEPRECATED controlled ResNet34 attention-gate variant.
 
-The model uses the same ImageNet-pretrained ResNet34 encoder as the project
-baseline and canonical additive attention gates on the four encoder-decoder
-skip connections. It deliberately has no boundary/rim targets and no RBSG.
+This historical script is retained for auditability, but it is not Attention
+U-Net as defined by Oktay et al. and must not be used in the external-model
+table. Use ``train_attention_unet_official.py`` instead.
 """
 
 import argparse
@@ -214,6 +214,10 @@ def main(args):
 
 
 if __name__ == "__main__":
+    raise SystemExit(
+        "Deprecated comparison: ResNet34 is not the native Attention U-Net "
+        "encoder. Submit src/train_attention_unet_official.py instead."
+    )
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--run-name",

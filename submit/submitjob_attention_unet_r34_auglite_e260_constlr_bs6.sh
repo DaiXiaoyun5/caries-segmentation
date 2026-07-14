@@ -14,6 +14,10 @@ module load anaconda3/4.12.0
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate caries-train
 
+echo "ERROR: this ResNet34 attention-gate run is not canonical Attention U-Net."
+echo "Use: sbatch submit/submitjob_attention_unet_official_e1000_bs2.sh"
+exit 2
+
 mkdir -p runs/logs
 
 RUN_NAME=attention_unet_r34_auglite_e260_constlr_bs6
