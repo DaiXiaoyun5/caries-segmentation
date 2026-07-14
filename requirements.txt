@@ -11,9 +11,11 @@ opencv-python
 albumentations
 segmentation-models-pytorch
 
+# Reproducible SegFormer-B2 comparison baseline
+transformers==4.50.0
+
 # Optional model-complexity reporting used by some scripts
 thop
 
 # Optional experiment families are intentionally not included:
 # nnunetv2, ultralytics, MedSAM/segment-anything, and RWKV dependencies.
-

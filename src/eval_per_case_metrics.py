@@ -99,6 +99,10 @@ def infer_model_info(run_name: str):
     rn = run_name.lower()
 
     # 注意顺序：更具体的放前面
+    if "segformer_b2" in rn:
+        return "train_segformer_b2_auglite_e260", "SegFormerB2Binary"
+    if "attention_unet" in rn or "attunet_r34" in rn:
+        return "train_attention_unet_r34_auglite_e260", "AttentionUNetResNet34"
     if "simam_scse_hd1" in rn:
         return "train_resnet34_unet3p_edge_simam_scse_hd1", "ResNet34UNet3PlusEdgeSimAMSCSEHD1"
     if "simam_ra" in rn:
@@ -212,6 +216,12 @@ def build_model(model_cls, cfg):
         "base_channels": base_channels,
         "base_ch": base_channels,
         "deep_supervision": deep_supervision,
+
+        # Controlled external comparison baselines.
+        "decoder_channels": cfg.get("decoder_channels", "256,128,64,32,16"),
+        "pretrained_model_name": cfg.get("pretrained_model_name", "nvidia/mit-b2"),
+        "normalize_inputs": bool(cfg.get("normalize_inputs", 1)),
+        "local_files_only": bool(cfg.get("local_files_only", False)),
 
         # SimAM / RA / SCSE / AG / Wavelet 等可选参数
         "simam_lambda": cfg.get("simam_lambda", 1e-4),
