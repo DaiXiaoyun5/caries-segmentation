@@ -6,13 +6,16 @@
 #SBATCH -c 4
 #SBATCH --gres=gpu:1
 #SBATCH -o runs/logs/unetpp_official_%j.out
+#SBATCH -e runs/logs/unetpp_official_%j.out
 
-set -e
+set -Eeuo pipefail
 
 cd /share/home/u2515283028/caries_project
 module load anaconda3/4.12.0
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate caries-train
+conda activate caries-baselines
+export PYTHONNOUSERSITE=1
 
 mkdir -p runs/logs
 
@@ -38,4 +41,3 @@ python src/train_unetpp_official.py \
 
 cat runs/unetpp_official_ds_e200_bs4/test_metrics.json
 cat runs/unetpp_official_ds_e200_bs4/summary_metrics.json
-

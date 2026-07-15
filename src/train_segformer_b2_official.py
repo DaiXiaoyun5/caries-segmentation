@@ -13,6 +13,7 @@ import torch.nn.functional as F
 from official_baseline_common import (
     IterationPolynomialLR,
     make_dataset_bundle,
+    run_cli_with_failure_report,
     run_official_experiment,
     set_seed,
 )
@@ -207,4 +208,4 @@ if __name__ == "__main__":
     parser.add_argument("--seed", type=int, default=42)
     # Filled from total_iters and split size before the common runner starts.
     parser.set_defaults(epochs=1)
-    main(parser.parse_args())
+    run_cli_with_failure_report(main, parser.parse_args())

@@ -1,0 +1,15 @@
+# Isolated runtime for the five external comparison baselines.
+# Do not apply these pins to caries-train (B2/B30 environment).
+torch==2.0.1
+torchvision==0.15.2
+numpy==1.26.4
+Pillow==10.4.0
+scipy==1.12.0
+matplotlib==3.8.4
+opencv-python==4.9.0.80
+segmentation-models-pytorch==0.3.4
+timm==0.9.7
+transformers==4.50.0
+einops==0.7.0
+yacs==0.1.8
+PyYAML==6.0.1

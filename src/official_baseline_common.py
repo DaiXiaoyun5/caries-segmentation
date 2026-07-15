@@ -15,7 +15,12 @@ from __future__ import annotations
 import csv
 import json
 import math
+import os
+import platform
 import random
+import sys
+import traceback
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Optional, Sequence, Tuple
 
@@ -68,6 +73,121 @@ def save_json(value: Any, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(value, f, ensure_ascii=False, indent=2)
+
+
+def _runtime_snapshot() -> Dict[str, Any]:
+    """Small, non-secret runtime snapshot for reproducible failure reports."""
+    cuda_error = None
+    try:
+        cuda_available = bool(torch.cuda.is_available())
+    except Exception as exc:
+        cuda_available = False
+        cuda_error = f"{type(exc).__name__}: {exc}"
+    gpu_name = None
+    if cuda_available:
+        try:
+            gpu_name = torch.cuda.get_device_name(0)
+        except Exception:
+            gpu_name = "unavailable"
+    slurm_keys = (
+        "SLURM_JOB_ID",
+        "SLURM_JOB_NAME",
+        "SLURM_JOB_NODELIST",
+        "CUDA_VISIBLE_DEVICES",
+        "CONDA_DEFAULT_ENV",
+    )
+    return {
+        "timestamp": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "hostname": platform.node(),
+        "platform": platform.platform(),
+        "python": sys.version,
+        "torch": torch.__version__,
+        "torch_cuda": torch.version.cuda,
+        "cuda_available": cuda_available,
+        "cuda_probe_error": cuda_error,
+        "gpu_name": gpu_name,
+        "slurm": {key: os.environ.get(key) for key in slurm_keys},
+    }
+
+
+def save_run_status(
+    run_name: str,
+    status: str,
+    stage: str,
+    **details: Any,
+) -> None:
+    payload = {
+        "run_name": str(run_name),
+        "status": str(status),
+        "stage": str(stage),
+        "runtime": _runtime_snapshot(),
+    }
+    payload.update(details)
+    save_json(payload, PROJECT_ROOT / "runs" / str(run_name) / "run_status.json")
+
+
+def run_cli_with_failure_report(
+    entrypoint: Callable[[Any], None],
+    args: Any,
+) -> None:
+    """Run a CLI entry point and preserve its traceback beside config.json."""
+    run_name = str(getattr(args, "run_name", "unknown_official_baseline"))
+    run_dir = PROJECT_ROOT / "runs" / run_name
+    diagnostic_name = "".join(
+        char if char.isalnum() or char in ("-", "_", ".") else "_"
+        for char in run_name
+    )
+    diagnostic_path = (
+        PROJECT_ROOT
+        / "diagnostics"
+        / "official_baselines"
+        / f"{diagnostic_name}_failure.json"
+    )
+    run_dir.mkdir(parents=True, exist_ok=True)
+    for stale_name in ("failure_report.json", "failure_traceback.txt"):
+        stale_path = run_dir / stale_name
+        if stale_path.exists():
+            stale_path.unlink()
+    if diagnostic_path.exists():
+        diagnostic_path.unlink()
+    try:
+        save_run_status(run_name, "running", "entrypoint_started")
+        entrypoint(args)
+    except BaseException as exc:
+        traceback_text = traceback.format_exc()
+        status_path = run_dir / "run_status.json"
+        last_completed_stage = None
+        if status_path.exists():
+            try:
+                last_completed_stage = json.loads(
+                    status_path.read_text(encoding="utf-8")
+                ).get("stage")
+            except Exception:
+                last_completed_stage = "status_file_unreadable"
+        report = {
+            "run_name": run_name,
+            "status": "failed",
+            "exception_type": type(exc).__name__,
+            "exception_message": str(exc),
+            "last_completed_stage": last_completed_stage,
+            "traceback": traceback_text,
+            "runtime": _runtime_snapshot(),
+        }
+        save_json(report, run_dir / "failure_report.json")
+        save_json(report, diagnostic_path)
+        (run_dir / "failure_traceback.txt").write_text(
+            traceback_text,
+            encoding="utf-8",
+        )
+        save_run_status(
+            run_name,
+            "failed",
+            "exception_caught",
+            exception_type=type(exc).__name__,
+            exception_message=str(exc),
+            last_completed_stage=last_completed_stage,
+        )
+        raise
 
 
 def _resize_pair(
@@ -790,6 +910,7 @@ def run_official_experiment(
     prediction_dir = run_dir / "preds"
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     prediction_dir.mkdir(parents=True, exist_ok=True)
+    save_run_status(args.run_name, "running", "runner_initialized", device=str(device))
 
     val_batch_size = int(getattr(args, "val_batch_size", args.batch_size))
     train_loader = _build_loader(
@@ -851,11 +972,29 @@ def run_official_experiment(
         ),
     }
     save_json(config, run_dir / "config.json")
+    save_run_status(args.run_name, "running", "config_saved", device=str(device))
 
-    sample_images, _, _, _ = next(iter(train_loader))
+    sample_images, _, sample_image_paths, sample_mask_paths = next(iter(train_loader))
+    save_run_status(
+        args.run_name,
+        "running",
+        "first_batch_loaded",
+        device=str(device),
+        batch_shape=list(sample_images.shape),
+        first_image=sample_image_paths[0],
+        first_mask=sample_mask_paths[0],
+    )
     model.eval()
     with torch.no_grad():
         sample_logits = merge_output_logits(model(sample_images[:1].to(device)))
+    save_run_status(
+        args.run_name,
+        "running",
+        "forward_check_completed",
+        device=str(device),
+        input_shape=list(sample_images[:1].shape),
+        output_shape=list(sample_logits.shape),
+    )
     if sample_logits.shape[-2:] != sample_images.shape[-2:]:
         raise RuntimeError(
             f"Model output {tuple(sample_logits.shape)} does not match input "
@@ -882,6 +1021,7 @@ def run_official_experiment(
     history_path = run_dir / "history.csv"
     with open(history_path, "w", newline="", encoding="utf-8") as f:
         csv.DictWriter(f, fieldnames=fieldnames).writeheader()
+    save_run_status(args.run_name, "running", "training_started", device=str(device))
 
     best_value = -math.inf if selection_mode == "max" else math.inf
     best_epoch = -1
@@ -1069,3 +1209,11 @@ def run_official_experiment(
     print("best epoch/step:", best_epoch, best_global_step)
     print("test metrics:", test_metrics)
     print("=" * 80)
+    save_run_status(
+        args.run_name,
+        "completed",
+        "result_export_completed",
+        device=str(device),
+        best_epoch=best_epoch,
+        best_global_step=best_global_step,
+    )

@@ -6,13 +6,20 @@
 #SBATCH -c 4
 #SBATCH --gres=gpu:1
 #SBATCH -o runs/logs/segformer_b2_official_%j.out
+#SBATCH -e runs/logs/segformer_b2_official_%j.out
 
-set -e
+set -Eeuo pipefail
 
 cd /share/home/u2515283028/caries_project
 module load anaconda3/4.12.0
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate caries-train
+conda activate caries-baselines
+export PYTHONNOUSERSITE=1
+
+module load http-proxy 2>/dev/null || true
+export http_proxy=http://211.67.63.75:3128
+export https_proxy=http://211.67.63.75:3128
 
 mkdir -p runs/logs .cache/huggingface
 export HF_HOME=/share/home/u2515283028/caries_project/.cache/huggingface
@@ -53,4 +60,3 @@ python src/train_segformer_b2_official.py \
 
 cat runs/segformer_b2_official_40k_bs2/test_metrics.json
 cat runs/segformer_b2_official_40k_bs2/summary_metrics.json
-

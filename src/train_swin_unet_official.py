@@ -18,6 +18,7 @@ from official_baseline_common import (
     IterationPolynomialLR,
     make_dataset_bundle,
     multiclass_dice_loss_official_swin,
+    run_cli_with_failure_report,
     run_official_experiment,
     set_seed,
 )
@@ -213,4 +214,4 @@ if __name__ == "__main__":
             "swin_tiny_patch4_window7_224.pth"
         ),
     )
-    main(parser.parse_args())
+    run_cli_with_failure_report(main, parser.parse_args())

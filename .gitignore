@@ -82,6 +82,7 @@ external_models/
 external_assets/
 third_party/
 nnunet_caries/
+umamba_caries/
 
 # ===== temporary / suspicious stray files =====
 PY

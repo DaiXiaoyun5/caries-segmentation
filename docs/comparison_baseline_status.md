@@ -14,7 +14,7 @@ marked **paper-ready after rerun**.
 | DeepLabV3+ | ResNet50 ImageNet, output stride 16, ASPP `12/24/36`, standard decoder; SGD, encoder `0.1x` LR, poly schedule, CE | `submit/submitjob_deeplabv3plus_r50_os16_30k_bs4.sh` | Paper-ready after rerun |
 | UNet++ | Native `32/64/128/256/512` encoder, nested dense skip pathways, four deep-supervision heads and accurate-mode averaging; Adam `3e-4`, BCE+Dice | `submit/submitjob_unetpp_official_ds_e200_bs4.sh` | Paper-ready after rerun |
 | Swin-Unet | User-supplied official Swin-T 224 source/config/checkpoint; official mirrored encoder/decoder initialization, SGD/poly and CE+Dice | `submit/submitjob_swin_unet_official_224_e150_bs6.sh` | Paper-ready after assets are uploaded |
-| U-Mamba-Bot 2D | User-supplied official repository and embedded nnU-Net trainer | Not generated yet | Waiting only for cluster CUDA/PyTorch compatibility information |
+| U-Mamba-Bot 2D | User-supplied official repository, embedded nnU-Net v2.1.1 trainer, official 1000-epoch recipe and fixed CariXray fold 0 | `submit/submitjob_umamba_prepare_caries_2d.sh`, then `submit/submitjob_umamba_bot_official_2d_fold0.sh` | Ready after isolated environment setup and preprocessing |
 
 ## Superseded results that must not enter the paper table
 
@@ -32,6 +32,18 @@ two obsolete submit scripts now stop with a clear error to prevent accidental
 use.
 
 ## Swin-Unet asset placement
+
+`external_assets/` is intentionally ignored by Git and therefore is not created
+by `git pull`. Create it once on the cluster:
+
+```bash
+cd /share/home/u2515283028/caries_project
+module load anaconda3/4.12.0
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate caries-train
+
+mkdir -p /share/home/u2515283028/caries_project/external_assets
+```
 
 Do not commit the ZIP or checkpoint. Upload the supplied local files to exactly:
 
@@ -54,9 +66,12 @@ The submit job verifies both hashes, extracts the source to the ignored
 `external_models/` directory, and imports the official network directly. It
 does not copy or reimplement the Swin-Unet architecture.
 
-## Install/check dependencies
+## Isolated external-baseline environment
 
-Run once after pulling this branch:
+The existing `caries-train` environment has PyTorch `1.10.0+cu111`, while
+Transformers 4.50 requires PyTorch 2.0 or newer. Do not upgrade
+`caries-train`, because that environment must remain stable for B2/B30. Run
+this once to create the separate `caries-baselines` environment:
 
 ```bash
 cd /share/home/u2515283028/caries_project
@@ -64,13 +79,107 @@ module load anaconda3/4.12.0
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate caries-train
 
-pip install -r requirements.txt
-python -c "import torch, transformers, segmentation_models_pytorch, timm, yacs, einops; print(torch.__version__)"
+bash scripts/setup/setup_official_baselines_env.sh
 ```
+
+The five external-baseline submit jobs first activate `caries-train` to obey
+the project convention, then switch to `caries-baselines`. The B2/B30 jobs are
+unchanged and continue to use only `caries-train`.
 
 SegFormer may download `nvidia/mit-b2` on its first run. DeepLabV3+ may
 download ImageNet ResNet50 weights on its first run. Their caches are kept in
 the project `.cache/` directory and are excluded from Git.
+
+## U-Mamba official environment and data
+
+The login-node output `nvidia-smi: command not found` and
+`cuda_available=False` is normal because the login node has no GPU. The
+important incompatibility is that `caries-train` uses torch 1.10/cu111, while
+official U-Mamba requires Python 3.10, torch 2.0.1 and cu118. U-Mamba therefore
+uses a second isolated environment named `umamba-caries` and the official
+prebuilt CUDA extension wheels; it does not compile with login-node `nvcc`.
+
+Upload the supplied source archive to:
+
+```text
+/share/home/u2515283028/caries_project/external_assets/U-Mamba-main.zip
+```
+
+Verified SHA256:
+
+```text
+7d03c731ddb30061d46f1f40d42885ffce868c8581dffcce38794f20c4f8decc
+```
+
+Then install, preprocess, and train in this order:
+
+```bash
+cd /share/home/u2515283028/caries_project
+module load anaconda3/4.12.0
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate caries-train
+
+bash scripts/setup/setup_umamba_official_env.sh
+sbatch submit/submitjob_umamba_prepare_caries_2d.sh
+```
+
+Wait until the preparation job finishes successfully, then run:
+
+```bash
+cd /share/home/u2515283028/caries_project
+module load anaconda3/4.12.0
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate caries-train
+
+sbatch submit/submitjob_umamba_bot_official_2d_fold0.sh
+```
+
+The training job performs a real Mamba CUDA forward preflight on its allocated
+GPU before starting the official trainer. It reuses the existing raw
+`Dataset701_CariXray` through a symlink named `Dataset711_CariXray`, but creates
+independent U-Mamba preprocessed data and results so it cannot corrupt the
+existing nnU-Net run. Dataset ID 711 is used only to avoid colliding with the
+official archive's example `Dataset701_AbdomenCT`; the images and fixed split
+are unchanged.
+
+## Diagnosing an early baseline failure
+
+The latest Git commit contains only `config.json` for Attention U-Net and
+UNet++. No `*.out`, `*.err`, or `*.log` file was committed because logs and
+all of `runs/` are intentionally ignored. A config without `history.csv`
+narrows the failure to first-batch loading or the initial forward check, but it
+does not reveal whether the cause was a bad sample, CUDA incompatibility, or
+out-of-memory.
+
+After this update, every official Python runner writes `run_status.json`,
+`failure_report.json`, and `failure_traceback.txt` beside `config.json` when it
+fails. It also writes a small, non-ignored
+`diagnostics/official_baselines/*_failure.json`, so future tracebacks can be
+uploaded with a normal Git commit. The Slurm scripts merge stderr into stdout.
+Inspect the existing cluster logs with:
+
+```bash
+cd /share/home/u2515283028/caries_project
+module load anaconda3/4.12.0
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate caries-train
+
+ls -lt runs/logs | head -20
+tail -n 160 runs/logs/attention_unet_official_*.out
+tail -n 160 runs/logs/unetpp_official_*.out
+```
+
+If a rerun fails, inspect the preserved reports directly:
+
+```bash
+cd /share/home/u2515283028/caries_project
+module load anaconda3/4.12.0
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate caries-train
+
+cat runs/attention_unet_official_2d_e1000_bs2/failure_traceback.txt
+cat runs/unetpp_official_ds_e200_bs4/failure_traceback.txt
+```
 
 ## Submit commands
 
@@ -103,6 +212,12 @@ runs/{run_name}/per_case_metrics_summary.json
 runs/{run_name}/checkpoints/{best,last}.pth
 runs/{run_name}/preds/test_preview.png
 ```
+
+U-Mamba retains its official nnU-Net checkpoints in the isolated official
+results directory. `src/export_umamba_official_results.py` exports its
+history, configuration, fixed-split validation information, global-pixel test
+metrics, per-case metrics and summary files into
+`runs/umamba_bot_official_2d_fold0/` without copying the large checkpoint.
 
 The architecture, optimizer, loss, scheduler, budget, input size, and
 checkpoint rule are recorded in each `config.json`. Only the CariXray split and
