@@ -6,13 +6,16 @@
 #SBATCH -c 4
 #SBATCH --gres=gpu:1
 #SBATCH -o runs/logs/attention_unet_official_%j.out
+#SBATCH -e runs/logs/attention_unet_official_%j.out
 
-set -e
+set -Eeuo pipefail
 
 cd /share/home/u2515283028/caries_project
 module load anaconda3/4.12.0
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate caries-train
+conda activate caries-baselines
+export PYTHONNOUSERSITE=1
 
 mkdir -p runs/logs
 
@@ -41,4 +44,3 @@ python src/train_attention_unet_official.py \
 
 cat runs/attention_unet_official_2d_e1000_bs2/test_metrics.json
 cat runs/attention_unet_official_2d_e1000_bs2/summary_metrics.json
-

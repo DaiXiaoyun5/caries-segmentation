@@ -18,6 +18,7 @@ import torch.nn.functional as F
 from official_baseline_common import (
     binary_dice_loss,
     make_dataset_bundle,
+    run_cli_with_failure_report,
     run_official_experiment,
     set_seed,
 )
@@ -289,4 +290,4 @@ if __name__ == "__main__":
     parser.add_argument("--val-every-epochs", type=int, default=10)
     parser.add_argument("--num-workers", type=int, default=2)
     parser.add_argument("--seed", type=int, default=42)
-    main(parser.parse_args())
+    run_cli_with_failure_report(main, parser.parse_args())

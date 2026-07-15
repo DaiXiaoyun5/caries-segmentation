@@ -1,0 +1,20 @@
+# U-Mamba official March-2024 software stack.
+# Keep this environment isolated from caries-train.
+torch==2.0.1
+torchvision==0.15.2
+numpy==1.26.4
+scipy==1.11.4
+scikit-image==0.22.0
+scikit-learn==1.3.2
+pandas==2.1.4
+matplotlib==3.8.2
+SimpleITK==2.3.1
+imagecodecs==2024.1.1
+dynamic-network-architectures==0.2
+acvl-utils==0.2
+batchgenerators==0.25
+monai==1.3.0
+causal-conv1d==1.2.0.post2
+mamba-ssm==1.2.0.post1
+transformers==4.38.2
+opencv-python==4.9.0.80
