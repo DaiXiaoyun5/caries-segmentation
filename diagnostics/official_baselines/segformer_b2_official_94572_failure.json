@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "job_id": "94572",
+  "method": "SegFormer-B2 official",
+  "observed_python": "/share/home/u2515283028/.conda/envs/caries-train/bin/python",
+  "failure_stage": "dependency_preflight",
+  "exception_type": "ModuleNotFoundError",
+  "exception_message": "No module named 'transformers'",
+  "root_cause": "The job used the legacy caries-train environment instead of the isolated caries-baselines environment added in PR #21.",
+  "resolution": "Pull main after PR #21, run setup_official_baselines_env.sh, cache MiT-B2 on the login node, and submit the updated offline-only job."
+}

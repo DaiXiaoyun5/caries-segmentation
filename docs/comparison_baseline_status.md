@@ -86,9 +86,20 @@ The five external-baseline submit jobs first activate `caries-train` to obey
 the project convention, then switch to `caries-baselines`. The B2/B30 jobs are
 unchanged and continue to use only `caries-train`.
 
-SegFormer may download `nvidia/mit-b2` on its first run. DeepLabV3+ may
-download ImageNet ResNet50 weights on its first run. Their caches are kept in
-the project `.cache/` directory and are excluded from Git.
+The setup script downloads `nvidia/mit-b2` and the ImageNet ResNet50 weights on
+the login node, stores them under the ignored project `.cache/` directory, and
+immediately verifies offline loading. SegFormer and DeepLabV3+ jobs never rely
+on compute-node Internet access; each performs an offline cache check before
+starting training. This changes neither architecture nor initialization.
+
+If the environment already exists, rerunning the same setup command is safe and
+also prepares any missing pretrained assets. A successful setup ends with both
+of these lines:
+
+```text
+SegFormer MiT-B2 cache: OK
+DeepLabV3+ ResNet50 cache: OK
+```
 
 ## U-Mamba official environment and data
 
@@ -143,6 +154,19 @@ official archive's example `Dataset701_AbdomenCT`; the images and fixed split
 are unchanged.
 
 ## Diagnosing an early baseline failure
+
+Jobs `94572` and `94573` were submitted before PR #21 was pulled. Their logs
+prove two independent startup failures:
+
+- SegFormer `94572` used `caries-train` and stopped because `transformers` was
+  not installed.
+- DeepLabV3+ `94573` used `caries-train` and stopped when its compute node could
+  not download `resnet50-19c8e357.pth`.
+
+Small structured records are retained in
+`diagnostics/official_baselines/*_failure.json`. The setup and submit scripts
+now address both failures with an isolated environment and login-node weight
+prefetching.
 
 The latest Git commit contains only `config.json` for Attention U-Net and
 UNet++. No `*.out`, `*.err`, or `*.log` file was committed because logs and

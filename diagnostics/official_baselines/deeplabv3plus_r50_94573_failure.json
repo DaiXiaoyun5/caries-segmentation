@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "job_id": "94573",
+  "method": "DeepLabV3+ ResNet50 OS16",
+  "observed_python": "/share/home/u2515283028/.conda/envs/caries-train/bin/python",
+  "failure_stage": "model_initialization",
+  "exception_type": "URLError",
+  "exception_message": "Network is unreachable while downloading resnet50-19c8e357.pth",
+  "root_cause": "The legacy job tried to download the ImageNet ResNet50 checkpoint from a network-isolated compute node.",
+  "resolution": "Pull the offline-cache update, run setup_official_baselines_env.sh on the login node, and submit the updated job, which verifies and reuses the cached checkpoint."
+}
