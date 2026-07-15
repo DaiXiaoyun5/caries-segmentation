@@ -14,7 +14,17 @@ module load http-proxy 2>/dev/null || true
 export http_proxy=http://211.67.63.75:3128
 export https_proxy=http://211.67.63.75:3128
 
-mkdir -p runs/logs .cache/huggingface .cache/torch external_assets external_models
+mkdir -p \
+    runs/logs \
+    .cache/huggingface \
+    .cache/torch \
+    .cache/official_baselines \
+    external_assets \
+    external_models
+
+export HF_HOME=${PROJECT_ROOT}/.cache/huggingface
+export TORCH_HOME=${PROJECT_ROOT}/.cache/torch
+export HF_HUB_DISABLE_TELEMETRY=1
 
 if ! conda env list | awk 'NF && $1 !~ /^#/ {print $1}' | grep -qx "${ENV_NAME}"; then
     conda create -n "${ENV_NAME}" python=3.10 -y
@@ -61,5 +71,12 @@ print("yacs/einops: OK")
 print("CUDA available on this node:", torch.cuda.is_available())
 print("Login-node CUDA=False is expected; training jobs verify the allocated GPU.")
 PY
+
+# Download on the network-enabled login node, then prove that the exact model
+# loaders can reopen both checkpoints without Hugging Face network access.
+python scripts/setup/prepare_official_baseline_weights.py --model all
+python scripts/setup/prepare_official_baseline_weights.py \
+    --model all \
+    --verify-only
 
 echo "External baseline environment is ready: ${ENV_NAME}"

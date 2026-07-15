@@ -17,14 +17,12 @@ conda activate caries-train
 conda activate caries-baselines
 export PYTHONNOUSERSITE=1
 
-module load http-proxy 2>/dev/null || true
-export http_proxy=http://211.67.63.75:3128
-export https_proxy=http://211.67.63.75:3128
-
 mkdir -p runs/logs .cache/huggingface
 export HF_HOME=/share/home/u2515283028/caries_project/.cache/huggingface
 export TOKENIZERS_PARALLELISM=false
 export HF_HUB_DISABLE_TELEMETRY=1
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
 
 echo "===== SEGFORMER-B2 OFFICIAL RECIPE ====="
 which python
@@ -39,8 +37,13 @@ print("SegFormer import: OK")
 PY
 
 python -m py_compile \
+  scripts/setup/prepare_official_baseline_weights.py \
   src/official_baseline_common.py \
   src/train_segformer_b2_official.py
+
+python scripts/setup/prepare_official_baseline_weights.py \
+  --model segformer \
+  --verify-only
 
 python src/train_segformer_b2_official.py \
   --run-name segformer_b2_official_40k_bs2 \
@@ -55,6 +58,7 @@ python src/train_segformer_b2_official.py \
   --warmup-iters 1500 \
   --warmup-ratio 1e-6 \
   --pretrained-model-name nvidia/mit-b2 \
+  --local-files-only \
   --num-workers 2 \
   --seed 42
 

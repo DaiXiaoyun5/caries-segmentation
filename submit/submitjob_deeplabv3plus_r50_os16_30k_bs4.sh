@@ -17,10 +17,6 @@ conda activate caries-train
 conda activate caries-baselines
 export PYTHONNOUSERSITE=1
 
-module load http-proxy 2>/dev/null || true
-export http_proxy=http://211.67.63.75:3128
-export https_proxy=http://211.67.63.75:3128
-
 mkdir -p runs/logs .cache/torch
 export TORCH_HOME=/share/home/u2515283028/caries_project/.cache/torch
 
@@ -35,8 +31,13 @@ print("segmentation_models_pytorch:", smp.__version__)
 PY
 
 python -m py_compile \
+  scripts/setup/prepare_official_baseline_weights.py \
   src/official_baseline_common.py \
   src/train_deeplabv3plus_official.py
+
+python scripts/setup/prepare_official_baseline_weights.py \
+  --model deeplab \
+  --verify-only
 
 python src/train_deeplabv3plus_official.py \
   --run-name deeplabv3plus_r50_os16_30k_bs4 \
