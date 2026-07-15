@@ -45,7 +45,7 @@ python -m pip install \
     "opencv-python==4.9.0.80" \
     "segmentation-models-pytorch==0.3.4" \
     "timm==0.9.7" \
-    "transformers==4.50.0" \
+    "transformers==4.49.0" \
     "einops==0.7.0" \
     "yacs==0.1.8" \
     "PyYAML==6.0.1" \
@@ -56,6 +56,7 @@ python - <<'PY'
 import torch
 import torchvision
 import transformers
+from transformers import SegformerForSemanticSegmentation
 import segmentation_models_pytorch as smp
 import timm
 import yacs
@@ -65,6 +66,12 @@ print("torch:", torch.__version__)
 print("torch CUDA runtime:", torch.version.cuda)
 print("torchvision:", torchvision.__version__)
 print("transformers:", transformers.__version__)
+if transformers.__version__ != "4.49.0":
+    raise RuntimeError(
+        "Expected transformers 4.49.0 with torch 2.0.1, got "
+        + transformers.__version__
+    )
+print("SegformerForSemanticSegmentation import: OK")
 print("segmentation-models-pytorch:", smp.__version__)
 print("timm:", timm.__version__)
 print("yacs/einops: OK")

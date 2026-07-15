@@ -9,7 +9,10 @@ matplotlib==3.8.4
 opencv-python==4.9.0.80
 segmentation-models-pytorch==0.3.4
 timm==0.9.7
-transformers==4.50.0
+# 4.50.0 imports torch.compiler, which is unavailable in the official
+# U-Mamba-compatible torch 2.0.1 runtime. 4.49.0 still supports torch>=2.0
+# and provides the same native SegFormer implementation used here.
+transformers==4.49.0
 einops==0.7.0
 yacs==0.1.8
 PyYAML==6.0.1

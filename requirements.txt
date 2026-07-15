@@ -12,7 +12,7 @@ albumentations
 segmentation-models-pytorch
 
 # Reproducible SegFormer-B2 comparison baseline
-transformers==4.50.0
+transformers==4.49.0
 
 # Official Swin-Unet adapter (third-party source/weights stay outside Git)
 yacs
