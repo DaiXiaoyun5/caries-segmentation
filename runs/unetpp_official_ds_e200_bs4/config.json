@@ -1,0 +1,87 @@
+{
+  "run_name": "unetpp_official_ds_e200_bs4",
+  "image_size": 512,
+  "batch_size": 4,
+  "val_batch_size": 4,
+  "epochs": 200,
+  "lr": 0.0003,
+  "early_stopping_patience": 30,
+  "num_workers": 2,
+  "seed": 42,
+  "script": "src/train_unetpp_official.py",
+  "model_name": "UNet++ (native nested architecture with deep supervision)",
+  "model_class": "UNetPlusPlusOfficial2D",
+  "architecture": {
+    "encoder": "native UNet++ convolutional encoder trained from scratch",
+    "filters": [
+      32,
+      64,
+      128,
+      256,
+      512
+    ],
+    "nested_dense_skip_pathways": true,
+    "deep_supervision_heads": 4,
+    "inference_mode": "accurate mode; mean probability of all four heads",
+    "resnet_encoder": false
+  },
+  "training_recipe": {
+    "source": "UNet++ paper implementation details",
+    "input_size": 512,
+    "augmentation": "conservative affine transforms and horizontal flip",
+    "optimizer": "Adam",
+    "learning_rate": 0.0003,
+    "loss": "equal mean of BCE + Dice at four semantic levels",
+    "maximum_epochs": 200,
+    "early_stopping_patience": 30,
+    "batch_size": 4,
+    "checkpoint_selection": "minimum validation deep-supervision loss"
+  },
+  "reference": {
+    "paper": "https://arxiv.org/abs/1807.10165",
+    "official_code": "https://github.com/MrGiovanni/UNetPlusPlus"
+  },
+  "fidelity_note": "The 32/64/128/256/512 widths, nested dense nodes, four heads, accurate-mode averaging, Adam 3e-4, and BCE+Dice objective follow the original paper. No ResNet34 encoder is substituted.",
+  "arguments": {
+    "run_name": "unetpp_official_ds_e200_bs4",
+    "image_size": 512,
+    "batch_size": 4,
+    "val_batch_size": 4,
+    "epochs": 200,
+    "lr": 0.0003,
+    "early_stopping_patience": 30,
+    "num_workers": 2,
+    "seed": 42
+  },
+  "data_and_evaluation": {
+    "split_files": "data/splits/{train,val,test}.txt",
+    "split_sizes": {
+      "train": 3800,
+      "val": 500,
+      "test": 358
+    },
+    "shared_across_methods": [
+      "train/validation/test case split",
+      "foreground threshold or class argmax",
+      "global TP/FP/FN/TN metric aggregation",
+      "best-checkpoint test evaluation"
+    ],
+    "method_specific_training": {
+      "source": "UNet++ paper implementation details",
+      "input_size": 512,
+      "augmentation": "conservative affine transforms and horizontal flip",
+      "optimizer": "Adam",
+      "learning_rate": 0.0003,
+      "loss": "equal mean of BCE + Dice at four semantic levels",
+      "maximum_epochs": 200,
+      "early_stopping_patience": 30,
+      "batch_size": 4,
+      "checkpoint_selection": "minimum validation deep-supervision loss"
+    },
+    "final_metric_resolution": [
+      512,
+      512
+    ],
+    "metric_resolution_note": "Final best-train/validation/test and per-case metrics use GT resized directly from source masks to this common resolution. Training-time history and checkpoint loss remain at each method's native input size."
+  }
+}
