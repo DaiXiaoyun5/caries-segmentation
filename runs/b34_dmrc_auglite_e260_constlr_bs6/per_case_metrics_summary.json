@@ -1,0 +1,17 @@
+{
+  "run_name": "b34_dmrc_auglite_e260_constlr_bs6",
+  "num_cases": 358,
+  "threshold": 0.5,
+  "mean_dice": 0.8636092444271634,
+  "mean_iou": 0.7764573486848112,
+  "mean_precision": 0.8722518958430027,
+  "mean_recall": 0.8792657313454361,
+  "median_dice": 0.9037690533220502,
+  "median_iou": 0.8244331353683423,
+  "median_precision": 0.9188492734294893,
+  "median_recall": 0.9242697594778642,
+  "module_name": "train_resnet34_unet_brr_b34_dmrc_e260",
+  "class_name": "ResNet34UNetBRRB34DMRC",
+  "checkpoint": "/share/home/u2515283028/caries_project/runs/b34_dmrc_auglite_e260_constlr_bs6/checkpoints/best.pth",
+  "per_case_csv": "/share/home/u2515283028/caries_project/runs/b34_dmrc_auglite_e260_constlr_bs6/per_case_metrics.csv"
+}

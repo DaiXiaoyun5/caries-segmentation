@@ -1,0 +1,107 @@
+{
+  "run_name": "attention_unet_official_2d_e1000_bs2",
+  "image_size": 512,
+  "batch_size": 2,
+  "val_batch_size": 2,
+  "epochs": 1000,
+  "lr": 0.0001,
+  "weight_decay": 1e-06,
+  "lr_decay_epochs": 250,
+  "lr_decay_gamma": 0.1,
+  "val_every_epochs": 10,
+  "num_workers": 2,
+  "seed": 42,
+  "script": "src/train_attention_unet_official.py",
+  "model_name": "Attention U-Net (official native U-Net, 2D adaptation)",
+  "model_class": "AttentionUNetOfficial2D",
+  "architecture": {
+    "encoder": "native five-level convolutional U-Net, trained from scratch",
+    "filters": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "feature_scale": 4,
+    "input_channels": 1,
+    "attention": "additive grid attention on skip levels 2-4",
+    "first_low_level_skip": "ungated, as stated in the paper",
+    "deep_supervision": "four decoder scales fused by final 1x1 convolution",
+    "resnet_encoder": false
+  },
+  "training_recipe": {
+    "source": "official Attention-Gated-Networks CT configuration and paper",
+    "input_size": 512,
+    "normalization": "per-image zero mean / unit variance",
+    "augmentation": "affine rotation/scale/translation and axial(horizontal) flip",
+    "optimizer": "Adam",
+    "learning_rate": 0.0001,
+    "weight_decay": 1e-06,
+    "loss": "Sorensen-Dice loss",
+    "epochs": 1000,
+    "batch_size": 2,
+    "scheduler": {
+      "type": "StepLR",
+      "step_size_epochs": 250,
+      "gamma": 0.1
+    },
+    "checkpoint_selection": "minimum validation Dice loss"
+  },
+  "reference": {
+    "paper": "https://arxiv.org/abs/1804.03999",
+    "official_code": "https://github.com/ozan-oktay/Attention-Gated-Networks"
+  },
+  "fidelity_note": "The source method is 3D CT. Only Conv3d/Pool3d/interpolation are dimensionally adapted to 2D; the native encoder, gate placement, deep supervision, feature scale, optimizer, loss, and augmentation principles are retained.",
+  "arguments": {
+    "run_name": "attention_unet_official_2d_e1000_bs2",
+    "image_size": 512,
+    "batch_size": 2,
+    "val_batch_size": 2,
+    "epochs": 1000,
+    "lr": 0.0001,
+    "weight_decay": 1e-06,
+    "lr_decay_epochs": 250,
+    "lr_decay_gamma": 0.1,
+    "val_every_epochs": 10,
+    "num_workers": 2,
+    "seed": 42
+  },
+  "data_and_evaluation": {
+    "split_files": "data/splits/{train,val,test}.txt",
+    "split_sizes": {
+      "train": 3800,
+      "val": 500,
+      "test": 358
+    },
+    "shared_across_methods": [
+      "train/validation/test case split",
+      "foreground threshold or class argmax",
+      "global TP/FP/FN/TN metric aggregation",
+      "best-checkpoint test evaluation"
+    ],
+    "method_specific_training": {
+      "source": "official Attention-Gated-Networks CT configuration and paper",
+      "input_size": 512,
+      "normalization": "per-image zero mean / unit variance",
+      "augmentation": "affine rotation/scale/translation and axial(horizontal) flip",
+      "optimizer": "Adam",
+      "learning_rate": 0.0001,
+      "weight_decay": 1e-06,
+      "loss": "Sorensen-Dice loss",
+      "epochs": 1000,
+      "batch_size": 2,
+      "scheduler": {
+        "type": "StepLR",
+        "step_size_epochs": 250,
+        "gamma": 0.1
+      },
+      "checkpoint_selection": "minimum validation Dice loss"
+    },
+    "final_metric_resolution": [
+      512,
+      512
+    ],
+    "metric_resolution_note": "Final best-train/validation/test and per-case metrics use GT resized directly from source masks to this common resolution. Training-time history and checkpoint loss remain at each method's native input size."
+  }
+}
