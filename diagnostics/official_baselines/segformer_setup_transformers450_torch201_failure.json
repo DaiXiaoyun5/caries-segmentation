@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "method": "SegFormer-B2 official environment setup",
+  "observed_torch": "2.0.1+cu118",
+  "observed_transformers": "4.50.0",
+  "failure_stage": "SegformerForSemanticSegmentation lazy import",
+  "exception_type": "AttributeError",
+  "exception_message": "module 'torch' has no attribute 'compiler'",
+  "root_cause": "Transformers 4.50.0 imports integrations.flex_attention and decorates WrappedFlexAttention with torch.compiler.disable, but torch 2.0.1 does not expose torch.compiler.",
+  "resolution": "Pin Transformers 4.49.0, whose official package supports torch>=2.0 and whose FlexAttention integration does not call torch.compiler, then validate the actual SegFormer class import during setup."
+}

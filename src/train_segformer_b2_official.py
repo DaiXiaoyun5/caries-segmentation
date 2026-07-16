@@ -35,7 +35,8 @@ class SegFormerB2Official(nn.Module):
         super().__init__()
         if SegformerForSemanticSegmentation is None:
             raise RuntimeError(
-                "SegFormer-B2 requires transformers==4.50.0; install requirements.txt first."
+                "SegFormer-B2 requires transformers==4.49.0; install the "
+                "isolated official-baseline environment first."
             )
         self.network = SegformerForSemanticSegmentation.from_pretrained(
             pretrained_model_name,

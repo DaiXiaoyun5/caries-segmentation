@@ -38,7 +38,7 @@ class SegFormerB2Binary(nn.Module):
         super().__init__()
         if SegformerForSemanticSegmentation is None:
             raise RuntimeError(
-                "SegFormer-B2 requires transformers==4.50.0. "
+                "SegFormer-B2 requires transformers==4.49.0. "
                 "Install the comparison dependency before submitting this job."
             )
         if in_channels != 3:

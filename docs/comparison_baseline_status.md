@@ -68,10 +68,10 @@ does not copy or reimplement the Swin-Unet architecture.
 
 ## Isolated external-baseline environment
 
-The existing `caries-train` environment has PyTorch `1.10.0+cu111`, while
-Transformers 4.50 requires PyTorch 2.0 or newer. Do not upgrade
-`caries-train`, because that environment must remain stable for B2/B30. Run
-this once to create the separate `caries-baselines` environment:
+The existing `caries-train` environment has PyTorch `1.10.0+cu111`, which is
+too old for the maintained Transformers runtime used by this baseline. Do not
+upgrade `caries-train`, because that environment must remain stable for
+B2/B30. Run this once to create the separate `caries-baselines` environment:
 
 ```bash
 cd /share/home/u2515283028/caries_project
@@ -100,6 +100,15 @@ of these lines:
 SegFormer MiT-B2 cache: OK
 DeepLabV3+ ResNet50 cache: OK
 ```
+
+The isolated environment deliberately pins `torch==2.0.1+cu118` and
+`transformers==4.49.0`. Version 4.50.0 cannot be used with this torch build:
+its SegFormer lazy import reaches `torch.compiler.disable`, while torch 2.0.1
+does not expose `torch.compiler`. Version 4.49.0 retains the same native
+SegFormer architecture and checkpoint loader, officially declares torch 2.0
+support, and avoids that incompatible import. The setup preflight now imports
+`SegformerForSemanticSegmentation` itself instead of checking only the top-level
+package.
 
 ## U-Mamba official environment and data
 
@@ -167,6 +176,12 @@ Small structured records are retained in
 `diagnostics/official_baselines/*_failure.json`. The setup and submit scripts
 now address both failures with an isolated environment and login-node weight
 prefetching.
+
+The first isolated-environment installation subsequently exposed a third,
+independent compatibility failure before any weight download: Transformers
+4.50.0 attempted to use `torch.compiler` with torch 2.0.1. This is recorded in
+`segformer_setup_transformers450_torch201_failure.json` and fixed by the 4.49.0
+pin described above.
 
 The latest Git commit contains only `config.json` for Attention U-Net and
 UNet++. No `*.out`, `*.err`, or `*.log` file was committed because logs and

@@ -57,9 +57,9 @@ def describe_files(paths: List[Path]) -> List[Dict[str, object]]:
 
 
 def prepare_segformer(verify_only: bool) -> Dict[str, object]:
-    from transformers import SegformerForSemanticSegmentation
-
     try:
+        from transformers import SegformerForSemanticSegmentation
+
         model = SegformerForSemanticSegmentation.from_pretrained(
             "nvidia/mit-b2",
             num_labels=2,
@@ -71,7 +71,7 @@ def prepare_segformer(verify_only: bool) -> Dict[str, object]:
     except Exception as exc:
         mode = "offline verification" if verify_only else "login-node download"
         raise RuntimeError(
-            "SegFormer MiT-B2 pretrained weights failed during "
+            "SegFormer class import or MiT-B2 pretrained-weight loading failed during "
             f"{mode}. Run bash scripts/setup/setup_official_baselines_env.sh "
             "on the login node before submitting SegFormer."
         ) from exc
