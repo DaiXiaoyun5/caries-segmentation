@@ -71,6 +71,18 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def sha256_normalized_text_file(path: Path) -> str:
+    """Hash UTF-8 text independent of Windows/Unix newline conversion."""
+
+    try:
+        text = path.read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeDecodeError) as exc:
+        raise RuntimeError(f"Expected a UTF-8 text file: {path}") from exc
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    normalized = normalized.rstrip("\n") + "\n"
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
 def validate_local_segformer_assets() -> List[Path]:
     if not SEGFORMER_ASSET_DIR.exists():
         return []
@@ -84,11 +96,20 @@ def validate_local_segformer_assets() -> List[Path]:
         )
 
     for path in paths:
-        actual = sha256_file(path)
+        # Browsers/editors may legitimately convert config.json from LF to
+        # CRLF or remove its final newline. The binary checkpoint must remain
+        # byte-for-byte identical.
+        if path.name == "config.json":
+            actual = sha256_normalized_text_file(path)
+            hash_description = "normalized UTF-8 SHA256"
+        else:
+            actual = sha256_file(path)
+            hash_description = "SHA256"
         expected = SEGFORMER_REQUIRED_FILES[path.name]
         if actual != expected:
             raise RuntimeError(
-                f"SHA256 mismatch for {path}: expected {expected}, got {actual}"
+                f"{hash_description} mismatch for {path}: "
+                f"expected {expected}, got {actual}"
             )
 
     try:
@@ -167,6 +188,9 @@ def prepare_segformer(verify_only: bool) -> Dict[str, object]:
         "local_files_only": local_files_only,
         "parameter_count_after_binary_head_adaptation": parameter_count,
         "expected_sha256": SEGFORMER_REQUIRED_FILES,
+        "config_hash_policy": (
+            "UTF-8 BOM removed; CRLF/CR normalized to LF; exactly one final LF"
+        ),
         "cached_files": describe_files(cached_files),
     }
 
