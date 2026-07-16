@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import gc
+import hashlib
 import json
 import os
 from datetime import datetime, timezone
@@ -26,6 +27,12 @@ TORCH_HOME = PROJECT_ROOT / ".cache" / "torch"
 MANIFEST_PATH = (
     PROJECT_ROOT / ".cache" / "official_baselines" / "pretrained_assets.json"
 )
+SEGFORMER_ASSET_DIR = PROJECT_ROOT / "external_assets" / "nvidia_mit_b2"
+SEGFORMER_REVISION = "3bb39e8739149c3777d0325349b2a6c32c6413db"
+SEGFORMER_REQUIRED_FILES = {
+    "config.json": "d9a879499e7d73e2b33af0638cee320b1070c8f0dadb620eac8907df3d18caa9",
+    "pytorch_model.bin": "4500b5665471b593e6757e15bcca5034f433fe3902fe8ec2b7230774a57f264f",
+}
 
 
 def configure_cache(verify_only: bool) -> None:
@@ -56,41 +63,110 @@ def describe_files(paths: List[Path]) -> List[Dict[str, object]]:
     return records
 
 
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def validate_local_segformer_assets() -> List[Path]:
+    if not SEGFORMER_ASSET_DIR.exists():
+        return []
+
+    paths = [SEGFORMER_ASSET_DIR / name for name in SEGFORMER_REQUIRED_FILES]
+    missing = [path.name for path in paths if not path.is_file()]
+    if missing:
+        raise RuntimeError(
+            f"Incomplete MiT-B2 asset directory {SEGFORMER_ASSET_DIR}; missing: "
+            + ", ".join(missing)
+        )
+
+    for path in paths:
+        actual = sha256_file(path)
+        expected = SEGFORMER_REQUIRED_FILES[path.name]
+        if actual != expected:
+            raise RuntimeError(
+                f"SHA256 mismatch for {path}: expected {expected}, got {actual}"
+            )
+
+    try:
+        config = json.loads((SEGFORMER_ASSET_DIR / "config.json").read_text("utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError("The local MiT-B2 config.json is invalid") from exc
+    expected_architecture = {
+        "model_type": "segformer",
+        "hidden_sizes": [64, 128, 320, 512],
+        "depths": [3, 4, 6, 3],
+        "decoder_hidden_size": 768,
+    }
+    for key, expected in expected_architecture.items():
+        if config.get(key) != expected:
+            raise RuntimeError(
+                f"Unexpected MiT-B2 config field {key}: "
+                f"expected {expected!r}, got {config.get(key)!r}"
+            )
+    return paths
+
+
 def prepare_segformer(verify_only: bool) -> Dict[str, object]:
+    local_assets = validate_local_segformer_assets()
+    if local_assets:
+        load_source = str(SEGFORMER_ASSET_DIR)
+        local_files_only = True
+        source_mode = "verified_external_assets"
+        print(f"Using verified local MiT-B2 assets: {load_source}", flush=True)
+    else:
+        load_source = "nvidia/mit-b2"
+        local_files_only = verify_only
+        source_mode = "huggingface_cache" if verify_only else "huggingface_download"
+
     try:
         from transformers import SegformerForSemanticSegmentation
 
         model = SegformerForSemanticSegmentation.from_pretrained(
-            "nvidia/mit-b2",
+            load_source,
             num_labels=2,
             id2label={0: "background", 1: "caries"},
             label2id={"background": 0, "caries": 1},
             ignore_mismatched_sizes=True,
-            local_files_only=verify_only,
+            local_files_only=local_files_only,
         )
     except Exception as exc:
-        mode = "offline verification" if verify_only else "login-node download"
+        if local_assets:
+            mode = "verified local-asset loading"
+        else:
+            mode = "offline verification" if verify_only else "login-node download"
         raise RuntimeError(
             "SegFormer class import or MiT-B2 pretrained-weight loading failed during "
-            f"{mode}. Run bash scripts/setup/setup_official_baselines_env.sh "
-            "on the login node before submitting SegFormer."
+            f"{mode}. If Hugging Face is unreachable, place the official "
+            "config.json and pytorch_model.bin under "
+            f"{SEGFORMER_ASSET_DIR}, then rerun setup."
         ) from exc
 
     parameter_count = sum(parameter.numel() for parameter in model.parameters())
     del model
     gc.collect()
 
-    repo_cache = HF_HOME / "hub" / "models--nvidia--mit-b2"
-    cached_files = list((repo_cache / "snapshots").glob("*/*"))
-    if not cached_files:
-        raise RuntimeError(
-            f"MiT-B2 loaded but no Hugging Face snapshot was found under {repo_cache}"
-        )
+    if local_assets:
+        cached_files = local_assets
+    else:
+        repo_cache = HF_HOME / "hub" / "models--nvidia--mit-b2"
+        cached_files = list((repo_cache / "snapshots").glob("*/*"))
+        if not cached_files:
+            raise RuntimeError(
+                f"MiT-B2 loaded but no Hugging Face snapshot was found under {repo_cache}"
+            )
     return {
         "source": "https://huggingface.co/nvidia/mit-b2",
+        "source_revision": SEGFORMER_REVISION if local_assets else "main",
+        "source_mode": source_mode,
+        "load_source": load_source,
         "loader": "SegformerForSemanticSegmentation.from_pretrained",
-        "local_files_only": verify_only,
+        "local_files_only": local_files_only,
         "parameter_count_after_binary_head_adaptation": parameter_count,
+        "expected_sha256": SEGFORMER_REQUIRED_FILES,
         "cached_files": describe_files(cached_files),
     }
 

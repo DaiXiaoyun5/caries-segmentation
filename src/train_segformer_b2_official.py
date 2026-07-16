@@ -139,7 +139,8 @@ def main(args) -> None:
         "architecture": {
             "encoder": "MiT-B2 hierarchical Transformer",
             "encoder_pretraining": "ImageNet-1K",
-            "checkpoint": args.pretrained_model_name,
+            "checkpoint": "nvidia/mit-b2",
+            "checkpoint_load_source": args.pretrained_model_name,
             "decoder": "standard SegFormer all-MLP decode head",
             "num_classes": 2,
             "input_size": args.image_size,

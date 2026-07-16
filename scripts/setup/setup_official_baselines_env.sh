@@ -79,8 +79,8 @@ print("CUDA available on this node:", torch.cuda.is_available())
 print("Login-node CUDA=False is expected; training jobs verify the allocated GPU.")
 PY
 
-# Download on the network-enabled login node, then prove that the exact model
-# loaders can reopen both checkpoints without Hugging Face network access.
+# Prefer verified files under external_assets; otherwise attempt a login-node
+# download. Then prove that both exact model loaders work without network use.
 python scripts/setup/prepare_official_baseline_weights.py --model all
 python scripts/setup/prepare_official_baseline_weights.py \
     --model all \
