@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "method": "SegFormer-B2 pretrained asset preparation",
+  "observed_torch": "2.0.1+cu118",
+  "observed_transformers": "4.49.0",
+  "failure_stage": "Hugging Face MiT-B2 config download",
+  "exception_type": "ProxyError",
+  "exception_message": "Cannot connect to proxy while requesting https://huggingface.co/nvidia/mit-b2/resolve/main/config.json",
+  "root_cause": "The login node proxy could install packages from PyPI and download.pytorch.org but timed out when connecting to huggingface.co.",
+  "resolution": "Support two verified files under external_assets/nvidia_mit_b2 and load them directly without Hugging Face network access."
+}

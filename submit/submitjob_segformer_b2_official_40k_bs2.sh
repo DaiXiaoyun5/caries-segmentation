@@ -24,6 +24,14 @@ export HF_HUB_DISABLE_TELEMETRY=1
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 
+SEGFORMER_ASSET_DIR=/share/home/u2515283028/caries_project/external_assets/nvidia_mit_b2
+if [[ -f "${SEGFORMER_ASSET_DIR}/config.json" && \
+      -f "${SEGFORMER_ASSET_DIR}/pytorch_model.bin" ]]; then
+  SEGFORMER_PRETRAINED_SOURCE=${SEGFORMER_ASSET_DIR}
+else
+  SEGFORMER_PRETRAINED_SOURCE=nvidia/mit-b2
+fi
+
 echo "===== SEGFORMER-B2 OFFICIAL RECIPE ====="
 which python
 python --version
@@ -35,6 +43,8 @@ print("transformers:", transformers.__version__)
 from transformers import SegformerForSemanticSegmentation
 print("SegFormer import: OK")
 PY
+
+echo "SegFormer pretrained source: ${SEGFORMER_PRETRAINED_SOURCE}"
 
 python -m py_compile \
   scripts/setup/prepare_official_baseline_weights.py \
@@ -57,7 +67,7 @@ python src/train_segformer_b2_official.py \
   --weight-decay 0.01 \
   --warmup-iters 1500 \
   --warmup-ratio 1e-6 \
-  --pretrained-model-name nvidia/mit-b2 \
+  --pretrained-model-name "${SEGFORMER_PRETRAINED_SOURCE}" \
   --local-files-only \
   --num-workers 2 \
   --seed 42
