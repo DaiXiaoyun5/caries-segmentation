@@ -145,17 +145,21 @@ Required SHA256 values and sizes:
 ```text
 config.json
 d9a879499e7d73e2b33af0638cee320b1070c8f0dadb620eac8907df3d18caa9
-70044 bytes
+70044 bytes in the official LF form; a semantically identical CRLF copy may be
+72112 bytes and is accepted
 
 pytorch_model.bin
 4500b5665471b593e6757e15bcca5034f433fe3902fe8ec2b7230774a57f264f
 98978917 bytes
 ```
 
-The setup and submit scripts verify both hashes and the MiT-B2 architecture
-fields before loading. `preprocessor_config.json` and `tf_model.h5` are not
-needed because preprocessing is explicitly implemented by the training runner
-and the model uses PyTorch weights. The files remain ignored by Git.
+The setup and submit scripts require an exact byte-level hash for the binary
+checkpoint. For `config.json`, they normalize UTF-8 BOM/newline differences
+before hashing and then verify the MiT-B2 architecture fields. This safely
+accepts Windows CRLF conversion without accepting a changed model
+configuration. `preprocessor_config.json` and `tf_model.h5` are not needed
+because preprocessing is explicitly implemented by the training runner and the
+model uses PyTorch weights. The files remain ignored by Git.
 
 Because `caries-baselines` is already installed, prepare both SegFormer and
 DeepLabV3+ assets without repeating package installation:
