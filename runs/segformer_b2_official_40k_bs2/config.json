@@ -1,0 +1,114 @@
+{
+  "run_name": "segformer_b2_official_40k_bs2",
+  "image_size": 512,
+  "batch_size": 2,
+  "val_batch_size": 2,
+  "total_iters": 40000,
+  "val_interval_iters": 2000,
+  "lr": 6e-05,
+  "head_lr_multiplier": 10.0,
+  "weight_decay": 0.01,
+  "warmup_iters": 1500,
+  "warmup_ratio": 1e-06,
+  "pretrained_model_name": "/share/home/u2515283028/caries_project/external_assets/nvidia_mit_b2",
+  "local_files_only": true,
+  "num_workers": 2,
+  "seed": 42,
+  "epochs": 22,
+  "script": "src/train_segformer_b2_official.py",
+  "model_name": "SegFormer-B2 (official MiT-B2 + all-MLP decoder)",
+  "model_class": "SegFormerB2Official",
+  "architecture": {
+    "encoder": "MiT-B2 hierarchical Transformer",
+    "encoder_pretraining": "ImageNet-1K",
+    "checkpoint": "nvidia/mit-b2",
+    "checkpoint_load_source": "/share/home/u2515283028/caries_project/external_assets/nvidia_mit_b2",
+    "decoder": "standard SegFormer all-MLP decode head",
+    "num_classes": 2,
+    "input_size": 512,
+    "input_normalization": "ImageNet mean/std"
+  },
+  "training_recipe": {
+    "source": "official NVlabs B2 512x512 ADE20K configuration",
+    "optimizer": "AdamW",
+    "base_learning_rate": 6e-05,
+    "decode_head_lr_multiplier": 10.0,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "weight_decay": 0.01,
+    "no_decay": "normalization, bias, and positional-block parameters",
+    "scheduler": "iteration-wise polynomial, power=1.0",
+    "warmup_iters": 1500,
+    "warmup_ratio": 1e-06,
+    "total_iters": 40000,
+    "loss": "two-class cross entropy",
+    "batch_size": 2,
+    "augmentation": "random scale 0.5-2.0, crop/pad, flip, photometric distortion",
+    "checkpoint_selection": "maximum validation mean IoU"
+  },
+  "reference": {
+    "paper": "https://arxiv.org/abs/2105.15203",
+    "official_code": "https://github.com/NVlabs/SegFormer",
+    "encoder_checkpoint": "https://huggingface.co/nvidia/mit-b2"
+  },
+  "fidelity_note": "Architecture, ImageNet MiT-B2 initialization, AdamW parameter groups, 6e-5 base LR, 10x decode-head LR, 0.01 decay, 1500-step warmup, and polynomial schedule follow the official recipe. The 40k budget is a documented small-dataset fine-tuning adaptation of ADE20K's 160k.",
+  "arguments": {
+    "run_name": "segformer_b2_official_40k_bs2",
+    "image_size": 512,
+    "batch_size": 2,
+    "val_batch_size": 2,
+    "total_iters": 40000,
+    "val_interval_iters": 2000,
+    "lr": 6e-05,
+    "head_lr_multiplier": 10.0,
+    "weight_decay": 0.01,
+    "warmup_iters": 1500,
+    "warmup_ratio": 1e-06,
+    "pretrained_model_name": "/share/home/u2515283028/caries_project/external_assets/nvidia_mit_b2",
+    "local_files_only": true,
+    "num_workers": 2,
+    "seed": 42,
+    "epochs": 22
+  },
+  "data_and_evaluation": {
+    "split_files": "data/splits/{train,val,test}.txt",
+    "split_sizes": {
+      "train": 3800,
+      "val": 500,
+      "test": 358
+    },
+    "shared_across_methods": [
+      "train/validation/test case split",
+      "foreground threshold or class argmax",
+      "global TP/FP/FN/TN metric aggregation",
+      "best-checkpoint test evaluation"
+    ],
+    "method_specific_training": {
+      "source": "official NVlabs B2 512x512 ADE20K configuration",
+      "optimizer": "AdamW",
+      "base_learning_rate": 6e-05,
+      "decode_head_lr_multiplier": 10.0,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "weight_decay": 0.01,
+      "no_decay": "normalization, bias, and positional-block parameters",
+      "scheduler": "iteration-wise polynomial, power=1.0",
+      "warmup_iters": 1500,
+      "warmup_ratio": 1e-06,
+      "total_iters": 40000,
+      "loss": "two-class cross entropy",
+      "batch_size": 2,
+      "augmentation": "random scale 0.5-2.0, crop/pad, flip, photometric distortion",
+      "checkpoint_selection": "maximum validation mean IoU"
+    },
+    "final_metric_resolution": [
+      512,
+      512
+    ],
+    "metric_resolution_note": "Final best-train/validation/test and per-case metrics use GT resized directly from source masks to this common resolution. Training-time history and checkpoint loss remain at each method's native input size."
+  }
+}

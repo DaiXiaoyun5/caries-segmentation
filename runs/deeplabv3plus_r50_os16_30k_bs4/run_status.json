@@ -1,0 +1,26 @@
+{
+  "run_name": "deeplabv3plus_r50_os16_30k_bs4",
+  "status": "completed",
+  "stage": "result_export_completed",
+  "runtime": {
+    "timestamp": "2026-07-16T14:02:46+08:00",
+    "hostname": "gpu03",
+    "platform": "Linux-4.18.0-348.el8.x86_64-x86_64-with-glibc2.28",
+    "python": "3.10.20 (main, Jun 11 2026, 15:17:37) [GCC 14.3.0]",
+    "torch": "2.0.1+cu118",
+    "torch_cuda": "11.8",
+    "cuda_available": true,
+    "cuda_probe_error": null,
+    "gpu_name": "NVIDIA A30",
+    "slurm": {
+      "SLURM_JOB_ID": "94807",
+      "SLURM_JOB_NAME": "deeplabv3p",
+      "SLURM_JOB_NODELIST": "gpu03",
+      "CUDA_VISIBLE_DEVICES": "0",
+      "CONDA_DEFAULT_ENV": "caries-baselines"
+    }
+  },
+  "device": "cuda",
+  "best_epoch": 31,
+  "best_global_step": 29450
+}

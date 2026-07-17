@@ -1,0 +1,102 @@
+{
+  "run_name": "deeplabv3plus_r50_os16_30k_bs4",
+  "image_size": 512,
+  "batch_size": 4,
+  "val_batch_size": 4,
+  "total_iters": 30000,
+  "val_interval_iters": 1000,
+  "lr": 0.0025,
+  "weight_decay": 0.0001,
+  "num_workers": 2,
+  "seed": 1,
+  "epochs": 32,
+  "script": "src/train_deeplabv3plus_official.py",
+  "model_name": "DeepLabV3+ (ResNet50, output stride 16)",
+  "model_class": "DeepLabV3PlusResNet50",
+  "architecture": {
+    "encoder": "ResNet50, ImageNet pretrained",
+    "output_stride": 16,
+    "aspp_atrous_rates": [
+      12,
+      24,
+      36
+    ],
+    "decoder_channels": 256,
+    "low_level_feature_decoder": true,
+    "num_classes": 2,
+    "input_normalization": "ImageNet mean/std",
+    "implementation": "segmentation-models-pytorch standard DeepLabV3Plus"
+  },
+  "training_recipe": {
+    "source": "widely used VainF DeepLabV3Plus PyTorch recipe",
+    "optimizer": "SGD",
+    "momentum": 0.9,
+    "classifier_learning_rate": 0.0025,
+    "encoder_learning_rate": 0.00025,
+    "lr_scaling_note": "0.01 at batch 16 scaled linearly to batch 4",
+    "weight_decay": 0.0001,
+    "scheduler": "iteration-wise polynomial, power=0.9",
+    "total_iters": 30000,
+    "loss": "two-class cross entropy",
+    "batch_size": 4,
+    "drop_last": true,
+    "augmentation": "random scale 0.5-2.0, crop/pad, horizontal flip",
+    "batch_norm_momentum": 0.01,
+    "checkpoint_selection": "maximum validation mean IoU"
+  },
+  "reference": {
+    "paper": "https://arxiv.org/abs/1802.02611",
+    "reference_implementation": "https://github.com/VainF/DeepLabV3Plus-Pytorch",
+    "maintained_pytorch_implementation": "https://github.com/qubvel-org/segmentation_models.pytorch"
+  },
+  "fidelity_note": "This replaces the old ResNet34/e50 exploratory run. It uses the standard ResNet50 OS16 architecture, ASPP rates, CE objective, backbone 0.1x LR, SGD, and poly schedule.",
+  "arguments": {
+    "run_name": "deeplabv3plus_r50_os16_30k_bs4",
+    "image_size": 512,
+    "batch_size": 4,
+    "val_batch_size": 4,
+    "total_iters": 30000,
+    "val_interval_iters": 1000,
+    "lr": 0.0025,
+    "weight_decay": 0.0001,
+    "num_workers": 2,
+    "seed": 1,
+    "epochs": 32
+  },
+  "data_and_evaluation": {
+    "split_files": "data/splits/{train,val,test}.txt",
+    "split_sizes": {
+      "train": 3800,
+      "val": 500,
+      "test": 358
+    },
+    "shared_across_methods": [
+      "train/validation/test case split",
+      "foreground threshold or class argmax",
+      "global TP/FP/FN/TN metric aggregation",
+      "best-checkpoint test evaluation"
+    ],
+    "method_specific_training": {
+      "source": "widely used VainF DeepLabV3Plus PyTorch recipe",
+      "optimizer": "SGD",
+      "momentum": 0.9,
+      "classifier_learning_rate": 0.0025,
+      "encoder_learning_rate": 0.00025,
+      "lr_scaling_note": "0.01 at batch 16 scaled linearly to batch 4",
+      "weight_decay": 0.0001,
+      "scheduler": "iteration-wise polynomial, power=0.9",
+      "total_iters": 30000,
+      "loss": "two-class cross entropy",
+      "batch_size": 4,
+      "drop_last": true,
+      "augmentation": "random scale 0.5-2.0, crop/pad, horizontal flip",
+      "batch_norm_momentum": 0.01,
+      "checkpoint_selection": "maximum validation mean IoU"
+    },
+    "final_metric_resolution": [
+      512,
+      512
+    ],
+    "metric_resolution_note": "Final best-train/validation/test and per-case metrics use GT resized directly from source masks to this common resolution. Training-time history and checkpoint loss remain at each method's native input size."
+  }
+}

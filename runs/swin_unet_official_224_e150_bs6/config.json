@@ -1,0 +1,119 @@
+{
+  "run_name": "swin_unet_official_224_e150_bs6",
+  "image_size": 224,
+  "batch_size": 6,
+  "val_batch_size": 6,
+  "epochs": 150,
+  "lr": 0.0125,
+  "num_workers": 2,
+  "seed": 1234,
+  "swin_source_dir": "/share/home/u2515283028/caries_project/external_models/Swin-Unet-main",
+  "pretrained_checkpoint": "/share/home/u2515283028/caries_project/external_assets/swin_tiny_patch4_window7_224.pth",
+  "script": "src/train_swin_unet_official.py",
+  "model_name": "Swin-Unet (official Swin-T 224 configuration)",
+  "model_class": "official networks.vision_transformer.SwinUnet",
+  "architecture": {
+    "source_dir": "/share/home/u2515283028/caries_project/external_models/Swin-Unet-main",
+    "configuration": "swin_tiny_patch4_window7_224_lite.yaml",
+    "input_size": 224,
+    "patch_size": 4,
+    "window_size": 7,
+    "embed_dim": 96,
+    "depths": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "decoder_depths": [
+      2,
+      2,
+      2,
+      1
+    ],
+    "num_heads": [
+      3,
+      6,
+      12,
+      24
+    ],
+    "drop_path_rate": 0.2,
+    "num_classes": 2,
+    "pretrained_checkpoint": "/share/home/u2515283028/caries_project/external_assets/swin_tiny_patch4_window7_224.pth",
+    "pretrained_checkpoint_sha256": "9f71c168d837d1b99dd1dc29e14990a7a9e8bdc5f673d46b04fe36fe15590ad3",
+    "pretrained_initialization": "official load_from encoder-to-decoder mirroring"
+  },
+  "training_recipe": {
+    "source": "supplied official Swin-Unet repository trainer.py/train.sh",
+    "optimizer": "SGD",
+    "momentum": 0.9,
+    "weight_decay": 0.0001,
+    "base_lr_batch24": 0.05,
+    "learning_rate_batch6": 0.0125,
+    "lr_scaling": "0.05 * batch_size / 24",
+    "scheduler": "iteration-wise polynomial, power=0.9",
+    "epochs": 150,
+    "batch_size": 6,
+    "loss": "0.4 cross entropy + 0.6 official multiclass Dice",
+    "augmentation": "official random rot90/flip or random rotation, bicubic resize",
+    "seed": 1234,
+    "checkpoint_selection": "minimum validation combined loss"
+  },
+  "reference": {
+    "paper": "https://arxiv.org/abs/2105.05537",
+    "official_code": "https://github.com/HuCaoFighting/Swin-Unet"
+  },
+  "asset_provenance": {
+    "supplied_zip_sha256": "0dff0004b71514fb3509b4fabc6b5ffd76d33aee283ba9fca8e0b1ceeb6215dc",
+    "supplied_checkpoint_sha256": "9f71c168d837d1b99dd1dc29e14990a7a9e8bdc5f673d46b04fe36fe15590ad3",
+    "third_party_source_or_weights_committed_to_git": false
+  },
+  "fidelity_note": "The model is imported directly from the user-supplied official source. Input resolution, architecture YAML, encoder/decoder initialization, augmentation, optimizer, loss, schedule, epochs, and seed are retained.",
+  "arguments": {
+    "run_name": "swin_unet_official_224_e150_bs6",
+    "image_size": 224,
+    "batch_size": 6,
+    "val_batch_size": 6,
+    "epochs": 150,
+    "lr": 0.0125,
+    "num_workers": 2,
+    "seed": 1234,
+    "swin_source_dir": "/share/home/u2515283028/caries_project/external_models/Swin-Unet-main",
+    "pretrained_checkpoint": "/share/home/u2515283028/caries_project/external_assets/swin_tiny_patch4_window7_224.pth"
+  },
+  "data_and_evaluation": {
+    "split_files": "data/splits/{train,val,test}.txt",
+    "split_sizes": {
+      "train": 3800,
+      "val": 500,
+      "test": 358
+    },
+    "shared_across_methods": [
+      "train/validation/test case split",
+      "foreground threshold or class argmax",
+      "global TP/FP/FN/TN metric aggregation",
+      "best-checkpoint test evaluation"
+    ],
+    "method_specific_training": {
+      "source": "supplied official Swin-Unet repository trainer.py/train.sh",
+      "optimizer": "SGD",
+      "momentum": 0.9,
+      "weight_decay": 0.0001,
+      "base_lr_batch24": 0.05,
+      "learning_rate_batch6": 0.0125,
+      "lr_scaling": "0.05 * batch_size / 24",
+      "scheduler": "iteration-wise polynomial, power=0.9",
+      "epochs": 150,
+      "batch_size": 6,
+      "loss": "0.4 cross entropy + 0.6 official multiclass Dice",
+      "augmentation": "official random rot90/flip or random rotation, bicubic resize",
+      "seed": 1234,
+      "checkpoint_selection": "minimum validation combined loss"
+    },
+    "final_metric_resolution": [
+      512,
+      512
+    ],
+    "metric_resolution_note": "Final best-train/validation/test and per-case metrics use GT resized directly from source masks to this common resolution. Training-time history and checkpoint loss remain at each method's native input size."
+  }
+}

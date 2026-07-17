@@ -1,0 +1,26 @@
+{
+  "run_name": "swin_unet_official_224_e150_bs6",
+  "status": "completed",
+  "stage": "result_export_completed",
+  "runtime": {
+    "timestamp": "2026-07-16T15:54:50+08:00",
+    "hostname": "gpu02",
+    "platform": "Linux-4.18.0-348.el8.x86_64-x86_64-with-glibc2.28",
+    "python": "3.10.20 (main, Jun 11 2026, 15:17:37) [GCC 14.3.0]",
+    "torch": "2.0.1+cu118",
+    "torch_cuda": "11.8",
+    "cuda_available": true,
+    "cuda_probe_error": null,
+    "gpu_name": "NVIDIA A30",
+    "slurm": {
+      "SLURM_JOB_ID": "94808",
+      "SLURM_JOB_NAME": "swin_unet",
+      "SLURM_JOB_NODELIST": "gpu02",
+      "CUDA_VISIBLE_DEVICES": "0",
+      "CONDA_DEFAULT_ENV": "caries-baselines"
+    }
+  },
+  "device": "cuda",
+  "best_epoch": 137,
+  "best_global_step": 86858
+}
