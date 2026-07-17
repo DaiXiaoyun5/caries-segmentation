@@ -80,7 +80,10 @@ data/
 datasets/
 external_models/
 external_assets/
-third_party/
+third_party/*
+!third_party/__init__.py
+!third_party/vainf_deeplabv3plus/
+!third_party/vainf_deeplabv3plus/**
 nnunet_caries/
 umamba_caries/
 

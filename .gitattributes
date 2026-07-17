@@ -5,3 +5,7 @@
 *.txt text eol=lf
 *.json text eol=lf
 
+# Preserve the attributed upstream snapshot byte-for-byte. Its original files
+# contain a few trailing spaces, which are covered by source_manifest.json.
+third_party/vainf_deeplabv3plus/network/** -whitespace
+

@@ -1,0 +1,47 @@
+{
+  "repository": "https://github.com/VainF/DeepLabV3Plus-Pytorch",
+  "ref": "master",
+  "retrieved_on": "2026-07-17",
+  "files": {
+    "LICENSE": {
+      "github_blob_sha": "f3a59ca920ea4beabb91090a0d3e9bc573973d73",
+      "sha256": "06935287e047ea0e80c3fa9e663ca5dbe3306a0a736338b96afb5e7e082e96cc"
+    },
+    "network/__init__.py": {
+      "github_blob_sha": "ad24f3360b6ebbfb837304a55ad5bbe9e72450df",
+      "sha256": "9554efb0c0cec7d391c747fdbb450204b93e01b739b48d8eb98695f150f1edb2"
+    },
+    "network/_deeplab.py": {
+      "github_blob_sha": "c82f7e97002cc9989f7a4d84d68816b397e4eef4",
+      "sha256": "3f13509cda2753cfdefbd179e2c6fa1f9e072bab7fdbf37bb71c119b34974f7c"
+    },
+    "network/modeling.py": {
+      "github_blob_sha": "ebf409c2bf1ee727343b3ceb2be17840c5c275dd",
+      "sha256": "e4fdb199e10868ba2592b36e6575e8901477b0c7a2ab816c5e0eb8db2127b7c9"
+    },
+    "network/utils.py": {
+      "github_blob_sha": "58ea389fa539306adb2a0e4cc8fe6d24d0d3dd14",
+      "sha256": "bab7ecf223ea20b21c5a5d3ed447b30466d586a126ffc623633a18e8eed90175"
+    },
+    "network/backbone/__init__.py": {
+      "github_blob_sha": "2fe6e12b1e685f588b5984685d7bcfeee7446f13",
+      "sha256": "f6a1b4bf50ba44fff39f300751096ce064091fc17f9413047ef4959a100363da"
+    },
+    "network/backbone/hrnetv2.py": {
+      "github_blob_sha": "a33c6f2624e7e0a0e9b8e4d6e738c5edd984bbd6",
+      "sha256": "7bed8c8fd83d91fef92ede79f5fe2614432c4b81399434ffe2fbd243c698615f"
+    },
+    "network/backbone/mobilenetv2.py": {
+      "github_blob_sha": "234dbc7f95999c9a76f771a4b5148fc0e943c5ba",
+      "sha256": "0498b001aba1abcd9520ded4a85502b73d3016700979a597572bdef841a1157c"
+    },
+    "network/backbone/resnet.py": {
+      "github_blob_sha": "366a5721b319266ffa2667c06248abe1d2b9e0aa",
+      "sha256": "b81ef133fe645f1d9d59ba716bb41c1b20e4672f9f5f8eec10c8a2c5bbb06d72"
+    },
+    "network/backbone/xception.py": {
+      "github_blob_sha": "8e7012de707b77a1714da7878f733dd7f60fdd32",
+      "sha256": "be083a2404e2244a3a973047c264f186cae370aa1fcbfdae878aeb1f4356ef61"
+    }
+  }
+}
