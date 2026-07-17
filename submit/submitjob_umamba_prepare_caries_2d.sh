@@ -14,6 +14,22 @@ SOURCE_ROOT="${PROJECT_ROOT}/external_models/U-Mamba-main"
 DATASET_ID=711
 DATASET_NAME=Dataset711_CariXray
 
+require_file() {
+    local required_path="$1"
+    if [[ ! -f "${required_path}" ]]; then
+        echo "Missing required file: ${required_path}" >&2
+        exit 2
+    fi
+}
+
+require_dir() {
+    local required_path="$1"
+    if [[ ! -d "${required_path}" ]]; then
+        echo "Missing required directory: ${required_path}" >&2
+        exit 2
+    fi
+}
+
 cd "${PROJECT_ROOT}"
 module load anaconda3/4.12.0
 source "$(conda info --base)/etc/profile.d/conda.sh"
@@ -25,8 +41,8 @@ module load http-proxy 2>/dev/null || true
 export http_proxy=http://211.67.63.75:3128
 export https_proxy=http://211.67.63.75:3128
 
-test -f "${SOURCE_ROOT}/umamba/nnunetv2/nets/UMambaBot_2d.py"
-test -f "${SOURCE_ROOT}/data/nnUNet_raw/${DATASET_NAME}/dataset.json"
+require_file "${SOURCE_ROOT}/umamba/nnunetv2/nets/UMambaBot_2d.py"
+require_file "${SOURCE_ROOT}/data/nnUNet_raw/${DATASET_NAME}/dataset.json"
 
 echo "===== U-MAMBA OFFICIAL 2D PREPARATION ====="
 which python
@@ -86,6 +102,6 @@ print("Fixed split:", split_path)
 print("train/val/test:", len(meta["train_ids"]), len(meta["val_ids"]), len(meta["test_ids"]))
 PY
 
-test -d "${SOURCE_ROOT}/data/nnUNet_preprocessed/${DATASET_NAME}/nnUNetPlans_2d"
-test -f "${SOURCE_ROOT}/data/nnUNet_preprocessed/${DATASET_NAME}/splits_final.json"
+require_dir "${SOURCE_ROOT}/data/nnUNet_preprocessed/${DATASET_NAME}/nnUNetPlans_2d"
+require_file "${SOURCE_ROOT}/data/nnUNet_preprocessed/${DATASET_NAME}/splits_final.json"
 echo "U-Mamba preprocessing and fixed split are ready."
