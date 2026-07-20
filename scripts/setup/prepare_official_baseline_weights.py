@@ -16,12 +16,14 @@ import gc
 import hashlib
 import json
 import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SRC_ROOT = PROJECT_ROOT / "src"
 HF_HOME = PROJECT_ROOT / ".cache" / "huggingface"
 TORCH_HOME = PROJECT_ROOT / ".cache" / "torch"
 MANIFEST_PATH = (
@@ -196,8 +198,6 @@ def prepare_segformer(verify_only: bool) -> Dict[str, object]:
 
 
 def prepare_deeplab(verify_only: bool) -> Dict[str, object]:
-    import segmentation_models_pytorch as smp
-
     checkpoint_dir = TORCH_HOME / "hub" / "checkpoints"
     candidates = list(checkpoint_dir.glob("resnet50-*.pth"))
     if verify_only and not candidates:
@@ -208,28 +208,37 @@ def prepare_deeplab(verify_only: bool) -> Dict[str, object]:
             "before submitting DeepLabV3+."
         )
 
+    if not candidates:
+        try:
+            from torchvision.models import ResNet50_Weights, resnet50
+
+            download_model = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1)
+            del download_model
+            gc.collect()
+        except Exception as exc:
+            raise RuntimeError(
+                "ResNet50 ImageNet weights could not be downloaded on the "
+                "login node. Restore Internet/proxy access or place a "
+                "torchvision resnet50-*.pth checkpoint under "
+                f"{checkpoint_dir}."
+            ) from exc
+
+    if str(SRC_ROOT) not in sys.path:
+        sys.path.insert(0, str(SRC_ROOT))
     try:
-        model = smp.DeepLabV3Plus(
-            encoder_name="resnet50",
-            encoder_depth=5,
-            encoder_weights="imagenet",
-            encoder_output_stride=16,
-            decoder_channels=256,
-            decoder_atrous_rates=(12, 24, 36),
-            in_channels=3,
-            classes=2,
-            activation=None,
-            upsampling=4,
-        )
+        from deeplabv3plus_vainf_common import build_vainf_deeplabv3plus
+
+        model = build_vainf_deeplabv3plus(pretrained=True)
     except Exception as exc:
         mode = "offline verification" if verify_only else "login-node download"
         raise RuntimeError(
-            "DeepLabV3+ ResNet50 ImageNet weights failed during "
+            "VainF DeepLabV3+ ResNet50 ImageNet loading failed during "
             f"{mode}. Run bash scripts/setup/setup_official_baselines_env.sh "
             "on the login node before submitting DeepLabV3+."
         ) from exc
 
     parameter_count = sum(parameter.numel() for parameter in model.parameters())
+    checkpoint_path = model.pretrained_checkpoint
     del model
     gc.collect()
 
@@ -239,9 +248,18 @@ def prepare_deeplab(verify_only: bool) -> Dict[str, object]:
             f"ResNet50 loaded but no checkpoint was found under {checkpoint_dir}"
         )
     return {
-        "source": "https://download.pytorch.org/models/",
-        "loader": "segmentation_models_pytorch.DeepLabV3Plus",
-        "encoder_weights": "imagenet",
+        "source": "https://github.com/VainF/DeepLabV3Plus-Pytorch",
+        "network_source": (
+            "third_party/vainf_deeplabv3plus/source_manifest.json"
+        ),
+        "loader": "VainFDeepLabV3PlusResNet50",
+        "encoder": "ResNet50",
+        "encoder_weights": "ImageNet torchvision local cache",
+        "checkpoint_path": checkpoint_path,
+        "output_stride": 16,
+        "aspp_atrous_rates": [6, 12, 18],
+        "optional_separable_conversion": False,
+        "num_classes": 2,
         "parameter_count": parameter_count,
         "cached_files": describe_files(candidates),
     }

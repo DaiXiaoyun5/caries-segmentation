@@ -2,7 +2,8 @@
 
 This document separates faithful method reproductions from older exploratory
 or B30-controlled variants. The main comparison table must use only the rows
-marked **paper-ready after rerun**.
+marked ready after the corresponding rerun. Exact U-Mamba and DeepLab follow-up
+commands are in `docs/run_umamba_and_deeplab_followup.md`.
 
 ## Status
 
@@ -11,7 +12,8 @@ marked **paper-ready after rerun**.
 | nnU-Net v2 2D | Official self-configuring 2D pipeline and fixed CariXray split | `scripts/jobs/submitjob_nnunet_caries_2d_fold0_fixed.sh` | Already implemented; do not regenerate |
 | Attention U-Net | Native five-level U-Net, official feature scale 4, additive grid gates, first low-level skip ungated, deep supervision; Adam/Dice official CT recipe adapted only from 3D to 2D | `submit/submitjob_attention_unet_official_e1000_bs2.sh` | Paper-ready after rerun |
 | SegFormer-B2 | ImageNet MiT-B2 + standard all-MLP decoder; AdamW `6e-5`, head `10x`, weight decay `0.01`, warmup + poly schedule, two-class CE | `submit/submitjob_segformer_b2_official_40k_bs2.sh` | Ready after verified MiT-B2 assets are uploaded and rerun |
-| DeepLabV3+ | ResNet50 ImageNet, output stride 16, ASPP `12/24/36`, standard decoder; SGD, encoder `0.1x` LR, poly schedule, CE | `submit/submitjob_deeplabv3plus_r50_os16_30k_bs4.sh` | Paper-ready after rerun |
+| DeepLabV3+ (strict VainF) | Vendored VainF ResNet50 ImageNet, output stride 16, ASPP `6/12/18`, unmodified decoder; SGD, backbone `0.1x` LR, poly schedule, CE, 30k updates | `submit/submitjob_deeplabv3plus_vainf_r50_os16_official_30k_bs4.sh` | Ready after ResNet50 cache verification and rerun |
+| DeepLabV3+ (medical adaptation) | Exactly the same VainF network; CariXray AugLite, CE + foreground Dice, AdamW constant `3e-4`, 260 epochs | `submit/submitjob_deeplabv3plus_vainf_r50_os16_medical_e260_bs6.sh` | Controlled supplementary comparison; ready to run |
 | UNet++ | Native `32/64/128/256/512` encoder, nested dense skip pathways, four deep-supervision heads and accurate-mode averaging; Adam `3e-4`, BCE+Dice | `submit/submitjob_unetpp_official_ds_e200_bs4.sh` | Paper-ready after rerun |
 | Swin-Unet | User-supplied official Swin-T 224 source/config/checkpoint; official mirrored encoder/decoder initialization, SGD/poly and CE+Dice | `submit/submitjob_swin_unet_official_224_e150_bs6.sh` | Paper-ready after assets are uploaded |
 | U-Mamba-Bot 2D | User-supplied official repository, embedded nnU-Net v2.1.1 trainer, official 1000-epoch recipe and fixed CariXray fold 0 | `submit/submitjob_umamba_prepare_caries_2d.sh`, then `submit/submitjob_umamba_bot_official_2d_fold0.sh` | Ready after isolated environment setup and preprocessing |
@@ -24,12 +26,15 @@ marked **paper-ready after rerun**.
   protocol instead of SegFormer's official optimizer groups, CE, warmup, and
   polynomial schedule.
 - `runs/deeplabv3plus_resnet34_e50_bs6/` is a short ResNet34 exploratory run.
+- `runs/deeplabv3plus_r50_os16_30k_bs4/` and its old SMP training/submit
+  scripts use a different implementation and ASPP `12/24/36`. Retain them for
+  auditability, but mark them superseded and do not place that result in the
+  final main comparison table.
 - `runs/unetpp_baseline_v3_bs6/` is a short generic SMP run without the
   original four-head deep-supervision setup.
 
-The historical Python and submit files remain in Git for auditability, but the
-two obsolete submit scripts now stop with a clear error to prevent accidental
-use.
+The historical Python and submit files remain in Git for auditability; obsolete
+submit scripts that were already guarded continue to stop with a clear error.
 
 ## Swin-Unet asset placement
 
