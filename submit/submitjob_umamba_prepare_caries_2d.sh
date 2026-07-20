@@ -11,8 +11,25 @@ set -Eeuo pipefail
 
 PROJECT_ROOT=/share/home/u2515283028/caries_project
 SOURCE_ROOT="${PROJECT_ROOT}/external_models/U-Mamba-main"
+DATA_ROOT="${SOURCE_ROOT}/data"
 DATASET_ID=711
 DATASET_NAME=Dataset711_CariXray
+
+require_file() {
+    local required_path="$1"
+    if [[ ! -f "${required_path}" ]]; then
+        echo "Missing required file: ${required_path}" >&2
+        exit 2
+    fi
+}
+
+require_dir() {
+    local required_path="$1"
+    if [[ ! -d "${required_path}" ]]; then
+        echo "Missing required directory: ${required_path}" >&2
+        exit 2
+    fi
+}
 
 cd "${PROJECT_ROOT}"
 module load anaconda3/4.12.0
@@ -20,13 +37,16 @@ source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate caries-train
 conda activate umamba-caries
 export PYTHONNOUSERSITE=1
+export nnUNet_raw="${DATA_ROOT}/nnUNet_raw"
+export nnUNet_preprocessed="${DATA_ROOT}/nnUNet_preprocessed"
+export nnUNet_results="${DATA_ROOT}/nnUNet_results"
 
 module load http-proxy 2>/dev/null || true
 export http_proxy=http://211.67.63.75:3128
 export https_proxy=http://211.67.63.75:3128
 
-test -f "${SOURCE_ROOT}/umamba/nnunetv2/nets/UMambaBot_2d.py"
-test -f "${SOURCE_ROOT}/data/nnUNet_raw/${DATASET_NAME}/dataset.json"
+require_file "${SOURCE_ROOT}/umamba/nnunetv2/nets/UMambaBot_2d.py"
+require_file "${SOURCE_ROOT}/data/nnUNet_raw/${DATASET_NAME}/dataset.json"
 
 echo "===== U-MAMBA OFFICIAL 2D PREPARATION ====="
 which python
@@ -34,10 +54,22 @@ python --version
 which nnUNetv2_plan_and_preprocess
 
 python - <<'PY'
+import os
+from pathlib import Path
+
 from nnunetv2.paths import nnUNet_raw, nnUNet_preprocessed, nnUNet_results
-print("nnUNet_raw:", nnUNet_raw)
-print("nnUNet_preprocessed:", nnUNet_preprocessed)
-print("nnUNet_results:", nnUNet_results)
+
+actual = {
+    "nnUNet_raw": nnUNet_raw,
+    "nnUNet_preprocessed": nnUNet_preprocessed,
+    "nnUNet_results": nnUNet_results,
+}
+for name, value in actual.items():
+    expected = os.environ[name]
+    print(f"{name}: {value}")
+    if Path(value).resolve() != Path(expected).resolve():
+        raise RuntimeError(f"{name} mismatch: imported={value}, expected={expected}")
+print("nnU-Net path preflight: OK")
 PY
 
 nnUNetv2_plan_and_preprocess \
@@ -86,6 +118,6 @@ print("Fixed split:", split_path)
 print("train/val/test:", len(meta["train_ids"]), len(meta["val_ids"]), len(meta["test_ids"]))
 PY
 
-test -d "${SOURCE_ROOT}/data/nnUNet_preprocessed/${DATASET_NAME}/nnUNetPlans_2d"
-test -f "${SOURCE_ROOT}/data/nnUNet_preprocessed/${DATASET_NAME}/splits_final.json"
+require_dir "${SOURCE_ROOT}/data/nnUNet_preprocessed/${DATASET_NAME}/nnUNetPlans_2d"
+require_file "${SOURCE_ROOT}/data/nnUNet_preprocessed/${DATASET_NAME}/splits_final.json"
 echo "U-Mamba preprocessing and fixed split are ready."

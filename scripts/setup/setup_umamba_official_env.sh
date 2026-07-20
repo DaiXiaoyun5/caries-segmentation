@@ -5,6 +5,9 @@ set -Eeuo pipefail
 PROJECT_ROOT=/share/home/u2515283028/caries_project
 ASSET_DIR="${PROJECT_ROOT}/external_assets"
 ASSET_ZIP="${ASSET_DIR}/U-Mamba-main.zip"
+WHEEL_DIR="${PROJECT_ROOT}/external_assets/umamba_wheels"
+CAUSAL_CONV1D_WHEEL="${WHEEL_DIR}/causal_conv1d-1.2.0.post2+cu118torch2.0cxx11abiFALSE-cp310-cp310-linux_x86_64.whl"
+MAMBA_SSM_WHEEL="${WHEEL_DIR}/mamba_ssm-1.2.0.post1+cu118torch2.0cxx11abiFALSE-cp310-cp310-linux_x86_64.whl"
 EXTERNAL_MODELS="${PROJECT_ROOT}/external_models"
 SOURCE_ROOT="${EXTERNAL_MODELS}/U-Mamba-main"
 ENV_NAME=umamba-caries
@@ -21,6 +24,15 @@ export https_proxy=http://211.67.63.75:3128
 
 mkdir -p "${ASSET_DIR}" "${EXTERNAL_MODELS}" runs/logs umamba_caries/predictions
 
+require_nonempty_file() {
+    local required_path="$1"
+    if [[ ! -s "${required_path}" ]]; then
+        echo "Missing or empty required wheel: ${required_path}" >&2
+        exit 2
+    fi
+    echo "Using local wheel: ${required_path}"
+}
+
 if [[ ! -f "${ASSET_ZIP}" ]]; then
     echo "Missing official source archive: ${ASSET_ZIP}" >&2
     echo "Upload the supplied U-Mamba-main.zip to external_assets first." >&2
@@ -28,6 +40,8 @@ if [[ ! -f "${ASSET_ZIP}" ]]; then
 fi
 
 echo "${EXPECTED_SHA256}  ${ASSET_ZIP}" | sha256sum -c -
+require_nonempty_file "${CAUSAL_CONV1D_WHEEL}"
+require_nonempty_file "${MAMBA_SSM_WHEEL}"
 
 if [[ ! -f "${SOURCE_ROOT}/umamba/setup.py" ]]; then
     if [[ -e "${SOURCE_ROOT}" ]]; then
@@ -78,12 +92,10 @@ python -m pip install -c configs/umamba_official_constraints.txt \
     "requests==2.31.0"
 
 # These are the official March-2024 prebuilt CUDA 11.8 / torch 2.0 / CPython
-# 3.10 / old-ABI wheels. Using the wheels avoids compiling CUDA extensions on
-# a login node that does not expose nvcc or a GPU.
-python -m pip install --no-deps \
-    "https://github.com/Dao-AILab/causal-conv1d/releases/download/v1.2.0.post2/causal_conv1d-1.2.0.post2+cu118torch2.0cxx11abiFALSE-cp310-cp310-linux_x86_64.whl"
-python -m pip install --no-deps \
-    "https://github.com/state-spaces/mamba/releases/download/v1.2.0.post1/mamba_ssm-1.2.0.post1+cu118torch2.0cxx11abiFALSE-cp310-cp310-linux_x86_64.whl"
+# 3.10 / old-ABI wheels. They are installed from local assets so setup does not
+# depend on GitHub access and does not compile CUDA code on the login node.
+python -m pip install --no-deps "${CAUSAL_CONV1D_WHEEL}"
+python -m pip install --no-deps "${MAMBA_SSM_WHEEL}"
 
 python -m pip install --no-deps -e "${SOURCE_ROOT}/umamba"
 python -m pip check

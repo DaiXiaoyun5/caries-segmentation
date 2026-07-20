@@ -22,17 +22,36 @@ TRAINING_DIR="${DATA_ROOT}/nnUNet_results/${DATASET_NAME}/${TRAINER}__nnUNetPlan
 PRED_DIR="${PROJECT_ROOT}/umamba_caries/predictions/umamba_bot_official_2d_fold0"
 RUN_DIR="${PROJECT_ROOT}/runs/umamba_bot_official_2d_fold0"
 
+require_file() {
+    local required_path="$1"
+    if [[ ! -f "${required_path}" ]]; then
+        echo "Missing required file: ${required_path}" >&2
+        exit 2
+    fi
+}
+
+require_dir() {
+    local required_path="$1"
+    if [[ ! -d "${required_path}" ]]; then
+        echo "Missing required directory: ${required_path}" >&2
+        exit 2
+    fi
+}
+
 cd "${PROJECT_ROOT}"
 module load anaconda3/4.12.0
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate caries-train
 conda activate umamba-caries
 export PYTHONNOUSERSITE=1
+export nnUNet_raw="${DATA_ROOT}/nnUNet_raw"
+export nnUNet_preprocessed="${DATA_ROOT}/nnUNet_preprocessed"
+export nnUNet_results="${DATA_ROOT}/nnUNet_results"
 
 mkdir -p runs/logs "${PRED_DIR}" "${RUN_DIR}"
-test -f "${SOURCE_ROOT}/umamba/nnunetv2/nets/UMambaBot_2d.py"
-test -d "${DATA_ROOT}/nnUNet_preprocessed/${DATASET_NAME}/nnUNetPlans_2d"
-test -f "${DATA_ROOT}/nnUNet_preprocessed/${DATASET_NAME}/splits_final.json"
+require_file "${SOURCE_ROOT}/umamba/nnunetv2/nets/UMambaBot_2d.py"
+require_dir "${DATA_ROOT}/nnUNet_preprocessed/${DATASET_NAME}/nnUNetPlans_2d"
+require_file "${DATA_ROOT}/nnUNet_preprocessed/${DATASET_NAME}/splits_final.json"
 
 echo "===== U-MAMBA-BOT OFFICIAL 2D / FIXED FOLD 0 ====="
 echo "Host: $(hostname)"
@@ -42,9 +61,24 @@ python --version
 nvidia-smi
 
 python - <<'PY'
+import os
+from pathlib import Path
+
 import torch
 from mamba_ssm import Mamba
+from nnunetv2.paths import nnUNet_raw, nnUNet_preprocessed, nnUNet_results
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainerUMambaBot import nnUNetTrainerUMambaBot
+
+actual_paths = {
+    "nnUNet_raw": nnUNet_raw,
+    "nnUNet_preprocessed": nnUNet_preprocessed,
+    "nnUNet_results": nnUNet_results,
+}
+for name, value in actual_paths.items():
+    expected = os.environ[name]
+    if Path(value).resolve() != Path(expected).resolve():
+        raise RuntimeError(f"{name} mismatch: imported={value}, expected={expected}")
+print("nnU-Net path preflight: OK")
 
 print("torch:", torch.__version__)
 print("torch CUDA runtime:", torch.version.cuda)
@@ -73,7 +107,7 @@ nnUNetv2_train \
     "${FOLD}" \
     -tr "${TRAINER}"
 
-test -f "${TRAINING_DIR}/checkpoint_final.pth"
+require_file "${TRAINING_DIR}/checkpoint_final.pth"
 
 nnUNetv2_predict \
     -i "${DATA_ROOT}/nnUNet_raw/${DATASET_NAME}/imagesTs" \
