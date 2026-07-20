@@ -38,6 +38,21 @@ class UMambaOfflineSetupTests(unittest.TestCase):
                 self.assertIn("require_dir", text)
                 self.assertIn("Missing required", text)
 
+    def test_jobs_bind_and_verify_isolated_nnunet_paths(self):
+        for relative in (
+            "submit/submitjob_umamba_prepare_caries_2d.sh",
+            "submit/submitjob_umamba_bot_official_2d_fold0.sh",
+        ):
+            with self.subTest(script=relative):
+                text = (ROOT / relative).read_text(encoding="utf-8")
+                for variable in (
+                    "nnUNet_raw",
+                    "nnUNet_preprocessed",
+                    "nnUNet_results",
+                ):
+                    self.assertIn(f"export {variable}=", text)
+                self.assertIn("nnU-Net path preflight: OK", text)
+
 
 if __name__ == "__main__":
     unittest.main()

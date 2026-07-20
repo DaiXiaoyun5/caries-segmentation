@@ -44,6 +44,9 @@ source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate caries-train
 conda activate umamba-caries
 export PYTHONNOUSERSITE=1
+export nnUNet_raw="${DATA_ROOT}/nnUNet_raw"
+export nnUNet_preprocessed="${DATA_ROOT}/nnUNet_preprocessed"
+export nnUNet_results="${DATA_ROOT}/nnUNet_results"
 
 mkdir -p runs/logs "${PRED_DIR}" "${RUN_DIR}"
 require_file "${SOURCE_ROOT}/umamba/nnunetv2/nets/UMambaBot_2d.py"
@@ -58,9 +61,24 @@ python --version
 nvidia-smi
 
 python - <<'PY'
+import os
+from pathlib import Path
+
 import torch
 from mamba_ssm import Mamba
+from nnunetv2.paths import nnUNet_raw, nnUNet_preprocessed, nnUNet_results
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainerUMambaBot import nnUNetTrainerUMambaBot
+
+actual_paths = {
+    "nnUNet_raw": nnUNet_raw,
+    "nnUNet_preprocessed": nnUNet_preprocessed,
+    "nnUNet_results": nnUNet_results,
+}
+for name, value in actual_paths.items():
+    expected = os.environ[name]
+    if Path(value).resolve() != Path(expected).resolve():
+        raise RuntimeError(f"{name} mismatch: imported={value}, expected={expected}")
+print("nnU-Net path preflight: OK")
 
 print("torch:", torch.__version__)
 print("torch CUDA runtime:", torch.version.cuda)

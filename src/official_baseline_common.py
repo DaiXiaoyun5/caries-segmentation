@@ -38,6 +38,8 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision.transforms import InterpolationMode
 from torchvision.transforms import functional as TVF
 
+from official_training_schedule import training_segment_update_limit
+
 
 PROJECT_ROOT = Path("/share/home/u2515283028/caries_project")
 METRIC_KEYS = (
@@ -1031,12 +1033,17 @@ def run_official_experiment(
     next_val_step = int(val_interval_iterations or 0)
     stopped_early = False
 
-    for epoch in range(1, int(args.epochs) + 1):
-        remaining = None
-        if max_iterations is not None:
-            remaining = int(max_iterations) - global_step
-            if remaining <= 0:
-                break
+    epoch = 0
+    while max_iterations is not None or epoch < int(args.epochs):
+        remaining = training_segment_update_limit(
+            global_step=global_step,
+            max_iterations=max_iterations,
+            val_interval_iterations=val_interval_iterations,
+            next_val_step=next_val_step,
+        )
+        if remaining == 0:
+            break
+        epoch += 1
         train_metrics, updates = run_one_epoch(
             model,
             train_loader,
@@ -1047,6 +1054,8 @@ def run_official_experiment(
             scheduler_step=scheduler_step,
             max_updates=remaining,
         )
+        if updates <= 0:
+            raise RuntimeError("Training loader produced no optimizer updates")
         global_step += updates
         if scheduler is not None and scheduler_step == "epoch":
             scheduler.step()
@@ -1056,7 +1065,10 @@ def run_official_experiment(
             should_validate = global_step >= next_val_step or reached_end
         else:
             should_validate = epoch % max(int(val_every_epochs), 1) == 0
-        should_validate = bool(should_validate or epoch == int(args.epochs))
+        finished_epoch_budget = (
+            max_iterations is None and epoch == int(args.epochs)
+        )
+        should_validate = bool(should_validate or finished_epoch_budget)
 
         val_metrics = None
         if should_validate:
@@ -1124,8 +1136,13 @@ def run_official_experiment(
                 f"loss={val_metrics['loss']:.4f}, dice={val_metrics['dice']:.4f}, "
                 f"mIoU={val_metrics['mean_iou']:.4f}"
             )
+        progress = (
+            f"epoch {epoch:04d}/{int(args.epochs):04d}"
+            if max_iterations is None
+            else f"training-segment {epoch:04d}"
+        )
         print(
-            f"[epoch {epoch:04d}/{int(args.epochs):04d} | step {global_step}] "
+            f"[{progress} | step {global_step}] "
             f"lr={lr:.6g} train_loss={train_metrics['loss']:.4f} "
             f"train_dice={train_metrics['dice']:.4f} val={val_text}"
         )

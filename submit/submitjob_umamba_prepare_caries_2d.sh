@@ -11,6 +11,7 @@ set -Eeuo pipefail
 
 PROJECT_ROOT=/share/home/u2515283028/caries_project
 SOURCE_ROOT="${PROJECT_ROOT}/external_models/U-Mamba-main"
+DATA_ROOT="${SOURCE_ROOT}/data"
 DATASET_ID=711
 DATASET_NAME=Dataset711_CariXray
 
@@ -36,6 +37,9 @@ source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate caries-train
 conda activate umamba-caries
 export PYTHONNOUSERSITE=1
+export nnUNet_raw="${DATA_ROOT}/nnUNet_raw"
+export nnUNet_preprocessed="${DATA_ROOT}/nnUNet_preprocessed"
+export nnUNet_results="${DATA_ROOT}/nnUNet_results"
 
 module load http-proxy 2>/dev/null || true
 export http_proxy=http://211.67.63.75:3128
@@ -50,10 +54,22 @@ python --version
 which nnUNetv2_plan_and_preprocess
 
 python - <<'PY'
+import os
+from pathlib import Path
+
 from nnunetv2.paths import nnUNet_raw, nnUNet_preprocessed, nnUNet_results
-print("nnUNet_raw:", nnUNet_raw)
-print("nnUNet_preprocessed:", nnUNet_preprocessed)
-print("nnUNet_results:", nnUNet_results)
+
+actual = {
+    "nnUNet_raw": nnUNet_raw,
+    "nnUNet_preprocessed": nnUNet_preprocessed,
+    "nnUNet_results": nnUNet_results,
+}
+for name, value in actual.items():
+    expected = os.environ[name]
+    print(f"{name}: {value}")
+    if Path(value).resolve() != Path(expected).resolve():
+        raise RuntimeError(f"{name} mismatch: imported={value}, expected={expected}")
+print("nnU-Net path preflight: OK")
 PY
 
 nnUNetv2_plan_and_preprocess \
