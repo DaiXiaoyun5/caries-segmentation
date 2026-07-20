@@ -36,7 +36,7 @@ class BaselineHandoffContract(unittest.TestCase):
             "sbatch submit/submitjob_deeplabv3plus_vainf_r50_os16_official_30k_bs4.sh",
             "sbatch submit/submitjob_deeplabv3plus_vainf_r50_os16_medical_e260_bs6.sh",
             "deeplabv3plus_r50_os16_30k_bs4",
-            "superseded",
+            "现已被新实验替代",
         ):
             self.assertIn(expected, guide)
 
